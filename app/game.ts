@@ -7,6 +7,7 @@ export type Ice = {
   strength: number;
   stress: number;
   links: string[];
+  color: 'blue' | 'white';
   state: 'solid' | 'gone';
 };
 
@@ -16,6 +17,8 @@ export type ResolutionStep = {
 };
 
 export const PLAYER_NAMES = ['파랑', '주황', '보라', '초록'];
+export const ROULETTE_RESULTS = ['blue', 'white', 'any', 'pass'] as const;
+export type RouletteResult = typeof ROULETTE_RESULTS[number];
 
 const directions = [
   [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1],
@@ -48,10 +51,16 @@ export function makeIce(players: number, seed: number): Ice[] {
         strength: 2 + (hash(q, r, seed) % 2),
         stress: 0,
         links: [],
+        color: 'white',
         state: 'solid',
       });
     }
   }
+
+  const blueIds = new Set([...ice]
+    .sort((a, b) => hash(a.q, a.r, seed + 41) - hash(b.q, b.r, seed + 41))
+    .slice(0, Math.floor(ice.length / 2))
+    .map((tile) => tile.id));
 
   return ice.map((tile) => {
     const ordered = neighbors(tile, ice).sort((a, b) =>
@@ -62,7 +71,7 @@ export function makeIce(players: number, seed: number): Ice[] {
       if (linked.length >= Math.min(2, ordered.length)) break;
       if (!linked.includes(item)) linked.push(item);
     }
-    return { ...tile, links: linked.slice(0, 3).map((item) => item.id) };
+    return { ...tile, color: blueIds.has(tile.id) ? 'blue' : 'white', links: linked.slice(0, 3).map((item) => item.id) };
   });
 }
 
@@ -92,7 +101,7 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
 
   let next = all.map((tile) => tile.id === targetId ? { ...tile, state: 'gone' as const } : { ...tile });
   const steps: ResolutionStep[] = [];
-  const coldPenalty = Math.min(1, Math.floor(Math.floor((move - 1) / players) / 2));
+  const coldPenalty = Math.floor((Math.floor((move - 1) / players) * 2) / 3);
   let frontier = [targetId];
 
   for (let depth = 0; depth < 2 && frontier.length; depth += 1) {
@@ -104,7 +113,7 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
     next = next.map((tile) => affectedSet.has(tile.id) ? { ...tile, stress: tile.stress + 1 } : tile);
     const falling = affected.filter((id) => {
       const tile = next.find((item) => item.id === id)!;
-      if (tile.id === '0:0' && move <= players) return false;
+      if (tile.id === '0:0' && move <= players * 2) return false;
       return tile.stress >= Math.max(1, tile.strength - coldPenalty);
     });
     const fallingSet = new Set(falling);
@@ -113,7 +122,7 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
     frontier = falling;
   }
 
-  const detached = detachedIds(next).filter((id) => id !== '0:0' || move > players);
+  const detached = detachedIds(next).filter((id) => id !== '0:0' || move > players * 2);
   if (detached.length) {
     const detachedSet = new Set(detached);
     next = next.map((tile) => detachedSet.has(tile.id) ? { ...tile, state: 'gone' as const } : tile);

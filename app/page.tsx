@@ -1,9 +1,15 @@
 'use client';
 
-import { useMemo, useState, type CSSProperties } from 'react';
-import { makeIce, PLAYER_NAMES, resolveHit, type Ice } from './game';
+import { useMemo, useRef, useState, type CSSProperties } from 'react';
+import { makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const ROULETTE_LABELS: Record<RouletteResult, string> = {
+  blue: '파란 얼음',
+  white: '하얀 얼음',
+  any: '아무 얼음',
+  pass: '차례 통과',
+};
 
 function initialGame(round: number, players: number) {
   return makeIce(players, 20260821 + round * 97 + players * 13);
@@ -20,45 +26,122 @@ export default function Home() {
   const [loser, setLoser] = useState<number | null>(null);
   const [pulse, setPulse] = useState<string[]>([]);
   const [falling, setFalling] = useState<string[]>([]);
+  const [hammer, setHammer] = useState<string | null>(null);
+  const [shake, setShake] = useState<'' | 'small' | 'large'>('');
+  const [penguinMood, setPenguinMood] = useState<'calm' | 'tense' | 'panic'>('calm');
+  const [muted, setMuted] = useState(false);
+  const [roulette, setRoulette] = useState<RouletteResult | null>(null);
+  const [spinning, setSpinning] = useState(false);
+  const [wheelRotation, setWheelRotation] = useState(0);
+  const audioRef = useRef<AudioContext | null>(null);
   const remaining = useMemo(() => ice.filter((tile) => tile.state === 'solid').length, [ice]);
   const radius = players;
   const completedCycles = Math.floor((move - 1) / players);
 
+  function audioContext() {
+    if (muted) return null;
+    audioRef.current ??= new AudioContext();
+    if (audioRef.current.state === 'suspended') void audioRef.current.resume();
+    return audioRef.current;
+  }
+
+  function tone(start: number, end: number, duration: number, type: OscillatorType, volume: number) {
+    const context = audioContext();
+    if (!context) return;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(start, now);
+    oscillator.frequency.exponentialRampToValueAtTime(end, now + duration);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + duration);
+  }
+
+  function canHit(tile: Ice) {
+    return tile.state === 'solid' && (roulette === 'any' || roulette === tile.color);
+  }
+
+  const needsRespin = roulette === 'blue' || roulette === 'white'
+    ? !ice.some((tile) => tile.state === 'solid' && tile.color === roulette)
+    : false;
+
+  async function spinRoulette() {
+    if (busy || spinning || loser !== null || (roulette !== null && !needsRespin)) return;
+    setSpinning(true);
+    setRoulette(null);
+    const random = crypto.getRandomValues(new Uint32Array(1))[0];
+    const result = ROULETTE_RESULTS[random % ROULETTE_RESULTS.length];
+    const targetAngle = -ROULETTE_RESULTS.indexOf(result) * 90;
+    setWheelRotation((current) => current + 1440 + ((targetAngle - current % 360 + 360) % 360));
+    await wait(850);
+    setRoulette(result);
+    if (result === 'pass') {
+      await wait(700);
+      setPlayer((current) => (current + 1) % players);
+      setRoulette(null);
+    }
+    setSpinning(false);
+  }
+
   async function breakIce(id: string) {
-    if (busy || loser !== null) return;
+    if (busy || spinning || loser !== null) return;
+    if (!ice.some((tile) => tile.id === id && canHit(tile))) return;
     setBusy(true);
+    audioContext();
     const { final, steps } = resolveHit(ice, id, move, players);
 
+    setHammer(id);
+    setPenguinMood('tense');
+    await wait(140);
+    tone(150, 70, 0.08, 'square', 0.07);
+    setShake('small');
     setFalling([id]);
     setIce((current) => current.map((tile) => tile.id === id ? { ...tile, state: 'gone' } : tile));
-    await wait(160);
+    await wait(80);
+    setHammer(null);
+    setShake('');
 
     for (const step of steps) {
       setFalling([]);
       setPulse(step.affected);
-      await wait(190);
+      setPenguinMood('tense');
+      tone(680, 360, 0.08, 'triangle', 0.025);
+      await wait(140);
       if (step.falling.length) {
         setPulse([]);
         setFalling(step.falling);
+        setShake(step.falling.length >= 4 ? 'large' : 'small');
+        setPenguinMood(step.falling.length >= 4 ? 'panic' : 'tense');
+        tone(110, 35, 0.18, 'sawtooth', Math.min(0.12, 0.04 + step.falling.length * 0.01));
         setIce((current) => current.map((tile) => step.falling.includes(tile.id) ? { ...tile, state: 'gone' } : tile));
-        await wait(210);
+        await wait(140);
+        setShake('');
       }
     }
 
     setIce(final);
     setPulse([]);
     setFalling([]);
+    setHammer(null);
+    setShake('');
+    setPenguinMood('calm');
     const penguinFell = final.find((tile) => tile.id === '0:0')?.state === 'gone';
     setBusy(false);
     if (penguinFell) setLoser(player);
     else {
       setPlayer((current) => (current + 1) % players);
       setMove((current) => current + 1);
+      setRoulette(null);
     }
   }
 
   function restart(nextPlayers = players) {
-    if (busy) return;
+    if (busy || spinning) return;
     const nextRound = round + 1;
     const nextStarter = nextPlayers === players ? (starter + 1) % nextPlayers : 0;
     setPlayers(nextPlayers);
@@ -70,10 +153,22 @@ export default function Home() {
     setLoser(null);
     setPulse([]);
     setFalling([]);
+    setHammer(null);
+    setShake('');
+    setPenguinMood('calm');
+    setRoulette(null);
+    setSpinning(false);
+    setWheelRotation(0);
   }
 
   const boardStyle = { '--ice-size': `${48 / radius}%` } as CSSProperties;
   const penguinSize = radius === 2 ? 60 : radius === 3 ? 48 : 38;
+  const hammerTarget = ice.find((tile) => tile.id === hammer);
+  const instruction = roulette === 'pass' ? '이번 차례는 통과!'
+    : spinning ? '룰렛이 돌아갑니다…'
+    : roulette === null ? '먼저 룰렛을 돌리세요'
+    : needsRespin ? `${ROULETTE_LABELS[roulette]}이 없습니다`
+    : `${ROULETTE_LABELS[roulette]}을 고르세요`;
 
   return (
     <main className="game-shell">
@@ -85,13 +180,20 @@ export default function Home() {
         <div className="game-actions">
           <label className="player-select">
             <span>인원</span>
-            <select value={players} disabled={busy} onChange={(event) => restart(Number(event.target.value))}>
+            <select value={players} disabled={busy || spinning} onChange={(event) => restart(Number(event.target.value))}>
               <option value={2}>2명</option>
               <option value={3}>3명</option>
               <option value={4}>4명</option>
             </select>
           </label>
-          <button className="restart-small" disabled={busy} onClick={() => restart()}>새 게임</button>
+          <button
+            className="sound-toggle"
+            disabled={busy || spinning}
+            aria-label={muted ? '소리 켜기' : '음소거'}
+            aria-pressed={muted}
+            onClick={() => setMuted((current) => !current)}
+          >{muted ? '🔇' : '🔊'}</button>
+          <button className="restart-small" disabled={busy || spinning} onClick={() => restart()}>새 게임</button>
         </div>
       </header>
 
@@ -99,34 +201,52 @@ export default function Home() {
         <div className={`player-dot player-${player}`} />
         <div>
           <span>{loser === null ? `${PLAYER_NAMES[player]} 차례` : `${PLAYER_NAMES[loser]} 패배`}</span>
-          <strong>{loser === null ? (busy ? '충격이 퍼집니다…' : '얼음 하나를 고르세요') : '펭귄이 빠졌습니다!'}</strong>
+          <strong>{loser === null ? (busy ? '충격이 퍼집니다…' : instruction) : '펭귄이 빠졌습니다!'}</strong>
         </div>
         <div className="move-count"><span>타격</span><b>{move}</b></div>
+      </section>
+
+      <section className="roulette-panel" aria-label="타격 룰렛">
+        <div className="wheel-shell">
+          <i className="wheel-pointer" />
+          <div className="roulette-wheel" style={{ transform: `rotate(${wheelRotation}deg)` }}>
+            <span>파랑</span><span>하양</span><span>자유</span><span>통과</span>
+          </div>
+        </div>
+        <div className="roulette-action">
+          <b>{roulette ? ROULETTE_LABELS[roulette] : '오늘의 운명'}</b>
+          <button onClick={spinRoulette} disabled={busy || spinning || loser !== null || (roulette !== null && !needsRespin)}>
+            {roulette === 'pass' ? '차례 통과' : spinning ? '도는 중…' : needsRespin ? '다시 돌리기' : '룰렛 돌리기'}
+          </button>
+        </div>
       </section>
 
       <section className="board-wrap" aria-label={`${players}인용 얼음 게임판`}>
         <div className="cold-meter" aria-label={`한기 단계 ${Math.min(3, Math.floor(completedCycles / 2) + 1)}`}>
           <i style={{ width: `${Math.min(100, 25 + completedCycles * 15)}%` }} />
         </div>
-        <div className={`board board-${players}`} style={boardStyle}>
+        <div className={`board board-${players} ${shake ? `shake-${shake}` : ''}`} style={boardStyle}>
           <div className="water-ripple" />
           {ice.map((tile) => (
             <button
               key={tile.id}
-              className={`ice ${tile.state} ${pulse.includes(tile.id) ? 'pulse' : ''} ${falling.includes(tile.id) ? 'falling' : ''}`}
+              className={`ice ${tile.color} ${tile.state} ${roulette && !canHit(tile) ? 'unavailable' : ''} ${pulse.includes(tile.id) ? 'pulse' : ''} ${falling.includes(tile.id) ? 'falling' : ''}`}
               style={{ left: `${tile.x}%`, top: `${tile.y}%` }}
               onClick={() => breakIce(tile.id)}
-              disabled={busy || loser !== null || tile.state === 'gone'}
-              aria-label={tile.id === '0:0' ? '펭귄이 있는 얼음' : '얼음'}
+              disabled={busy || spinning || loser !== null || !canHit(tile)}
+              aria-label={`${tile.color === 'blue' ? '파란' : '하얀'} ${tile.id === '0:0' ? '펭귄이 있는 얼음' : '얼음'}`}
             />
           ))}
+          {hammerTarget && (
+            <span className="hammer" style={{ left: `${hammerTarget.x}%`, top: `${hammerTarget.y}%` }} aria-hidden="true">🔨</span>
+          )}
           <div
-            className={`penguin ${ice.find((tile) => tile.id === '0:0')?.state === 'gone' ? 'dropped' : busy ? 'worried' : ''}`}
+            className={`penguin ${ice.find((tile) => tile.id === '0:0')?.state === 'gone' ? 'dropped' : penguinMood}`}
             style={{ fontSize: `${penguinSize}px` }}
             aria-label="펭귄"
           >🐧</div>
         </div>
-        <p className="rule">타격 전에는 균열이 보이지 않습니다. 펭귄을 떨어뜨린 사람이 집니다.</p>
+        <p className="rule">룰렛이 정한 색만 깨세요. 균열은 타격 전까지 보이지 않습니다.</p>
       </section>
 
       <footer>
@@ -141,7 +261,7 @@ export default function Home() {
             <span className="result-penguin">🐧</span>
             <p>라운드 종료</p>
             <h2 id="result-title">{PLAYER_NAMES[loser]} 패배</h2>
-            <span>{move}번의 타격, 약 {Math.max(10, move * 4)}초 만에 끝났어요.</span>
+            <span>{move}번의 타격으로 끝났어요.</span>
             <button autoFocus onClick={() => restart()}>한 판 더</button>
           </div>
         </div>
