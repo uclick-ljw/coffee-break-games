@@ -19,6 +19,7 @@ export type ResolutionStep = {
 export const PLAYER_NAMES = ['파랑', '주황', '보라', '초록'];
 export const ROULETTE_RESULTS = ['blue', 'white', 'any', 'pass'] as const;
 export type RouletteResult = typeof ROULETTE_RESULTS[number];
+export const iceSize = (radius: number) => 48 / (radius + 0.5);
 
 const directions = [
   [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1],
@@ -38,6 +39,7 @@ function neighbors(tile: Ice, all: Ice[]) {
 
 export function makeIce(players: number, seed: number): Ice[] {
   const radius = players;
+  const size = iceSize(radius);
   const ice: Ice[] = [];
   for (let q = -radius; q <= radius; q += 1) {
     for (let r = -radius; r <= radius; r += 1) {
@@ -46,9 +48,9 @@ export function makeIce(players: number, seed: number): Ice[] {
         id: `${q}:${r}`,
         q,
         r,
-        x: 50 + q * (44 / radius) + r * (22 / radius),
-        y: 50 + r * (38 / radius),
-        strength: 2 + (hash(q, r, seed) % 2),
+        x: 50 + (q + r / 2) * size,
+        y: 50 + r * size * Math.sqrt(3) / 2,
+        strength: 3 + (hash(q, r, seed) % 2),
         stress: 0,
         links: [],
         color: 'white',
@@ -62,37 +64,57 @@ export function makeIce(players: number, seed: number): Ice[] {
     .slice(0, Math.floor(ice.length / 2))
     .map((tile) => tile.id));
 
-  return ice.map((tile) => {
-    const ordered = neighbors(tile, ice).sort((a, b) =>
-      hash(tile.q + a.q * 7, tile.r + a.r * 11, seed) - hash(tile.q + b.q * 7, tile.r + b.r * 11, seed),
-    );
-    const linked = ordered.filter((item) => hash(tile.q + item.q, tile.r + item.r, seed) % 100 < 55).slice(0, 3);
-    for (const item of ordered) {
-      if (linked.length >= Math.min(2, ordered.length)) break;
-      if (!linked.includes(item)) linked.push(item);
+  const linkMap = new Map(ice.map((tile) => [tile.id, new Set<string>()]));
+  const edges = ice.flatMap((tile) => neighbors(tile, ice)
+    .filter((other) => tile.id < other.id)
+    .map((other) => ({
+      a: tile,
+      b: other,
+      score: hash(tile.q * 11 + other.q * 17, tile.r * 13 + other.r * 19, seed),
+    })))
+    .sort((a, b) => a.score - b.score);
+  const connect = (a: Ice, b: Ice) => {
+    linkMap.get(a.id)!.add(b.id);
+    linkMap.get(b.id)!.add(a.id);
+  };
+
+  for (const edge of edges) {
+    if (edge.score % 100 < 45 && linkMap.get(edge.a.id)!.size < 3 && linkMap.get(edge.b.id)!.size < 3) connect(edge.a, edge.b);
+  }
+  for (const tile of ice) {
+    const candidates = edges.filter((edge) => edge.a.id === tile.id || edge.b.id === tile.id);
+    for (const edge of candidates) {
+      if (linkMap.get(tile.id)!.size >= Math.min(2, candidates.length)) break;
+      const other = edge.a.id === tile.id ? edge.b : edge.a;
+      if (linkMap.get(other.id)!.size < 4) connect(tile, other);
     }
-    return { ...tile, color: blueIds.has(tile.id) ? 'blue' : 'white', links: linked.slice(0, 3).map((item) => item.id) };
-  });
+  }
+
+  return ice.map((tile) => ({
+    ...tile,
+    color: blueIds.has(tile.id) ? 'blue' : 'white',
+    links: [...linkMap.get(tile.id)!],
+  }));
 }
 
-function detachedIds(all: Ice[]) {
-  const reachable = new Set(
-    all.filter((tile) => tile.state === 'solid' && Math.max(Math.abs(tile.q), Math.abs(tile.r), Math.abs(tile.q + tile.r)) === Math.max(...all.map((item) => Math.max(Math.abs(item.q), Math.abs(item.r), Math.abs(item.q + item.r)))))
-      .map((tile) => tile.id),
-  );
-  const queue = [...reachable];
-  while (queue.length) {
-    const currentId = queue.shift();
-    const tile = all.find((item) => item.id === currentId);
-    if (!tile) continue;
-    for (const neighbor of neighbors(tile, all)) {
-      if (neighbor.state === 'solid' && !reachable.has(neighbor.id)) {
-        reachable.add(neighbor.id);
-        queue.push(neighbor.id);
+export function structurallyUnsupportedIds(all: Ice[]) {
+  const radius = Math.max(...all.map((tile) => Math.max(Math.abs(tile.q), Math.abs(tile.r), Math.abs(tile.q + tile.r))));
+  const stable = new Set(all
+    .filter((tile) => tile.state === 'solid' && Math.max(Math.abs(tile.q), Math.abs(tile.r), Math.abs(tile.q + tile.r)) === radius)
+    .map((tile) => tile.id));
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const tile of all) {
+      if (tile.state === 'gone' || stable.has(tile.id)) continue;
+      const requiredSupports = 2;
+      if (neighbors(tile, all).filter((neighbor) => neighbor.state === 'solid' && stable.has(neighbor.id)).length >= requiredSupports) {
+        stable.add(tile.id);
+        changed = true;
       }
     }
   }
-  return all.filter((tile) => tile.state === 'solid' && !reachable.has(tile.id)).map((tile) => tile.id);
+  return all.filter((tile) => tile.state === 'solid' && !stable.has(tile.id)).map((tile) => tile.id);
 }
 
 export function resolveHit(all: Ice[], targetId: string, move: number, players: number) {
@@ -101,7 +123,7 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
 
   let next = all.map((tile) => tile.id === targetId ? { ...tile, state: 'gone' as const } : { ...tile });
   const steps: ResolutionStep[] = [];
-  const coldPenalty = Math.floor((Math.floor((move - 1) / players) * 2) / 3);
+  const coldPenalty = Math.floor((Math.floor((move - 1) / players) * 3) / 4);
   let frontier = [targetId];
 
   for (let depth = 0; depth < 2 && frontier.length; depth += 1) {
@@ -113,7 +135,6 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
     next = next.map((tile) => affectedSet.has(tile.id) ? { ...tile, stress: tile.stress + 1 } : tile);
     const falling = affected.filter((id) => {
       const tile = next.find((item) => item.id === id)!;
-      if (tile.id === '0:0' && move <= players * 2) return false;
       return tile.stress >= Math.max(1, tile.strength - coldPenalty);
     });
     const fallingSet = new Set(falling);
@@ -122,11 +143,11 @@ export function resolveHit(all: Ice[], targetId: string, move: number, players: 
     frontier = falling;
   }
 
-  const detached = detachedIds(next).filter((id) => id !== '0:0' || move > players * 2);
-  if (detached.length) {
-    const detachedSet = new Set(detached);
-    next = next.map((tile) => detachedSet.has(tile.id) ? { ...tile, state: 'gone' as const } : tile);
-    steps.push({ affected: detached, falling: detached });
+  const unsupported = structurallyUnsupportedIds(next);
+  if (unsupported.length) {
+    const unsupportedSet = new Set(unsupported);
+    next = next.map((tile) => unsupportedSet.has(tile.id) ? { ...tile, state: 'gone' as const } : tile);
+    steps.push({ affected: unsupported, falling: unsupported });
   }
 
   return { final: next, steps };

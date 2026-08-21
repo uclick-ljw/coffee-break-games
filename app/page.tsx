@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
-import { makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
+import { iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -161,7 +161,7 @@ export default function Home() {
     setWheelRotation(0);
   }
 
-  const boardStyle = { '--ice-size': `${48 / radius}%` } as CSSProperties;
+  const boardStyle = { '--ice-size': `${iceSize(radius)}%` } as CSSProperties;
   const penguinSize = radius === 2 ? 60 : radius === 3 ? 48 : 38;
   const hammerTarget = ice.find((tile) => tile.id === hammer);
   const instruction = roulette === 'pass' ? '이번 차례는 통과!'
