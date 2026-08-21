@@ -16,10 +16,11 @@ export type ResolutionStep = {
   falling: string[];
 };
 
-export const PLAYER_NAMES = ['파랑', '주황', '보라', '초록'];
+export const PLAYER_NAMES = ['파랑', '주황', '보라', '초록', '분홍', '노랑'];
 export const ROULETTE_RESULTS = ['blue', 'white', 'any', 'pass'] as const;
 export type RouletteResult = typeof ROULETTE_RESULTS[number];
 export const iceSize = (radius: number) => 48 / (radius + 0.5);
+export const boardRadius = (players: number) => Math.min(4, players);
 
 const directions = [
   [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1],
@@ -38,7 +39,7 @@ function neighbors(tile: Ice, all: Ice[]) {
 }
 
 export function makeIce(players: number, seed: number): Ice[] {
-  const radius = players;
+  const radius = boardRadius(players);
   const size = iceSize(radius);
   const ice: Ice[] = [];
   for (let q = -radius; q <= radius; q += 1) {
@@ -50,7 +51,7 @@ export function makeIce(players: number, seed: number): Ice[] {
         r,
         x: 50 + (q + r / 2) * size,
         y: 50 + r * size * Math.sqrt(3) / 2,
-        strength: 3 + (hash(q, r, seed) % 2),
+        strength: 3 + (hash(q, r, seed) % 2) + (players >= 5 ? 1 : 0),
         stress: 0,
         links: [],
         color: 'white',

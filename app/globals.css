@@ -21,6 +21,46 @@ body {
 
 button { font: inherit; }
 
+.menu-shell {
+  min-height: 100svh;
+  max-width: 760px;
+  margin: auto;
+  padding: clamp(32px, 8vw, 72px) 22px;
+  display: grid;
+  align-content: center;
+  background: radial-gradient(circle at 20% 15%, #fff 0 3px, transparent 4px), linear-gradient(145deg, #f9fdff, #d9f1fa);
+}
+.menu-hero { text-align: center; }
+.menu-hero h1 { font-size: clamp(42px, 10vw, 70px); }
+.menu-hero > p:last-child { margin: 10px 0 28px; color: var(--muted); }
+.game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.game-card { min-height: 300px; padding: 24px; display: flex; flex-direction: column; align-items: flex-start; border: 1px solid #c8e6f0; border-radius: 28px; color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 18px 40px #287a9e1c; transition: transform .18s, box-shadow .18s; }
+.game-card:hover, .game-card:focus-visible { transform: translateY(-4px); box-shadow: 0 24px 48px #287a9e30; outline: 3px solid #168ad555; }
+.ice-card { background: linear-gradient(155deg, #fff, #c9effa); }
+.marble-card { background: linear-gradient(155deg, #fff, #ffe4bd); }
+.game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
+.game-card small { color: var(--muted); font-weight: 800; }
+.game-card strong { margin-top: 4px; font-size: 27px; letter-spacing: -.04em; }
+.game-card p { min-height: 42px; margin: 8px 0 20px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.game-card b { padding: 10px 15px; border-radius: 99px; background: var(--ink); color: white; font-size: 12px; }
+.menu-note { margin: 20px 0 0; color: var(--muted); text-align: center; font-size: 12px; }
+
+.marble-shell { max-width: 620px; overflow: visible; }
+.score-grid { margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.score-chip { min-width: 0; padding: 8px 11px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border: 1px solid #c8e6f0; border-left-width: 5px; border-radius: 12px; background: #ffffffb8; color: var(--muted); font-size: 11px; font-weight: 800; transition: transform .18s, background .18s; }
+.score-chip b { color: var(--ink); font-size: 19px; }
+.score-chip.current { transform: translateY(-2px); background: white; box-shadow: 0 7px 15px #287a9e20; }
+.player-border-0 { border-left-color: var(--blue); }.player-border-1 { border-left-color: var(--orange); }.player-border-2 { border-left-color: var(--purple); }.player-border-3 { border-left-color: var(--green); }.player-border-4 { border-left-color: #e84d9b; }.player-border-5 { border-left-color: #e6b81e; }
+.tower-wrap { flex: 1; min-height: 0; display: grid; align-content: center; justify-items: center; }
+.tower-stage { position: relative; width: min(68vw, 330px); aspect-ratio: 360 / 500; margin: 8px auto 4px; filter: drop-shadow(0 18px 18px #287a9e25); }
+.tower-stage canvas { display: block; width: 100%; height: 100%; }
+.pin-handle { position: absolute; z-index: 4; top: var(--pin-y); width: 42px; height: 24px; border: 3px solid white; border-radius: 99px; background: var(--pin-color); box-shadow: 0 5px 10px #17384f35; cursor: pointer; transform: translateY(-50%); transition: transform .15s, filter .15s; }
+.pin-handle.left { left: -10px; }.pin-handle.right { right: -10px; }
+.pin-handle:hover:not(:disabled), .pin-handle:focus-visible { filter: brightness(1.12); transform: translateY(-50%) scale(1.16); outline: 3px solid #10263a55; }
+.pin-handle:disabled { cursor: wait; opacity: .55; }
+.tower-stage.moving { animation: tower-breathe .22s ease-in-out infinite alternate; }
+.marble-result > span:not(.result-penguin) { display: block; line-height: 1.6; }
+
 .game-shell {
   min-height: 100svh;
   max-width: 540px;
@@ -38,7 +78,7 @@ button { font: inherit; }
 .topbar { justify-content: space-between; }
 .eyebrow { margin: 0 0 3px; color: #4f9abb; font-size: 10px; font-weight: 800; letter-spacing: .18em; }
 h1 { margin: 0; font-size: clamp(26px, 7vw, 34px); letter-spacing: -.06em; }
-.game-actions { display: flex; align-items: center; gap: 7px; }
+.game-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
 .player-select { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
 .player-select select, .restart-small, .sound-toggle { border: 1px solid #b8dce9; border-radius: 99px; background: #fff9; color: #52758a; font-weight: 700; }
 .player-select select { padding: 8px 7px; }
@@ -61,6 +101,8 @@ h1 { margin: 0; font-size: clamp(26px, 7vw, 34px); letter-spacing: -.06em; }
 .player-1 { background: var(--orange); box-shadow: 0 0 16px #ff8f4566; }
 .player-2 { background: var(--purple); box-shadow: 0 0 16px #8b6edb66; }
 .player-3 { background: var(--green); box-shadow: 0 0 16px #28a77a66; }
+.player-4 { background: #e84d9b; box-shadow: 0 0 16px #e84d9b66; }
+.player-5 { background: #e6b81e; box-shadow: 0 0 16px #e6b81e66; }
 .status-card div:nth-child(2) { display: grid; gap: 3px; }
 .status-card span { color: var(--muted); font-size: 12px; font-weight: 700; }
 .status-card strong { font-size: 16px; }
@@ -141,6 +183,7 @@ footer b { color: var(--ink); }
 @keyframes wobble { from { transform: translate(-50%, -50%) rotate(-4deg); } to { transform: translate(-50%, -50%) rotate(4deg); } }
 @keyframes panic { from { transform: translate(-52%, -50%) rotate(-8deg); } to { transform: translate(-48%, -52%) rotate(8deg); } }
 @keyframes pop { from { opacity: 0; transform: translateY(16px) scale(.94); } }
+@keyframes tower-breathe { from { transform: translateX(-1px); } to { transform: translateX(1px); } }
 
 .board.shake-small { animation: board-nudge .14s ease-out; }
 .board.shake-large { animation: board-shock .2s ease-out; }
@@ -151,15 +194,23 @@ footer b { color: var(--ink); }
   .roulette-panel { margin-top: 5px; transform: scale(.88); }
   .board-wrap { min-height: 330px; }
   .board { width: min(72vh, 430px); }
+  .marble-shell .status-card { min-height: 58px; }
+  .tower-stage { width: min(57vh, 62vw, 285px); }
 }
 
 @media (max-width: 420px) {
+  .game-grid { grid-template-columns: 1fr; }
+  .menu-shell { align-content: start; padding-top: 36px; }
+  .game-card { min-height: 220px; }
+  .game-card-art { font-size: 48px; }
   .game-shell { padding-inline: 15px; }
   .player-select > span { display: none; }
   .game-actions { gap: 5px; }
   .restart-small { padding-inline: 10px; }
   .sound-toggle { width: 36px; height: 36px; }
   .board-4 .ice { min-width: 44px; min-height: 44px; }
+  .score-chip { padding-inline: 7px; }
+  .score-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {

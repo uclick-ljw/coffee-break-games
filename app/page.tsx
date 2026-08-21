@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
-import { iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
+import MarbleGame from './marbles';
+import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -11,11 +12,45 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
+type GameMode = 'menu' | 'ice' | 'marbles';
+
+export default function Home() {
+  const [mode, setMode] = useState<GameMode>('menu');
+  if (mode === 'ice') return <IceGame onExit={() => setMode('menu')} />;
+  if (mode === 'marbles') return <MarbleGame onExit={() => setMode('menu')} />;
+  return (
+    <main className="menu-shell">
+      <header className="menu-hero">
+        <p className="eyebrow">ONE MINUTE BOARD GAMES</p>
+        <h1>커피 한 판</h1>
+        <p>2~6명이 한 기기로 즐기는 빠른 내기 게임</p>
+      </header>
+      <section className="game-grid" aria-label="게임 선택">
+        <button className="game-card ice-card" onClick={() => setMode('ice')}>
+          <span className="game-card-art" aria-hidden="true">🐧</span>
+          <small>운과 연쇄 붕괴</small>
+          <strong>얼음깨기</strong>
+          <p>룰렛 색에 맞춰 얼음을 깨고 펭귄을 지키세요.</p>
+          <b>게임 시작</b>
+        </button>
+        <button className="game-card marble-card" onClick={() => setMode('marbles')}>
+          <span className="game-card-art" aria-hidden="true">🔴</span>
+          <small>선택과 낙하 물리</small>
+          <strong>구슬 타워</strong>
+          <p>막대를 빼고 떨어진 구슬을 가장 적게 모으세요.</p>
+          <b>게임 시작</b>
+        </button>
+      </section>
+      <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
+    </main>
+  );
+}
+
 function initialGame(round: number, players: number) {
   return makeIce(players, 20260821 + round * 97 + players * 13);
 }
 
-export default function Home() {
+function IceGame({ onExit }: { onExit: () => void }) {
   const [players, setPlayers] = useState(2);
   const [round, setRound] = useState(1);
   const [starter, setStarter] = useState(0);
@@ -29,13 +64,13 @@ export default function Home() {
   const [hammer, setHammer] = useState<string | null>(null);
   const [shake, setShake] = useState<'' | 'small' | 'large'>('');
   const [penguinMood, setPenguinMood] = useState<'calm' | 'tense' | 'panic'>('calm');
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [roulette, setRoulette] = useState<RouletteResult | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [wheelRotation, setWheelRotation] = useState(0);
   const audioRef = useRef<AudioContext | null>(null);
   const remaining = useMemo(() => ice.filter((tile) => tile.state === 'solid').length, [ice]);
-  const radius = players;
+  const radius = boardRadius(players);
   const completedCycles = Math.floor((move - 1) / players);
 
   function audioContext() {
@@ -178,12 +213,15 @@ export default function Home() {
           <h1>얼음 한 판</h1>
         </div>
         <div className="game-actions">
+          <button className="restart-small" disabled={busy || spinning} onClick={onExit}>게임 선택</button>
           <label className="player-select">
             <span>인원</span>
             <select value={players} disabled={busy || spinning} onChange={(event) => restart(Number(event.target.value))}>
               <option value={2}>2명</option>
               <option value={3}>3명</option>
               <option value={4}>4명</option>
+              <option value={5}>5명</option>
+              <option value={6}>6명</option>
             </select>
           </label>
           <button
