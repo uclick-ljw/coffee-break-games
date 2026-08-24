@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useRef, useState, type CSSProperties } from 'react';
-import MarbleGame from './marbles';
+import { lazy, Suspense, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
+
+const MarbleGame = lazy(() => import('./marbles'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -17,7 +18,11 @@ type GameMode = 'menu' | 'ice' | 'marbles';
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
   if (mode === 'ice') return <IceGame onExit={() => setMode('menu')} />;
-  if (mode === 'marbles') return <MarbleGame onExit={() => setMode('menu')} />;
+  if (mode === 'marbles') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">3D 타워를 준비하고 있습니다…</p></main>}>
+      <MarbleGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">

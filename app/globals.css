@@ -52,12 +52,18 @@ button { font: inherit; }
 .score-chip.current { transform: translateY(-2px); background: white; box-shadow: 0 7px 15px #287a9e20; }
 .player-border-0 { border-left-color: var(--blue); }.player-border-1 { border-left-color: var(--orange); }.player-border-2 { border-left-color: var(--purple); }.player-border-3 { border-left-color: var(--green); }.player-border-4 { border-left-color: #e84d9b; }.player-border-5 { border-left-color: #e6b81e; }
 .tower-wrap { flex: 1; min-height: 0; display: grid; align-content: center; justify-items: center; }
+.tower-direction { width: min(68vw, 330px); display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 8px; }
+.tower-direction button { width: 42px; height: 42px; border: 1px solid #b8dce9; border-radius: 50%; background: #fff; color: #287a9e; font-size: 24px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 14px #287a9e20; }
+.tower-direction button:disabled { cursor: wait; opacity: .45; }
+.tower-direction > div { min-width: 0; display: grid; justify-items: center; line-height: 1.2; }
+.tower-direction span, .tower-direction small { color: var(--muted); font-size: 9px; font-weight: 800; }
+.tower-direction strong { margin: 2px 0; font-size: 15px; }
 .tower-stage { position: relative; width: min(68vw, 330px); aspect-ratio: 360 / 500; margin: 8px auto 4px; filter: drop-shadow(0 18px 18px #287a9e25); }
 .tower-stage canvas { display: block; width: 100%; height: 100%; }
-.pin-handle { position: absolute; z-index: 4; top: var(--pin-y); width: 42px; height: 24px; border: 3px solid white; border-radius: 99px; background: var(--pin-color); box-shadow: 0 5px 10px #17384f35; cursor: pointer; transform: translateY(-50%); transition: transform .15s, filter .15s; }
-.pin-handle.left { left: -10px; }.pin-handle.right { right: -10px; }
-.pin-handle:hover:not(:disabled), .pin-handle:focus-visible { filter: brightness(1.12); transform: translateY(-50%) scale(1.16); outline: 3px solid #10263a55; }
+.pin-handle { position: absolute; z-index: 4; left: var(--pin-x); top: var(--pin-y); width: 38px; height: 38px; border: 4px solid white; border-radius: 50%; background: var(--pin-color); box-shadow: 0 5px 12px #17384f55, inset 0 0 0 5px #ffffff35; cursor: pointer; transform: translate(-50%, -50%); transition: transform .15s, filter .15s; }
+.pin-handle:hover:not(:disabled), .pin-handle:focus-visible { filter: brightness(1.12); transform: translate(-50%, -50%) scale(1.16); outline: 3px solid #10263a55; }
 .pin-handle:disabled { cursor: wait; opacity: .55; }
+.tower-stage.turning:not(.moving) { animation: tower-turn .2s ease-out; }
 .tower-stage.moving { animation: tower-breathe .22s ease-in-out infinite alternate; }
 .marble-result > span:not(.result-penguin) { display: block; line-height: 1.6; }
 
@@ -183,6 +189,7 @@ footer b { color: var(--ink); }
 @keyframes wobble { from { transform: translate(-50%, -50%) rotate(-4deg); } to { transform: translate(-50%, -50%) rotate(4deg); } }
 @keyframes panic { from { transform: translate(-52%, -50%) rotate(-8deg); } to { transform: translate(-48%, -52%) rotate(8deg); } }
 @keyframes pop { from { opacity: 0; transform: translateY(16px) scale(.94); } }
+@keyframes tower-turn { from { opacity: .45; transform: perspective(500px) rotateY(10deg) scale(.97); } }
 @keyframes tower-breathe { from { transform: translateX(-1px); } to { transform: translateX(1px); } }
 
 .board.shake-small { animation: board-nudge .14s ease-out; }
@@ -195,7 +202,7 @@ footer b { color: var(--ink); }
   .board-wrap { min-height: 330px; }
   .board { width: min(72vh, 430px); }
   .marble-shell .status-card { min-height: 58px; }
-  .tower-stage { width: min(57vh, 62vw, 285px); }
+  .tower-stage, .tower-direction { width: min(57vh, 62vw, 285px); }
 }
 
 @media (max-width: 420px) {
@@ -204,6 +211,7 @@ footer b { color: var(--ink); }
   .game-card { min-height: 220px; }
   .game-card-art { font-size: 48px; }
   .game-shell { padding-inline: 15px; }
+  .tower-stage, .tower-direction { width: min(calc(100vw - 32px), 300px); }
   .player-select > span { display: none; }
   .game-actions { gap: 5px; }
   .restart-small { padding-inline: 10px; }
