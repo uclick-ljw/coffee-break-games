@@ -4,6 +4,7 @@ import { lazy, Suspense, useMemo, useRef, useState, type CSSProperties } from 'r
 import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
 
 const MarbleGame = lazy(() => import('./marbles'));
+const PegDropGame = lazy(() => import('./pegdrop'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -13,7 +14,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -21,6 +22,11 @@ export default function Home() {
   if (mode === 'marbles') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">3D 타워를 준비하고 있습니다…</p></main>}>
       <MarbleGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'pegdrop') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">게임판을 준비하고 있습니다…</p></main>}>
+      <PegDropGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -43,6 +49,13 @@ export default function Home() {
           <small>선택과 낙하 물리</small>
           <strong>구슬 타워</strong>
           <p>막대를 빼고 떨어진 구슬을 가장 적게 모으세요.</p>
+          <b>게임 시작</b>
+        </button>
+        <button className="game-card peg-card" onClick={() => setMode('pegdrop')}>
+          <span className="game-card-art" aria-hidden="true">🟠</span>
+          <small>직접 만든 길과 튕김</small>
+          <strong>툭 떨어뜨려</strong>
+          <p>돌기를 놓고 구슬을 쏴 가장 높은 점수를 만드세요.</p>
           <b>게임 시작</b>
         </button>
       </section>

@@ -9,6 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "check:game": "node --experimental-strip-types scripts/check-game.ts",
+    "check:peg": "node --experimental-strip-types scripts/check-peg-game.ts",
     "check:tower": "node --experimental-strip-types scripts/check-tower.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"

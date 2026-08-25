@@ -33,11 +33,12 @@ button { font: inherit; }
 .menu-hero { text-align: center; }
 .menu-hero h1 { font-size: clamp(42px, 10vw, 70px); }
 .menu-hero > p:last-child { margin: 10px 0 28px; color: var(--muted); }
-.game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .game-card { min-height: 300px; padding: 24px; display: flex; flex-direction: column; align-items: flex-start; border: 1px solid #c8e6f0; border-radius: 28px; color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 18px 40px #287a9e1c; transition: transform .18s, box-shadow .18s; }
 .game-card:hover, .game-card:focus-visible { transform: translateY(-4px); box-shadow: 0 24px 48px #287a9e30; outline: 3px solid #168ad555; }
 .ice-card { background: linear-gradient(155deg, #fff, #c9effa); }
 .marble-card { background: linear-gradient(155deg, #fff, #ffe4bd); }
+.peg-card { background: linear-gradient(155deg, #fff, #d9f4df); }
 .game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
 .game-card small { color: var(--muted); font-weight: 800; }
 .game-card strong { margin-top: 4px; font-size: 27px; letter-spacing: -.04em; }
@@ -66,6 +67,19 @@ button { font: inherit; }
 .tower-stage.turning:not(.moving) { animation: tower-turn .2s ease-out; }
 .tower-stage.moving { animation: tower-breathe .22s ease-in-out infinite alternate; }
 .marble-result > span:not(.result-penguin) { display: block; line-height: 1.6; }
+
+.peg-shell { max-width: 620px; overflow-y: auto; }
+.peg-status { margin-top: 12px; }
+.peg-scores { margin-top: 8px; }
+.peg-board-wrap { flex: 1; min-height: 0; display: grid; align-content: center; justify-items: center; }
+.peg-board { position: relative; width: min(calc(100vw - 30px), 62svh, 420px); aspect-ratio: 20 / 27; margin: 8px auto 5px; filter: drop-shadow(0 18px 18px #17384f38); }
+.peg-board canvas { display: block; width: 100%; height: 100%; border-radius: 24px; touch-action: none; user-select: none; cursor: grab; }
+.peg-board canvas:active { cursor: grabbing; }
+.peg-hole { position: absolute; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; transform: translate(-50%, -50%); cursor: pointer; }
+.peg-hole:hover:not(:disabled), .peg-hole:focus-visible { outline: 3px solid #ffd971; background: #ffd9712e; }
+.peg-hole:disabled { pointer-events: none; }
+.peg-result > span:not(.result-penguin) { display: block; line-height: 1.7; }
+.peg-result > strong { display: block; margin-top: 9px; color: #e26936; font-size: 17px; }
 
 .game-shell {
   min-height: 100svh;
@@ -203,6 +217,8 @@ footer b { color: var(--ink); }
   .board { width: min(72vh, 430px); }
   .marble-shell .status-card { min-height: 58px; }
   .tower-stage, .tower-direction { width: min(57vh, 62vw, 285px); }
+  .peg-status { min-height: 58px; }
+  .peg-board { width: min(calc(100vw - 30px), 50svh, 340px); }
 }
 
 @media (max-width: 420px) {
