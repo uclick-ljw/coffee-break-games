@@ -7,7 +7,7 @@ type Phase = 'setup' | 'pick' | 'reveal' | 'result';
 type DrawResult = { player: number; ticket: number; penalty: boolean };
 
 const confettiColors = ['#ffd447', '#ff4d67', '#5ee7ff', '#9dff6b', '#a67cff', '#ff8c42'];
-const SCRATCH_COMPLETE = 25;
+const SCRATCH_COMPLETE = 40;
 const playerName = (index: number) => `참가자 ${index + 1}`;
 
 export default function LotteryGame({ onExit }: { onExit: () => void }) {
@@ -209,7 +209,7 @@ function ScratchCover({ onComplete }: { onComplete: () => void }) {
     const previous = lastPointRef.current ?? point;
     context.globalCompositeOperation = 'destination-out';
     context.lineCap = 'round';
-    context.lineWidth = 92;
+    context.lineWidth = 48;
     context.beginPath();
     context.moveTo(previous.x, previous.y);
     context.lineTo(point.x, point.y);
@@ -225,7 +225,7 @@ function ScratchCover({ onComplete }: { onComplete: () => void }) {
       for (let row = 0; row < rows; row += 1) for (let column = 0; column < columns; column += 1) {
         const dx = (column + .5) * canvas.width / columns - x;
         const dy = (row + .5) * canvas.height / rows - y;
-        if (dx * dx + dy * dy < 48 * 48) scratchedRef.current.add(row * columns + column);
+        if (dx * dx + dy * dy < 26 * 26) scratchedRef.current.add(row * columns + column);
       }
     }
     const nextProgress = Math.round(scratchedRef.current.size / (columns * rows) * 100);
@@ -244,6 +244,14 @@ function ScratchCover({ onComplete }: { onComplete: () => void }) {
     onComplete();
   }
 
+  const tensionText = progress < 8
+    ? '천천히 긁어보세요'
+    : progress < 20
+      ? '무언가 보입니다…'
+      : progress < 33
+        ? '결과가 드러나고 있어요'
+        : '조금만 더…';
+
   return (
     <div className="scratch-cover">
       <canvas
@@ -259,7 +267,7 @@ function ScratchCover({ onComplete }: { onComplete: () => void }) {
         onPointerUp={(event) => { lastPointRef.current = null; event.currentTarget.releasePointerCapture(event.pointerId); }}
         onKeyDown={keyScratch}
       />
-      <span className="scratch-progress" aria-hidden="true"><i style={{ width: `${Math.min(100, progress / SCRATCH_COMPLETE * 100)}%` }} />{progress}%</span>
+      <span className="scratch-progress" aria-hidden="true"><i style={{ width: `${Math.min(100, progress / SCRATCH_COMPLETE * 100)}%` }} />{progress}% · {tensionText}</span>
     </div>
   );
 }
