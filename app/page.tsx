@@ -68,7 +68,7 @@ export default function Home() {
           <span className="game-card-art" aria-hidden="true">🎟️</span>
           <small>선택과 짜릿한 공개</small>
           <strong>뜯어봐!</strong>
-          <p>봉인된 종이를 직접 뜯고 당첨의 주인공을 확인하세요.</p>
+          <p>봉인된 종이를 직접 뜯고 오늘 커피나 밥을 살 사람을 정하세요.</p>
           <b>게임 시작</b>
         </button>
       </section>

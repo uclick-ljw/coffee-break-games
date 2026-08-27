@@ -4,14 +4,14 @@ import { useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboa
 import { makeLotteryTickets, type LotteryTicket } from './lottery-game';
 
 type Phase = 'setup' | 'pick' | 'reveal' | 'result';
-type DrawResult = { player: number; ticket: number; winner: boolean };
+type DrawResult = { player: number; ticket: number; penalty: boolean };
 
 const confettiColors = ['#ffd447', '#ff4d67', '#5ee7ff', '#9dff6b', '#a67cff', '#ff8c42'];
 const playerName = (index: number) => `참가자 ${index + 1}`;
 
 export default function LotteryGame({ onExit }: { onExit: () => void }) {
   const [people, setPeople] = useState(6);
-  const [winners, setWinners] = useState(1);
+  const [penalties, setPenalties] = useState(1);
   const [phase, setPhase] = useState<Phase>('setup');
   const [tickets, setTickets] = useState<LotteryTicket[]>([]);
   const [results, setResults] = useState<DrawResult[]>([]);
@@ -22,7 +22,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
   const tearTrackRef = useRef<HTMLDivElement>(null);
 
   function startGame() {
-    setTickets(makeLotteryTickets(people, winners));
+    setTickets(makeLotteryTickets(people, penalties));
     setResults([]);
     setTurn(0);
     setSelected(null);
@@ -34,7 +34,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
   function changePeople(value: number) {
     const next = Math.max(2, Math.min(20, value || 2));
     setPeople(next);
-    setWinners((current) => Math.min(current, next));
+    setPenalties((current) => Math.min(current, next));
   }
 
   function pickTicket(ticket: LotteryTicket) {
@@ -49,7 +49,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
     setTear(value);
     if (value < 96 || revealed || !selected) return;
     setRevealed(true);
-    setResults((current) => [...current, { player: turn, ticket: selected.id, winner: selected.winner }]);
+    setResults((current) => [...current, { player: turn, ticket: selected.id, penalty: selected.penalty }]);
   }
 
   function ripAt(clientX: number) {
@@ -85,10 +85,10 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
   }
 
   const opened = new Set(results.map((result) => result.ticket));
-  const winnersFound = results.filter((result) => result.winner);
+  const penaltiesFound = results.filter((result) => result.penalty);
 
   return (
-    <main className={`lottery-shell ${revealed ? (selected?.winner ? 'win-flash' : 'lose-dim') : ''}`}>
+    <main className="lottery-shell">
       <header className="lottery-topbar">
         <div>
           <p className="lottery-eyebrow">LUCKY RIP</p>
@@ -103,8 +103,8 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
       {phase === 'setup' && (
         <section className="lottery-setup" aria-labelledby="lottery-setup-title">
           <div className="festival-sign" aria-hidden="true"><span>大</span><b>행운 대축제</b><span>吉</span></div>
-          <p className="lottery-kicker">당첨 종이는 정확히 설정한 만큼만 들어갑니다</p>
-          <h2 id="lottery-setup-title">오늘의 운을 봉인하세요</h2>
+          <p className="lottery-kicker">꽝 종이는 정확히 설정한 만큼만 들어갑니다</p>
+          <h2 id="lottery-setup-title">오늘의 꽝을 봉인하세요</h2>
           <div className="lottery-inputs">
             <label>
               <span>참가자</span>
@@ -113,8 +113,8 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
             </label>
             <i aria-hidden="true">중</i>
             <label>
-              <span>당첨</span>
-              <input type="number" min="1" max={people} value={winners} onChange={(event) => setWinners(Math.max(1, Math.min(people, Number(event.target.value) || 1)))} />
+              <span>꽝</span>
+              <input type="number" min="1" max={people} value={penalties} onChange={(event) => setPenalties(Math.max(1, Math.min(people, Number(event.target.value) || 1)))} />
               <b>개</b>
             </label>
           </div>
@@ -128,7 +128,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
           <div className="lottery-status">
             <span>{turn + 1} / {people}</span>
             <div><small>지금 뽑을 사람</small><h2 id="pick-title">{playerName(turn)}</h2></div>
-            <b>당첨 {winners}장</b>
+            <b>꽝 {penalties}장</b>
           </div>
           <p>마음이 가는 종이 한 장을 고르세요</p>
           <div className="ticket-wall" aria-label="봉인된 뽑기 종이">
@@ -150,14 +150,14 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'reveal' && selected && (
         <section className={`lottery-reveal ${revealed ? 'is-revealed' : ''}`} aria-live="polite">
-          {revealed && selected.winner && <Confetti />}
-          <div className={`reveal-ticket ${revealed ? 'revealed' : ''} ${selected.winner ? 'winner' : 'blank'}`}>
+          {revealed && selected.penalty && <Confetti />}
+          <div className={`reveal-ticket ${revealed ? 'revealed' : ''} ${selected.penalty ? 'bust' : 'pass'}`}>
             <p>{playerName(turn)}의 선택</p>
             <div className="prize-window">
               <div className="prize-result" hidden={!revealed}>
-                <span>{selected.winner ? '🎉' : '💨'}</span>
-                <small>{selected.winner ? 'LUCKY!' : 'NEXT TIME'}</small>
-                <strong>{selected.winner ? '당첨' : '꽝'}</strong>
+                <span>{selected.penalty ? '💥' : '😮‍💨'}</span>
+                <small>{selected.penalty ? 'OH NO!' : 'SAFE!'}</small>
+                <strong>{selected.penalty ? '꽝' : '패스'}</strong>
               </div>
               {!revealed && (
                 <div className="paper-cover" style={{ clipPath: `inset(0 0 0 ${tear}%)` }}>
@@ -188,7 +188,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
               </div>
             ) : (
               <div className="reveal-outcome">
-                <strong>{selected.winner ? '대박! 당첨입니다!' : '아쉽지만 꽝입니다'}</strong>
+                <strong>{selected.penalty ? '걸렸다! 오늘은 네가 삽니다!' : '휴—이번에는 패스!'}</strong>
                 <button autoFocus onClick={continueGame}>{turn + 1 >= people ? '전체 결과 보기' : '다음 사람 뽑기'}</button>
               </div>
             )}
@@ -199,14 +199,14 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
       {phase === 'result' && (
         <section className="lottery-final" aria-labelledby="lottery-result-title">
           <Confetti />
-          <span className="final-crown">🏆</span>
+          <span className="final-crown">☕</span>
           <p>모든 종이를 열었습니다</p>
-          <h2 id="lottery-result-title">당첨자 {winnersFound.length}명</h2>
-          <div className="winner-list">
-            {results.map((result) => <span key={result.player} className={result.winner ? 'hit' : ''}>{result.winner ? '🎉' : '·'} {playerName(result.player)}</span>)}
+          <h2 id="lottery-result-title">오늘 살 사람 {penaltiesFound.length}명</h2>
+          <div className="penalty-list">
+            {results.map((result) => <span key={result.player} className={result.penalty ? 'bust' : ''}>{result.penalty ? '💣' : '✓'} {playerName(result.player)}</span>)}
           </div>
           <button className="lottery-start" onClick={startGame}>같은 설정으로 다시 섞기</button>
-          <button className="lottery-secondary" onClick={() => setPhase('setup')}>인원과 당첨 수 바꾸기</button>
+          <button className="lottery-secondary" onClick={() => setPhase('setup')}>인원과 꽝 수 바꾸기</button>
         </section>
       )}
     </main>
