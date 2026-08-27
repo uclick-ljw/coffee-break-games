@@ -5,6 +5,7 @@ import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESUL
 
 const MarbleGame = lazy(() => import('./marbles'));
 const PegDropGame = lazy(() => import('./pegdrop'));
+const LotteryGame = lazy(() => import('./lottery'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -14,7 +15,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -29,12 +30,17 @@ export default function Home() {
       <PegDropGame onExit={() => setMode('menu')} />
     </Suspense>
   );
+  if (mode === 'lottery') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">행운 종이를 섞고 있습니다…</p></main>}>
+      <LotteryGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">
         <p className="eyebrow">ONE MINUTE BOARD GAMES</p>
         <h1>커피 한 판</h1>
-        <p>2~6명이 한 기기로 즐기는 빠른 내기 게임</p>
+        <p>2명부터 한 기기로 즐기는 빠른 내기 게임</p>
       </header>
       <section className="game-grid" aria-label="게임 선택">
         <button className="game-card ice-card" onClick={() => setMode('ice')}>
@@ -56,6 +62,13 @@ export default function Home() {
           <small>직접 만든 길과 튕김</small>
           <strong>툭 떨어뜨려</strong>
           <p>돌기를 놓고 구슬을 쏴 가장 높은 점수를 만드세요.</p>
+          <b>게임 시작</b>
+        </button>
+        <button className="game-card lottery-card" onClick={() => setMode('lottery')}>
+          <span className="game-card-art" aria-hidden="true">🎟️</span>
+          <small>선택과 짜릿한 공개</small>
+          <strong>뜯어봐!</strong>
+          <p>봉인된 종이를 직접 뜯고 당첨의 주인공을 확인하세요.</p>
           <b>게임 시작</b>
         </button>
       </section>

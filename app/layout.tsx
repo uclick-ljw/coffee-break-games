@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ice-one-round.uclick-ljw.chatgpt.site'),
+  metadataBase: new URL('https://coffee-break-games.uclick-ljw.chatgpt.site'),
   title: '커피 한 판',
-  description: '2~6명이 한 기기로 즐기는 1분 보드게임 모음',
+  description: '2명부터 한 기기로 즐기는 1분 보드게임 모음',
   openGraph: {
     title: '커피 한 판',
     description: '1분이면 끝나는 보드게임',
