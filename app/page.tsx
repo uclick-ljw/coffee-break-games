@@ -6,6 +6,7 @@ import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESUL
 const MarbleGame = lazy(() => import('./marbles'));
 const PegDropGame = lazy(() => import('./pegdrop'));
 const LotteryGame = lazy(() => import('./lottery'));
+const TimingGame = lazy(() => import('./timing'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -15,7 +16,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -33,6 +34,11 @@ export default function Home() {
   if (mode === 'lottery') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">행운 종이를 섞고 있습니다…</p></main>}>
       <LotteryGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'timing') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">스톱워치를 맞추고 있습니다…</p></main>}>
+      <TimingGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -70,6 +76,13 @@ export default function Home() {
           <strong>긁어봐!</strong>
           <p>스크래치 복권을 직접 긁고 오늘 커피나 밥을 살 사람을 정하세요.</p>
           <b>게임 시작</b>
+        </button>
+        <button className="game-card timing-card" onClick={() => setMode('timing')}>
+          <span className="game-card-art" aria-hidden="true">⏱️</span>
+          <small>감각과 순간 판단</small>
+          <strong>멈춰!</strong>
+          <p>시간을 숨기거나 보면서 목표 초에 가장 가깝게 멈추세요.</p>
+          <b>2가지 방식</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
