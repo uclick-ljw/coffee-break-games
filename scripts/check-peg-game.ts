@@ -17,7 +17,7 @@ const firstRow = makeHoles(2).filter((hole) => hole.row === 0);
 const crowdedRow = firstRow.slice(0, 3).map((hole) => ({ ...hole, owner: 0 } satisfies Peg));
 assert.ok(canPlacePeg(crowdedRow, firstRow[3]), '한 줄의 마지막 빈칸에도 돌기를 놓을 수 있어야 합니다.');
 
-let weak: BallState = { ...LAUNCHER, vx: 0, vy: -580, age: 0, stage: 'lane', guide: 0, bias: 0 };
+let weak: BallState = { ...LAUNCHER, vx: 0, vy: -540, age: 0, stage: 'lane', guide: 0, curveEnd: Math.PI * 0.28, bias: 0 };
 let misfire = false;
 for (let step = 0; step < 500 && !misfire; step += 1) {
   const result = stepBall(weak, FIXED_PEGS, 1 / 120);
@@ -26,7 +26,10 @@ for (let step = 0; step < 500 && !misfire; step += 1) {
 }
 assert.ok(misfire, '약한 발사는 점수칸으로 우회하지 않고 발사 통로로 돌아와야 합니다.');
 
-let ball: BallState = { ...LAUNCHER, vx: 0, vy: -820, age: 0, stage: 'lane', guide: 0, bias: 0 };
+const early = stepBall({ x: 170, y: 250, vx: 0, vy: 20, age: 5, stage: 'field', guide: 0, curveEnd: Math.PI / 2, bias: 0 }, FIXED_PEGS, 1 / 120);
+assert.equal(early.settled, false, '시간이 지나도 점수칸에 들어가기 전에는 발사가 끝나면 안 됩니다.');
+
+let ball: BallState = { ...LAUNCHER, vx: 0, vy: -850, age: 0, stage: 'lane', guide: 0, curveEnd: Math.PI * 0.75, bias: 0 };
 let settled = false;
 let enteredField = false;
 for (let step = 0; step < 700 && !settled; step += 1) {

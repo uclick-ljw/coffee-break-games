@@ -5,14 +5,18 @@ export const PEG_RADIUS = 8;
 export const FIELD_LEFT = 18;
 export const FIELD_RIGHT = 338;
 export const LANE_CENTER = 369;
-export const LAUNCHER = { x: LANE_CENTER, y: 472 };
+export const DOME_CENTER_X = (FIELD_LEFT + LANE_CENTER) / 2;
+export const DOME_CENTER_Y = 135;
+export const DOME_RADIUS_X = (LANE_CENTER - FIELD_LEFT) / 2;
+export const DOME_RADIUS_Y = 100;
+export const LAUNCHER = { x: LANE_CENTER, y: 418 };
 export const SCORE_TOP = 458;
 export const SCORE_VALUES = [10, 30, 50, 100, 50, 30, 10];
 
 export type Hole = { id: string; row: number; col: number; x: number; y: number };
 export type Peg = Hole & { owner: number };
 export type BallStage = 'lane' | 'curve' | 'field';
-export type BallState = { x: number; y: number; vx: number; vy: number; age: number; stage: BallStage; guide: number; bias: number };
+export type BallState = { x: number; y: number; vx: number; vy: number; age: number; stage: BallStage; guide: number; curveEnd: number; bias: number };
 
 export const FIXED_PEGS: Peg[] = [
   [302, 103], [258, 128], [214, 103], [170, 128], [126, 103], [82, 128],
@@ -74,29 +78,26 @@ export function stepBall(current: BallState, pegs: Peg[], dt: number) {
     next.vy += 560 * dt;
     next.x = LANE_CENTER;
     next.y += next.vy * dt;
-    if (next.y <= 54 && next.vy < 0) {
+    if (next.y <= DOME_CENTER_Y && next.vy < 0) {
       next.stage = 'curve';
       next.guide = 0;
-      next.vx = Math.max(210, -next.vy);
+      next.vx = Math.max(170, -next.vy);
       next.vy = 0;
       next.x = LANE_CENTER;
-      next.y = 54;
+      next.y = DOME_CENTER_Y;
     }
     const misfire = next.age > 0.35 && next.y >= LAUNCHER.y + 15 && next.vy > 0;
     return { ball: next, settled: false, misfire, slot: -1 };
   }
 
   if (next.stage === 'curve') {
-    next.guide = Math.min(1, next.guide + (next.vx * dt) / 105);
-    const t = next.guide;
-    const inverse = 1 - t;
-    next.x = inverse * inverse * LANE_CENTER + 2 * inverse * t * LANE_CENTER + t * t * 312;
-    next.y = inverse * inverse * 54 + 2 * inverse * t * 20 + t * t * 78;
-    if (t >= 1) {
-      const speed = next.vx;
+    next.guide = Math.min(next.curveEnd, next.guide + (next.vx * dt) / DOME_RADIUS_X);
+    next.x = DOME_CENTER_X + DOME_RADIUS_X * Math.cos(next.guide);
+    next.y = DOME_CENTER_Y - DOME_RADIUS_Y * Math.sin(next.guide);
+    if (next.guide >= next.curveEnd) {
       next.stage = 'field';
-      next.vx = -speed * 0.7 + next.bias;
-      next.vy = speed * 0.7;
+      next.vx = next.bias;
+      next.vy = 15;
     }
     return { ball: next, settled: false, misfire: false, slot: -1 };
   }
@@ -158,6 +159,6 @@ export function stepBall(current: BallState, pegs: Peg[], dt: number) {
     next.vy = -Math.abs(next.vy) * 0.18;
     next.vx *= 0.72;
   }
-  const settled = (next.y > floor - 3 && Math.hypot(next.vx, next.vy) < 34) || next.age >= 4.2;
+  const settled = next.y > floor - 3 && (Math.hypot(next.vx, next.vy) < 34 || next.age >= 4.2);
   return { ball: next, settled, misfire: false, slot: settled ? scoreSlot(next.x) : -1 };
 }

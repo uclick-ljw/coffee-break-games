@@ -6,6 +6,10 @@ import {
   BALL_RADIUS,
   BOARD_CONFIGS,
   canPlacePeg,
+  DOME_CENTER_X,
+  DOME_CENTER_Y,
+  DOME_RADIUS_X,
+  DOME_RADIUS_Y,
   FIELD_LEFT,
   FIELD_RIGHT,
   FIXED_PEGS,
@@ -61,21 +65,29 @@ function drawBoard(
   context.lineWidth = 30;
   context.beginPath();
   context.moveTo(LANE_CENTER, PEG_BOARD_HEIGHT - 22);
-  context.lineTo(LANE_CENTER, 54);
-  context.quadraticCurveTo(LANE_CENTER, 20, 312, 78);
+  context.lineTo(LANE_CENTER, DOME_CENTER_Y);
   context.stroke();
   context.strokeStyle = '#9edfeb55';
+  context.lineWidth = 3;
+  context.stroke();
+
+  context.strokeStyle = '#234b65';
+  context.lineWidth = 12;
+  context.beginPath();
+  context.ellipse(DOME_CENTER_X, DOME_CENTER_Y, DOME_RADIUS_X, DOME_RADIUS_Y, 0, Math.PI, Math.PI * 2);
+  context.stroke();
+  context.strokeStyle = '#9edfeb77';
   context.lineWidth = 3;
   context.stroke();
 
   context.strokeStyle = '#8bdcf055';
   context.lineWidth = 3;
   context.beginPath();
-  context.moveTo(FIELD_LEFT, 35);
+  context.moveTo(FIELD_LEFT, DOME_CENTER_Y);
   context.lineTo(FIELD_LEFT, PEG_BOARD_HEIGHT - 18);
-  context.moveTo(FIELD_RIGHT, 80);
+  context.moveTo(FIELD_RIGHT, DOME_CENTER_Y);
   context.lineTo(FIELD_RIGHT, PEG_BOARD_HEIGHT - 18);
-  context.moveTo(PEG_BOARD_WIDTH - 16, 35);
+  context.moveTo(PEG_BOARD_WIDTH - 16, DOME_CENTER_Y);
   context.lineTo(PEG_BOARD_WIDTH - 16, PEG_BOARD_HEIGHT - 18);
   context.stroke();
   context.lineCap = 'butt';
@@ -151,7 +163,7 @@ function drawBoard(
       context.arc(aim.x, aim.y, 7, 0, Math.PI * 2);
       context.fill();
       context.fillStyle = '#ffd97188';
-      context.fillRect(FIELD_RIGHT + 7, 449 - (aim.y - LAUNCHER.y) * 2.2, 5, (aim.y - LAUNCHER.y) * 2.2);
+      context.fillRect(FIELD_RIGHT + 7, LAUNCHER.y - (aim.y - LAUNCHER.y) * 2.5, 5, (aim.y - LAUNCHER.y) * 2.5);
     }
     const shownBall = ball ?? LAUNCHER;
     context.shadowColor = '#0009';
@@ -247,7 +259,7 @@ export default function PegDropGame({ onExit }: { onExit: () => void }) {
   }
 
   function clampAim(point: Point) {
-    return { x: LAUNCHER.x, y: LAUNCHER.y + Math.max(8, Math.min(48, point.y - LAUNCHER.y)) };
+    return { x: LAUNCHER.x, y: LAUNCHER.y + Math.max(8, Math.min(100, point.y - LAUNCHER.y)) };
   }
 
   function startAim(event: ReactPointerEvent<HTMLCanvasElement>) {
@@ -289,14 +301,16 @@ export default function PegDropGame({ onExit }: { onExit: () => void }) {
     if (pull < 16) return;
     const generation = generationRef.current;
     const random = crypto.getRandomValues(new Uint32Array(1))[0];
+    const strength = Math.max(0, Math.min(1, (pull - 24) / 76));
     let physics: BallState = {
       ...LAUNCHER,
       vx: 0,
-      vy: -(500 + pull * 7),
+      vy: -(460 + pull * 4.5),
       age: 0,
       stage: 'lane',
       guide: 0,
-      bias: (random % 41) - 20,
+      curveEnd: Math.PI * (0.28 + strength * 0.61),
+      bias: (random % 25) - 12,
     };
     let previous = performance.now();
     let accumulator = 0;
@@ -351,7 +365,7 @@ export default function PegDropGame({ onExit }: { onExit: () => void }) {
         : misfire
           ? '힘이 부족합니다. 다시 당기세요'
         : flying
-          ? '구슬이 핀볼 통로를 지나고 있습니다'
+          ? '구슬이 상단 레일을 따라 이동합니다'
           : `${PLAYER_NAMES[currentPlayer]}이 플런저를 당기세요`;
 
   return (
@@ -414,7 +428,7 @@ export default function PegDropGame({ onExit }: { onExit: () => void }) {
             />
           ))}
         </div>
-        <p className="rule">{phase === 'place' ? '은색 고정 범퍼 아래에 모두 5개씩 놓습니다.' : '오른쪽 구슬을 아래로 당겼다 놓으세요. 약한 발사는 다시 시도합니다.'}</p>
+        <p className="rule">{phase === 'place' ? '은색 고정 범퍼 아래에 모두 5개씩 놓습니다.' : '길게 당길수록 둥근 상단 레일을 더 멀리 돌아 위에서 떨어집니다.'}</p>
       </section>
 
       {phase === 'result' && (
