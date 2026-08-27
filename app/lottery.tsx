@@ -6,7 +6,7 @@ import { makeLotteryTickets, type LotteryTicket } from './lottery-game';
 type Phase = 'setup' | 'pick' | 'reveal' | 'result';
 type DrawResult = { player: number; ticket: number; penalty: boolean };
 
-const confettiColors = ['#ffd447', '#ff4d67', '#5ee7ff', '#9dff6b', '#a67cff', '#ff8c42'];
+const confettiColors = ['#e3b13f', '#c64b40', '#2c7790', '#2f6d68', '#f2e6c8', '#374f7d'];
 const SCRATCH_COMPLETE = 40;
 const playerName = (index: number) => `참가자 ${index + 1}`;
 
@@ -66,7 +66,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
     <main className="lottery-shell">
       <header className="lottery-topbar">
         <div>
-          <p className="lottery-eyebrow">LUCKY SCRATCH</p>
+          <p className="lottery-eyebrow">오늘의 복불복</p>
           <h1>긁어봐!</h1>
         </div>
         <div className="game-actions">
@@ -77,9 +77,9 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'setup' && (
         <section className="lottery-setup" aria-labelledby="lottery-setup-title">
-          <div className="festival-sign" aria-hidden="true"><span>大</span><b>복불복 대축제</b><span>吉</span></div>
-          <p className="lottery-kicker">꽝 복권은 정확히 설정한 만큼만 들어갑니다</p>
-          <h2 id="lottery-setup-title">오늘의 꽝을 봉인하세요</h2>
+          <div className="festival-sign" aria-hidden="true"><span>오늘</span><div><b>복불복 한판</b><small>긁어서 정하는 오늘의 한턱</small></div></div>
+          <p className="lottery-kicker">꽝 복권은 설정한 수만큼 정확히 들어갑니다</p>
+          <h2 id="lottery-setup-title">몇 명이서, 몇 명이 살까요?</h2>
           <div className="lottery-inputs">
             <label>
               <span>참가자</span>
@@ -93,7 +93,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
               <b>개</b>
             </label>
           </div>
-          <button className="lottery-start" onClick={startGame}><span>🎫</span> 복권 섞고 시작하기</button>
+          <button className="lottery-start" onClick={startGame}><span>☕</span> 한턱 복권 섞기</button>
           <p className="lottery-rule">한 명씩 복권을 고르고 은색 코팅을 손가락으로 긁어 결과를 확인합니다.</p>
         </section>
       )}
@@ -101,11 +101,11 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
       {phase === 'pick' && (
         <section className="lottery-pick" aria-labelledby="pick-title">
           <div className="lottery-status">
-            <span>{turn + 1} / {people}</span>
+            <span>차례 {turn + 1} / {people}</span>
             <div><small>지금 뽑을 사람</small><h2 id="pick-title">{playerName(turn)}</h2></div>
             <b>꽝 {penalties}장</b>
           </div>
-          <p>마음이 가는 스크래치 복권 한 장을 고르세요</p>
+          <p>마음이 가는 한턱 복권 한 장을 고르세요</p>
           <div className="ticket-wall" aria-label="스크래치 복권">
             {tickets.map((ticket, index) => (
               <button
@@ -115,7 +115,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
                 onClick={() => pickTicket(ticket)}
                 aria-label={opened.has(ticket.id) ? `${index + 1}번 복권, 이미 긁음` : `${index + 1}번 스크래치 복권 고르기`}
               >
-                <i /><strong>福</strong><span>{opened.has(ticket.id) ? '긁음' : '복권'}</span>
+                <i /><strong>복</strong><span>{opened.has(ticket.id) ? '확인 완료' : '한턱 복권'}</span>
               </button>
             ))}
           </div>

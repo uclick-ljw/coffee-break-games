@@ -83,71 +83,78 @@ button { font: inherit; }
 .peg-result > strong { display: block; margin-top: 9px; color: #e26936; font-size: 17px; }
 
 .lottery-shell {
-  --festival-red: #c91f37;
-  --festival-dark: #39091a;
-  --festival-gold: #ffd34d;
+  --festival-red: #c64b40;
+  --festival-dark: #102933;
+  --festival-gold: #e3bd58;
   min-height: 100svh;
   max-width: 620px;
   margin: auto;
   padding: 22px clamp(15px, 5vw, 28px);
   color: #fff8e8;
   background:
-    radial-gradient(circle at 18% 12%, #ffcf5a44 0 2px, transparent 3px),
-    radial-gradient(circle at 82% 30%, #ffcf5a33 0 2px, transparent 3px),
-    linear-gradient(155deg, #701027, #250817 72%);
+    repeating-linear-gradient(0deg, transparent 0 6px, #ffffff08 7px),
+    radial-gradient(circle at 18% 12%, #e3bd5827, transparent 28%),
+    linear-gradient(155deg, #294e59, #102933 72%);
   overflow-x: hidden;
 }
 .lottery-topbar { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; }
-.lottery-eyebrow { margin: 0 0 3px; color: var(--festival-gold); font-size: 10px; font-weight: 900; letter-spacing: .24em; }
+.lottery-eyebrow { margin: 0 0 3px; color: #ecd894; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
 .lottery-topbar h1 { color: white; text-shadow: 0 4px 18px #0008; }
-.lottery-nav { padding: 9px 12px; border: 1px solid #ffd77766; border-radius: 99px; background: #fff1d614; color: #fff4d5; font-size: 12px; font-weight: 800; cursor: pointer; }
+.lottery-nav { padding: 9px 12px; border: 1px solid #f1e4c466; border-radius: 99px; background: #f7edda12; color: #fff8e8; font-size: 12px; font-weight: 800; cursor: pointer; }
 .lottery-setup, .lottery-final { min-height: calc(100svh - 100px); display: grid; align-content: center; justify-items: center; text-align: center; }
 .festival-sign {
+  position: relative;
   width: min(100%, 430px);
-  padding: 19px 16px;
+  padding: 25px 20px 20px;
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: 56px 1fr;
   align-items: center;
-  border: 4px double #ffdf76;
-  border-radius: 20px;
-  background: linear-gradient(160deg, #dc2940, #96102b);
-  box-shadow: 0 0 0 7px #781226, 0 0 0 9px #ffca4d88, 0 24px 55px #0008;
-  transform: rotate(-1deg);
+  gap: 17px;
+  border: 2px solid #f8edd3;
+  border-radius: 9px;
+  background:
+    repeating-linear-gradient(90deg, #b94a3d 0 24px, #dfb542 24px 48px, #2f716d 48px 72px) top / 100% 8px no-repeat,
+    linear-gradient(160deg, #fffaf0, #e8ddc1);
+  color: #183746;
+  box-shadow: 0 0 0 6px #1e5b5d, 0 0 0 8px #dfb542, 0 24px 55px #0008;
+  transform: rotate(-.5deg);
 }
-.festival-sign span { display: grid; place-items: center; aspect-ratio: 1; border-radius: 50%; background: #ffd34d; color: #9e142c; font-size: 24px; font-weight: 900; box-shadow: inset 0 0 0 3px #fff4a9; }
-.festival-sign b { font-size: clamp(27px, 8vw, 40px); letter-spacing: -.06em; text-shadow: 0 3px #721025; }
-.lottery-kicker { margin: 42px 0 5px; color: #ffd976; font-size: 11px; font-weight: 900; letter-spacing: .04em; }
+.festival-sign span { display: grid; place-items: center; aspect-ratio: 1; border: 2px solid #8c2f2c; border-radius: 6px; background: #b74439; color: #fff5df; font-size: 17px; font-weight: 900; box-shadow: inset 0 0 0 3px #ffffff20; }
+.festival-sign div { text-align: left; }
+.festival-sign b { display: block; font-size: clamp(28px, 8vw, 40px); letter-spacing: -.06em; }
+.festival-sign small { display: block; margin-top: 3px; color: #557077; font-size: 11px; font-weight: 800; }
+.lottery-kicker { margin: 40px 0 5px; color: #ecd894; font-size: 11px; font-weight: 900; letter-spacing: .04em; }
 .lottery-setup h2 { margin: 0 0 25px; font-size: clamp(23px, 6vw, 32px); }
 .lottery-inputs { display: flex; align-items: end; justify-content: center; gap: 12px; }
 .lottery-inputs label { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 4px; }
-.lottery-inputs label > span { grid-column: 1 / -1; margin-bottom: 5px; color: #e7b8bf; font-size: 12px; font-weight: 800; }
-.lottery-inputs input { width: 88px; height: 62px; border: 2px solid #ffde78; border-radius: 15px; background: #fff9ed; color: #4a0d1d; text-align: center; font-size: 31px; font-weight: 900; box-shadow: inset 0 2px 8px #72102522; }
-.lottery-inputs b { padding-bottom: 8px; color: #ffd976; }
-.lottery-inputs > i { padding-bottom: 13px; color: #e6acb7; font-style: normal; font-weight: 900; }
-.lottery-start { margin-top: 30px; padding: 16px 24px; border: 0; border-radius: 16px; background: linear-gradient(#ffe57a, #ffb82f); color: #541024; font-weight: 900; box-shadow: 0 7px 0 #a94f14, 0 16px 35px #0007; cursor: pointer; transition: transform .12s, box-shadow .12s; }
-.lottery-start:active { transform: translateY(5px); box-shadow: 0 2px 0 #a94f14, 0 8px 18px #0006; }
+.lottery-inputs label > span { grid-column: 1 / -1; margin-bottom: 5px; color: #d9e1d9; font-size: 12px; font-weight: 800; }
+.lottery-inputs input { width: 88px; height: 62px; border: 2px solid #d9b95c; border-radius: 15px; background: #fff9e9; color: #173746; text-align: center; font-size: 31px; font-weight: 900; box-shadow: inset 0 2px 8px #17374622; }
+.lottery-inputs b { padding-bottom: 8px; color: #ecd894; }
+.lottery-inputs > i { padding-bottom: 13px; color: #bdd0cc; font-style: normal; font-weight: 900; }
+.lottery-start { margin-top: 30px; padding: 16px 24px; border: 1px solid #f0d985; border-radius: 14px; background: linear-gradient(#327974, #1d5d5b); color: #fff9e9; font-weight: 900; box-shadow: 0 7px 0 #0c393c, 0 16px 35px #0007; cursor: pointer; transition: transform .12s, box-shadow .12s; }
+.lottery-start:active { transform: translateY(5px); box-shadow: 0 2px 0 #0c393c, 0 8px 18px #0006; }
 .lottery-start span { margin-right: 6px; font-size: 20px; }
-.lottery-rule { max-width: 370px; margin: 22px 0 0; color: #d7a9b2; font-size: 12px; line-height: 1.6; }
+.lottery-rule { max-width: 370px; margin: 22px 0 0; color: #c4d1cd; font-size: 12px; line-height: 1.6; }
 
 .lottery-pick { padding: 26px 0 12px; text-align: center; }
-.lottery-status { min-height: 80px; padding: 13px 16px; display: grid; grid-template-columns: 62px 1fr 74px; align-items: center; border: 1px solid #ffd77755; border-radius: 20px; background: #ffffff0d; box-shadow: inset 0 0 28px #ffcf4510; }
-.lottery-status > span, .lottery-status > b { color: #ffd976; font-size: 12px; }
-.lottery-status small { color: #d6a5ae; font-size: 10px; font-weight: 800; }
+.lottery-status { min-height: 80px; padding: 13px 16px; display: grid; grid-template-columns: 72px 1fr 74px; align-items: center; border: 1px solid #ead9a855; border-radius: 15px; background: #f8eed815; box-shadow: inset 0 0 28px #e3bd580e; }
+.lottery-status > span, .lottery-status > b { color: #ecd894; font-size: 12px; }
+.lottery-status small { color: #bcd0cc; font-size: 10px; font-weight: 800; }
 .lottery-status h2 { margin: 2px 0 0; font-size: 22px; }
-.lottery-pick > p { margin: 24px 0 18px; color: #ffe7ba; font-size: 14px; font-weight: 800; }
+.lottery-pick > p { margin: 24px 0 18px; color: #f3e9cd; font-size: 14px; font-weight: 800; }
 .ticket-wall { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 11px; perspective: 700px; }
-.sealed-ticket { position: relative; min-height: 116px; padding: 13px 8px 9px; display: grid; place-items: center; overflow: hidden; border: 2px solid #ffd870; border-radius: 8px 8px 16px 16px; background: linear-gradient(135deg, #e52f45, #a7112a); color: #fff1c8; box-shadow: 0 8px 0 #5d091b, 0 12px 20px #0005, inset 0 0 0 4px #ffffff0e; cursor: pointer; animation: ticket-arrive .32s both; }
+.sealed-ticket { position: relative; min-height: 116px; padding: 13px 8px 9px; display: grid; place-items: center; overflow: hidden; border: 2px solid #f0e3c4; border-radius: 7px 7px 13px 13px; background: repeating-linear-gradient(135deg, transparent 0 10px, #ffffff10 10px 11px), linear-gradient(145deg, #347b76, #194d54); color: #fff8df; box-shadow: 0 8px 0 #0d333a, 0 12px 20px #0005, inset 0 0 0 4px #ffffff0e; cursor: pointer; animation: ticket-arrive .32s both; }
 .sealed-ticket:nth-child(3n) { animation-delay: .05s; }.sealed-ticket:nth-child(3n + 1) { animation-delay: .1s; }
-.sealed-ticket::before, .sealed-ticket::after { content: ""; position: absolute; left: 7px; right: 7px; border-top: 2px dashed #ffe39b88; }
+.sealed-ticket::before, .sealed-ticket::after { content: ""; position: absolute; left: 7px; right: 7px; border-top: 2px dashed #f3e7c890; }
 .sealed-ticket::before { top: 9px; }.sealed-ticket::after { bottom: 9px; }
-.sealed-ticket i { position: absolute; top: -16px; width: 33px; height: 33px; border: 2px solid #ffd870; border-radius: 50%; background: #420817; }
-.sealed-ticket strong { font-size: 35px; text-shadow: 0 3px #650b1c; }
-.sealed-ticket span { padding: 3px 8px; border-radius: 99px; background: #3b0716aa; color: #ffdc74; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+.sealed-ticket i { position: absolute; top: -16px; width: 33px; height: 33px; border: 2px solid #f0e3c4; border-radius: 50%; background: #102f38; }
+.sealed-ticket strong { font-size: 35px; text-shadow: 0 3px #13313a; }
+.sealed-ticket span { padding: 3px 8px; border-radius: 99px; background: #fff5d9dc; color: #173746; font-size: 9px; font-weight: 900; letter-spacing: .04em; }
 .sealed-ticket:hover:not(:disabled), .sealed-ticket:focus-visible { z-index: 2; outline: 3px solid white; transform: translateY(-5px) rotate(-1deg); filter: brightness(1.12); }
-.ticket-color-1 { background: linear-gradient(135deg, #2568ba, #143979); }.ticket-color-2 { background: linear-gradient(135deg, #903bb2, #501665); }.ticket-color-3 { background: linear-gradient(135deg, #178d79, #075044); }
-.sealed-ticket.opened { opacity: .24; filter: grayscale(1); transform: scale(.92); box-shadow: 0 3px 0 #29030c; }
+.ticket-color-1 { background: repeating-linear-gradient(135deg, transparent 0 10px, #ffffff10 10px 11px), linear-gradient(145deg, #365b7c, #1c364f); }.ticket-color-2 { background: repeating-linear-gradient(135deg, transparent 0 10px, #ffffff10 10px 11px), linear-gradient(145deg, #bd584a, #78352f); }.ticket-color-3 { background: repeating-linear-gradient(135deg, transparent 0 10px, #ffffff10 10px 11px), linear-gradient(145deg, #9a7134, #66461f); }
+.sealed-ticket.opened { opacity: .24; filter: grayscale(1); transform: scale(.92); box-shadow: 0 3px 0 #0b252c; }
 .draw-progress { height: 7px; margin: 27px auto 0; overflow: hidden; border-radius: 99px; background: #ffffff1b; }
-.draw-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffb92f, #fff097); transition: width .3s; }
+.draw-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #b94a3d, #dfb542, #2f716d); transition: width .3s; }
 
 .lottery-reveal { min-height: calc(100svh - 82px); display: grid; place-items: center; padding: 30px 0; text-align: center; }
 .lottery-reveal::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: conic-gradient(from 0deg at 50% 45%, transparent 0 7%, #ffd85116 8% 11%, transparent 12% 20%); animation: spotlight-spin 8s linear infinite; }
@@ -343,9 +350,9 @@ footer b { color: var(--ink); }
   .score-chip { padding-inline: 7px; }
   .score-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lottery-shell { padding-top: 16px; }
-  .festival-sign { grid-template-columns: 36px 1fr 36px; padding-inline: 10px; }
+  .festival-sign { grid-template-columns: 46px 1fr; padding-inline: 13px; gap: 11px; }
   .festival-sign b { font-size: 28px; }
-  .festival-sign span { font-size: 19px; }
+  .festival-sign span { font-size: 15px; }
   .ticket-wall { grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .sealed-ticket { min-height: 102px; }
   .prize-window { height: 220px; }
