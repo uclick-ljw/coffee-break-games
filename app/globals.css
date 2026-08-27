@@ -104,10 +104,10 @@ button { font: inherit; }
 .lottery-setup, .lottery-final { min-height: calc(100svh - 100px); display: grid; align-content: center; justify-items: center; text-align: center; }
 .festival-sign {
   position: relative;
-  width: min(100%, 430px);
+  width: min(100%, 470px);
   padding: 25px 20px 20px;
   display: grid;
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: 56px minmax(0, 1fr) 108px;
   align-items: center;
   gap: 17px;
   border: 2px solid #f8edd3;
@@ -123,6 +123,7 @@ button { font: inherit; }
 .festival-sign div { text-align: left; }
 .festival-sign b { display: block; font-size: clamp(28px, 8vw, 40px); letter-spacing: -.06em; }
 .festival-sign small { display: block; margin-top: 3px; color: #557077; font-size: 11px; font-weight: 800; }
+.festival-sign img { display: block; width: 108px; margin: -18px -8px -14px 0; align-self: end; filter: drop-shadow(0 7px 7px #1938473d); transform: rotate(2deg); }
 .lottery-kicker { margin: 40px 0 5px; color: #ecd894; font-size: 11px; font-weight: 900; letter-spacing: .04em; }
 .lottery-setup h2 { margin: 0 0 25px; font-size: clamp(23px, 6vw, 32px); }
 .lottery-inputs { display: flex; align-items: end; justify-content: center; gap: 12px; }
@@ -141,7 +142,9 @@ button { font: inherit; }
 .lottery-status > span, .lottery-status > b { color: #ecd894; font-size: 12px; }
 .lottery-status small { color: #bcd0cc; font-size: 10px; font-weight: 800; }
 .lottery-status h2 { margin: 2px 0 0; font-size: 22px; }
-.lottery-pick > p { margin: 24px 0 18px; color: #f3e9cd; font-size: 14px; font-weight: 800; }
+.pick-intro { min-height: 82px; margin: 10px 0 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.pick-intro img { width: 78px; filter: drop-shadow(0 7px 7px #0005); }
+.pick-intro p { margin: 0; color: #f3e9cd; font-size: 14px; font-weight: 800; line-height: 1.5; text-align: left; }
 .ticket-wall { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 11px; perspective: 700px; }
 .sealed-ticket { position: relative; min-height: 116px; padding: 13px 8px 9px; display: grid; place-items: center; overflow: hidden; border: 2px solid #f0e3c4; border-radius: 7px 7px 13px 13px; background: repeating-linear-gradient(135deg, transparent 0 10px, #ffffff10 10px 11px), linear-gradient(145deg, #347b76, #194d54); color: #fff8df; box-shadow: 0 8px 0 #0d333a, 0 12px 20px #0005, inset 0 0 0 4px #ffffff0e; cursor: pointer; animation: ticket-arrive .32s both; }
 .sealed-ticket:nth-child(3n) { animation-delay: .05s; }.sealed-ticket:nth-child(3n + 1) { animation-delay: .1s; }
@@ -350,9 +353,10 @@ footer b { color: var(--ink); }
   .score-chip { padding-inline: 7px; }
   .score-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lottery-shell { padding-top: 16px; }
-  .festival-sign { grid-template-columns: 46px 1fr; padding-inline: 13px; gap: 11px; }
+  .festival-sign { grid-template-columns: 44px minmax(0, 1fr) 82px; padding-inline: 12px; gap: 8px; }
   .festival-sign b { font-size: 28px; }
   .festival-sign span { font-size: 15px; }
+  .festival-sign img { width: 86px; margin-right: -7px; }
   .ticket-wall { grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .sealed-ticket { min-height: 102px; }
   .prize-window { height: 220px; }
