@@ -157,16 +157,12 @@ button { font: inherit; }
 .prize-result { position: absolute; inset: 0; display: grid; place-content: center; background: radial-gradient(circle, #fff 0 14%, #ffec94 45%, #ffae24 100%); color: #8f1027; text-shadow: 0 2px white; }
 .prize-result span { font-size: 58px; line-height: 1; }.prize-result small { margin: 10px 0 1px; font-weight: 900; letter-spacing: .2em; }.prize-result strong { font-size: clamp(52px, 15vw, 76px); letter-spacing: -.08em; }
 .reveal-ticket.pass .prize-result { background: radial-gradient(circle, #fff 0 12%, #dcfff4 45%, #69cfb2); color: #145e50; }
-.paper-cover { position: absolute; inset: 0; display: grid; place-content: center; background: repeating-linear-gradient(135deg, #fffaf0 0 13px, #f3e7cf 14px 27px); color: #6b1a2c; text-shadow: 0 1px white; }
-.paper-cover::before, .paper-cover::after { content: ""; position: absolute; inset: 12px; border: 2px solid #ca9b45; }.paper-cover::after { inset: 19px; border-style: dashed; }
-.paper-cover i { font-size: 62px; font-style: normal; font-weight: 900; }.paper-cover b { font-size: 23px; }.paper-cover span { margin-top: 7px; color: #a56f38; font-size: 11px; font-weight: 800; }
-.tear-edge { position: absolute; z-index: 3; top: 0; bottom: 0; width: 20px; background: linear-gradient(90deg, transparent, #fff, #c89f5b, transparent); filter: drop-shadow(4px 0 3px #4e142c55); transition: left .03s linear; }
-.tear-control { position: relative; display: block; margin-top: 26px; padding-top: 25px; }
-.tear-control > span { display: block; margin-bottom: 14px; color: #ffe6ad; font-size: 12px; font-weight: 800; }
-.tear-track { position: relative; width: 100%; height: 22px; border: 2px dashed #ffd976; border-radius: 99px; background: #380716; cursor: grab; touch-action: none; }
-.tear-track:active { cursor: grabbing; }
-.tear-track:focus-visible { outline: 3px solid white; outline-offset: 5px; }
-.tear-track b { position: absolute; z-index: 3; top: 50%; width: 48px; height: 48px; display: grid; place-items: center; border: 4px solid white; border-radius: 50%; background: linear-gradient(#ffd964, #ff9e28); color: #5a1022; box-shadow: 0 5px 14px #0009; pointer-events: none; font-size: 10px; transform: translateY(-50%); transition: left .03s linear; }
+.scratch-cover { position: absolute; z-index: 3; inset: 0; }
+.scratch-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.scratch-canvas:focus-visible { outline: 5px solid white; outline-offset: -8px; }
+.scratch-progress { position: absolute; z-index: 4; left: 50%; bottom: 9px; width: 112px; height: 22px; overflow: hidden; border: 2px solid #fff9; border-radius: 99px; background: #444a; color: white; font-size: 10px; font-weight: 900; line-height: 18px; text-align: center; transform: translateX(-50%); pointer-events: none; }
+.scratch-progress i { position: absolute; z-index: -1; inset: 0 auto 0 0; background: #ffd447b8; transition: width .08s; }
+.scratch-guide { margin: 18px 0 0; color: #ffe6ad; font-size: 12px; font-weight: 800; }
 .reveal-outcome { display: grid; gap: 18px; margin-top: 22px; animation: outcome-pop .35s .1s both; }
 .reveal-outcome strong { color: #fff2c4; font-size: 24px; text-shadow: 0 3px #520719; }
 .reveal-outcome button { padding: 15px; border: 0; border-radius: 14px; background: linear-gradient(#fff09a, #ffc034); color: #541024; font-weight: 900; cursor: pointer; box-shadow: 0 6px 0 #a94f14; }

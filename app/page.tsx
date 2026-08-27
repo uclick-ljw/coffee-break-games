@@ -65,10 +65,10 @@ export default function Home() {
           <b>게임 시작</b>
         </button>
         <button className="game-card lottery-card" onClick={() => setMode('lottery')}>
-          <span className="game-card-art" aria-hidden="true">🎟️</span>
+          <span className="game-card-art" aria-hidden="true">🎫</span>
           <small>선택과 짜릿한 공개</small>
-          <strong>뜯어봐!</strong>
-          <p>봉인된 종이를 직접 뜯고 오늘 커피나 밥을 살 사람을 정하세요.</p>
+          <strong>긁어봐!</strong>
+          <p>스크래치 복권을 직접 긁고 오늘 커피나 밥을 살 사람을 정하세요.</p>
           <b>게임 시작</b>
         </button>
       </section>
