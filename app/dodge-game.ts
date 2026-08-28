@@ -3,6 +3,7 @@ export const DODGE_HEIGHT = 540;
 export const DODGE_FINGER_OFFSET = 52;
 export const DODGE_PLAYER_RADIUS = 15;
 export const DODGE_MAX_SECONDS = 20;
+export const DODGE_FIRST_SPAWN = 0.5;
 
 export type DodgeAnimal = {
   id: string;
@@ -60,10 +61,11 @@ export function assignDodgeAnimals(players: number, seed: number) {
 
 export function dodgeDifficulty(seconds: number) {
   const time = Math.max(0, Math.min(DODGE_MAX_SECONDS, seconds));
+  const suddenDeath = Math.max(0, time - 8);
   return {
-    speed: 108 + time * 7.6,
-    spawnInterval: Math.max(0.42, 1.18 - time * 0.043),
-    warningSeconds: Math.max(0.42, 0.7 - time * 0.012),
+    speed: 125 + time * 9 + suddenDeath * 8,
+    spawnInterval: Math.max(0.24, 0.98 - time * 0.055 - suddenDeath * 0.02),
+    warningSeconds: Math.max(0.34, 0.62 - time * 0.018),
   };
 }
 
@@ -78,13 +80,13 @@ export function makeDodgeObstacle(id: number, seconds: number, seed: number): Do
   const nextRandom = random(seed + id * 7919);
   const difficulty = dodgeDifficulty(seconds);
   const side = Math.floor(nextRandom() * 4);
-  const kind = seconds >= 5 && id % 5 === 4 ? 'block' : 'ball';
+  const kind = seconds >= 4 && id % 4 === 3 ? 'block' : 'ball';
   const speed = difficulty.speed * (0.9 + nextRandom() * 0.2);
   const targetX = 65 + nextRandom() * (DODGE_WIDTH - 130);
   const targetY = 80 + nextRandom() * (DODGE_HEIGHT - 160);
   const radius = kind === 'ball' ? 16 + nextRandom() * 5 : 0;
-  const width = kind === 'block' ? (side % 2 === 0 ? 18 : 70 + nextRandom() * 28) : 0;
-  const height = kind === 'block' ? (side % 2 === 0 ? 70 + nextRandom() * 28 : 18) : 0;
+  const width = kind === 'block' ? (side % 2 === 0 ? 18 : 80 + nextRandom() * 35) : 0;
+  const height = kind === 'block' ? (side % 2 === 0 ? 80 + nextRandom() * 35 : 18) : 0;
   let x = targetX;
   let y = targetY;
   if (side === 0) x = -Math.max(radius, width / 2) - 3;

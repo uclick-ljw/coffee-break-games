@@ -5,6 +5,7 @@ import { PLAYER_NAMES } from './game';
 import {
   DODGE_ANIMALS,
   DODGE_FINGER_OFFSET,
+  DODGE_FIRST_SPAWN,
   DODGE_HEIGHT,
   DODGE_MAX_SECONDS,
   DODGE_PLAYER_RADIUS,
@@ -181,7 +182,7 @@ export default function DodgeGame({ onExit }: { onExit: () => void }) {
   const playerPositionRef = useRef({ x: DODGE_WIDTH / 2, y: DODGE_HEIGHT - 92 });
   const obstaclesRef = useRef<DodgeObstacle[]>([]);
   const startedAtRef = useRef(0);
-  const nextSpawnRef = useRef(0.72);
+  const nextSpawnRef = useRef(DODGE_FIRST_SPAWN);
   const obstacleIdRef = useRef(0);
   const lastDisplayRef = useRef(0);
 
@@ -285,7 +286,7 @@ export default function DodgeGame({ onExit }: { onExit: () => void }) {
     playerPositionRef.current = canvasPoint(event);
     obstaclesRef.current = [];
     obstacleIdRef.current = 0;
-    nextSpawnRef.current = 0.72;
+    nextSpawnRef.current = DODGE_FIRST_SPAWN;
     startedAtRef.current = performance.now();
     lastDisplayRef.current = 0;
     setDisplayTime(0);
