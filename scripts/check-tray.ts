@@ -4,9 +4,11 @@ import {
   createTrayEngine,
   makeTrayQueue,
   TRAY_ITEMS,
+  TRAY_DROP_DRAG,
   TRAY_ROTATION_STEP,
   TRAY_X_LIMIT,
   trayNextPlayer,
+  trayGestureAction,
   trayTurnReady,
   type TrayItemKind,
 } from '../app/tray-game.ts';
@@ -23,6 +25,10 @@ assert.equal(trayNextPlayer(1, 2), 0);
 assert.equal(trayNextPlayer(4, 6), 5);
 assert.equal(trayNextPlayer(5, 6), 0);
 assert.equal(TRAY_ROTATION_STEP, Math.PI / 6);
+assert.equal(trayGestureAction(3, 4), 'rotate', '짧게 누르면 회전해야 합니다.');
+assert.equal(trayGestureAction(45, 4), 'move', '좌우로 움직였다 놓으면 위치만 바뀌어야 합니다.');
+assert.equal(trayGestureAction(18, TRAY_DROP_DRAG - 1), 'move', '낙하 거리 전에는 떨어지면 안 됩니다.');
+assert.equal(trayGestureAction(18, TRAY_DROP_DRAG), 'drop', '아래로 충분히 끌면 낙하해야 합니다.');
 assert.equal(trayTurnReady(10, 0, 0), false, '움직임이 남아 있으면 시간이 지나도 차례를 넘기면 안 됩니다.');
 assert.equal(trayTurnReady(1.59, 1, 0), false, '안전해 보여도 최소 관찰 시간 전에는 기다려야 합니다.');
 assert.equal(trayTurnReady(1.6, 0.45, 0), true, '안정된 일반 배치는 차례를 넘겨야 합니다.');

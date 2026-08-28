@@ -8,6 +8,7 @@ export const TRAY_HALF_WIDTH = 3.45;
 export const TRAY_DROP_Y = 3.05;
 export const TRAY_X_LIMIT = 3.15;
 export const TRAY_ROTATION_STEP = Math.PI / 6;
+export const TRAY_DROP_DRAG = 62;
 
 export type TrayItemKind = 'cake' | 'cup' | 'mug' | 'macaron' | 'croissant' | 'tumbler';
 
@@ -116,6 +117,12 @@ export function trayTurnReady(observedSeconds: number, stableSeconds: number, tr
   const precarious = Math.abs(trayAngle) > 0.24;
   return observedSeconds >= (precarious ? 3 : 1.6)
     && stableSeconds >= (precarious ? 0.9 : 0.45);
+}
+
+export function trayGestureAction(deltaX: number, deltaY: number) {
+  if (Math.hypot(deltaX, deltaY) <= 10) return 'rotate';
+  if (deltaY >= TRAY_DROP_DRAG) return 'drop';
+  return 'move';
 }
 
 export type TrayPiece = {

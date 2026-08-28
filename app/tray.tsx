@@ -7,6 +7,7 @@ import {
   createTrayEngine,
   makeTrayQueue,
   TRAY_CENTER_Y,
+  TRAY_DROP_DRAG,
   TRAY_DROP_Y,
   TRAY_HALF_WIDTH,
   TRAY_HEIGHT,
@@ -15,6 +16,7 @@ import {
   TRAY_SCALE,
   TRAY_WIDTH,
   trayNextPlayer,
+  trayGestureAction,
   trayTurnReady,
   type TrayEngine,
   type TrayItemDefinition,
@@ -84,7 +86,7 @@ function drawItem(context: CanvasRenderingContext2D, definition: TrayItemDefinit
   context.restore();
 }
 
-function drawTray(canvas: HTMLCanvasElement, engine: TrayEngine, pieces: TrayPiece[], ghost: { kind: TrayItemKind; x: number; angle: number } | null) {
+function drawTray(canvas: HTMLCanvasElement, engine: TrayEngine, pieces: TrayPiece[], ghost: { kind: TrayItemKind; x: number; y: number; angle: number; held: boolean } | null) {
   const ratio = Math.min(2, window.devicePixelRatio || 1);
   if (canvas.width !== TRAY_WIDTH * ratio || canvas.height !== TRAY_HEIGHT * ratio) {
     canvas.width = TRAY_WIDTH * ratio;
@@ -134,12 +136,17 @@ function drawTray(canvas: HTMLCanvasElement, engine: TrayEngine, pieces: TrayPie
 
   for (const piece of pieces) drawItem(context, TRAY_ITEMS[piece.kind], piece.x, piece.y, piece.angle);
   if (ghost) {
-    context.save();
-    context.setLineDash([5, 5]);
-    drawItem(context, TRAY_ITEMS[ghost.kind], ghost.x, TRAY_DROP_Y, ghost.angle, 0.68);
-    context.restore();
+    drawItem(context, TRAY_ITEMS[ghost.kind], ghost.x, ghost.y, ghost.angle, ghost.held ? 1 : 0.86);
   }
 }
+
+type ActiveGesture = {
+  pointerId: number;
+  startClientX: number;
+  startClientY: number;
+  startX: number;
+  latestX: number;
+};
 
 export default function TrayGame({ onExit }: { onExit: () => void }) {
   const [phase, setPhase] = useState<'setup' | 'playing' | 'lost'>('setup');
@@ -152,6 +159,8 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
   const [queueIndex, setQueueIndex] = useState(0);
   const [x, setX] = useState(0);
   const [angle, setAngle] = useState(0);
+  const [dragY, setDragY] = useState(0);
+  const [holding, setHolding] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -163,7 +172,7 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
   const busyRef = useRef(false);
   const stableSecondsRef = useRef(0);
   const motionSecondsRef = useRef(0);
-  const draggingRef = useRef(false);
+  const gestureRef = useRef<ActiveGesture | null>(null);
 
   const currentKind = queue[queueIndex] ?? 'cake';
   const nextKind = queue[queueIndex + 1] ?? 'cup';
@@ -191,6 +200,9 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
     setTurn(1);
     setX(0);
     setAngle(0);
+    setDragY(0);
+    setHolding(false);
+    gestureRef.current = null;
     setBusy(false);
     setLoading(false);
     setPhase('playing');
@@ -231,14 +243,20 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
         }
       }
       if (engine && canvasRef.current) {
-        const ghost = busyRef.current || phase === 'lost' ? null : { kind: currentKind, x, angle };
+        const ghost = busyRef.current || phase === 'lost' ? null : {
+          kind: currentKind,
+          x,
+          y: TRAY_DROP_Y - Math.min(dragY, 76) / TRAY_SCALE,
+          angle,
+          held: holding,
+        };
         drawTray(canvasRef.current, engine, engine.pieces, ghost);
       }
       frameId = requestAnimationFrame(frame);
     };
     frameId = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(frameId);
-  }, [angle, currentKind, phase, x]);
+  }, [angle, currentKind, dragY, holding, phase, x]);
 
   function startGame() {
     void installEngine(players, round, starter);
@@ -252,21 +270,47 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
     void installEngine(players, nextRound, nextStarter);
   }
 
-  function drop() {
+  function drop(dropX = x) {
     const engine = engineRef.current;
     if (!engine || busyRef.current || loading || phase !== 'playing') return;
-    engine.drop(currentKind, x, angle);
+    engine.drop(currentKind, dropX, angle);
     stableSecondsRef.current = 0;
     motionSecondsRef.current = 0;
     busyRef.current = true;
     setBusy(true);
   }
 
-  function setXFromPointer(clientX: number) {
+  function pointerDelta(clientX: number, clientY: number, gesture: ActiveGesture) {
     const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect || busyRef.current) return;
-    const logicalX = ((clientX - rect.left) / rect.width) * TRAY_WIDTH;
-    setX(clampTrayX((logicalX - TRAY_WIDTH / 2) / TRAY_SCALE));
+    if (!rect) return { x: 0, y: 0 };
+    return {
+      x: (clientX - gesture.startClientX) * TRAY_WIDTH / rect.width,
+      y: (clientY - gesture.startClientY) * TRAY_HEIGHT / rect.height,
+    };
+  }
+
+  function beginsOnItem(clientX: number, clientY: number) {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return false;
+    const logicalX = (clientX - rect.left) * TRAY_WIDTH / rect.width;
+    const logicalY = (clientY - rect.top) * TRAY_HEIGHT / rect.height;
+    const item = TRAY_ITEMS[currentKind];
+    const hitWidth = Math.max(44, item.width * TRAY_SCALE / 2 + 17);
+    const hitHeight = Math.max(44, item.height * TRAY_SCALE / 2 + 17);
+    return Math.abs(logicalX - worldX(x)) <= hitWidth
+      && Math.abs(logicalY - worldY(TRAY_DROP_Y)) <= hitHeight;
+  }
+
+  function finishGesture(pointerId: number, clientX: number, clientY: number) {
+    const gesture = gestureRef.current;
+    if (!gesture || gesture.pointerId !== pointerId) return;
+    const delta = pointerDelta(clientX, clientY, gesture);
+    const action = trayGestureAction(delta.x, delta.y);
+    gestureRef.current = null;
+    setHolding(false);
+    setDragY(0);
+    if (action === 'rotate') setAngle((value) => value + TRAY_ROTATION_STEP);
+    else if (action === 'drop') drop(gesture.latestX);
   }
 
   if (phase === 'setup') {
@@ -283,7 +327,7 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
           <p className="tray-intro">좌우 위치와 각도를 정해 떨어뜨립니다.<br />물건 하나라도 떨어뜨린 사람이 집니다.</p>
           <label className="tray-player-select"><span>참여 인원</span><select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="tray-primary" onClick={startGame}>게임 시작</button>
-          <div className="tray-rules"><span>↔ 위치 조절</span><span>↻ 30° 회전</span><span>↓ 물리 낙하</span></div>
+          <div className="tray-rules"><span>↔ 잡고 이동</span><span>↻ 탭해서 회전</span><span>↓ 아래로 놓기</span></div>
         </section>
       </main>
     );
@@ -306,31 +350,61 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
         <div className={`tray-canvas-wrap ${busy ? 'settling' : ''}`}>
           <canvas
             ref={canvasRef}
-            aria-label="중앙 축 위의 균형 쟁반. 화면을 좌우로 끌어 물건 위치를 정할 수 있습니다."
+            role="application"
+            tabIndex={0}
+            aria-label={`${TRAY_ITEMS[currentKind].name} 조작. 짧게 누르면 30도 회전하고, 잡고 좌우로 움직이면 위치가 바뀌며, 아래로 끌어 놓으면 떨어집니다.`}
+            onKeyDown={(event) => {
+              if (busy || loading) return;
+              if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                setX((value) => clampTrayX(value + (event.key === 'ArrowLeft' ? -0.3 : 0.3)));
+              } else if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                setAngle((value) => value + TRAY_ROTATION_STEP);
+              } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                drop();
+              }
+            }}
             onPointerDown={(event) => {
-              draggingRef.current = true;
+              if (busyRef.current || !beginsOnItem(event.clientX, event.clientY)) return;
+              gestureRef.current = {
+                pointerId: event.pointerId,
+                startClientX: event.clientX,
+                startClientY: event.clientY,
+                startX: x,
+                latestX: x,
+              };
+              setHolding(true);
               event.currentTarget.setPointerCapture(event.pointerId);
-              setXFromPointer(event.clientX);
             }}
             onPointerMove={(event) => {
-              if (draggingRef.current) setXFromPointer(event.clientX);
+              const gesture = gestureRef.current;
+              if (!gesture || gesture.pointerId !== event.pointerId) return;
+              const delta = pointerDelta(event.clientX, event.clientY, gesture);
+              gesture.latestX = clampTrayX(gesture.startX + delta.x / TRAY_SCALE);
+              setX(gesture.latestX);
+              setDragY(Math.max(0, delta.y));
             }}
             onPointerUp={(event) => {
-              draggingRef.current = false;
-              event.currentTarget.releasePointerCapture(event.pointerId);
+              finishGesture(event.pointerId, event.clientX, event.clientY);
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+            }}
+            onPointerCancel={(event) => {
+              gestureRef.current = null;
+              setHolding(false);
+              setDragY(0);
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
             }}
           />
-          {!busy && <div className="tray-drag-guide">손가락으로 좌우 이동</div>}
+          {holding && <div className={`tray-drop-cue ${dragY >= TRAY_DROP_DRAG ? 'armed' : ''}`}>{dragY >= TRAY_DROP_DRAG ? '손을 떼면 낙하' : '아래로 더 끌어주세요'}</div>}
         </div>
       </section>
 
-      <section className="tray-controller" aria-label="물체 조작">
-        <div className="tray-item-label"><span>이번 물건</span><strong>{TRAY_ITEMS[currentKind].name}</strong><small>{TRAY_ITEMS[currentKind].hint}</small></div>
-        <div className="tray-buttons">
-          <button aria-label="왼쪽으로 이동" disabled={busy || loading} onClick={() => setX((value) => clampTrayX(value - 0.35))}>←</button>
-          <button aria-label="30도 회전" disabled={busy || loading} onClick={() => setAngle((value) => value + TRAY_ROTATION_STEP)}>↻<small>30°</small></button>
-          <button aria-label="오른쪽으로 이동" disabled={busy || loading} onClick={() => setX((value) => clampTrayX(value + 0.35))}>→</button>
-          <button className="tray-drop" disabled={busy || loading} onClick={drop}>{busy ? '균형 확인 중…' : '떨어뜨리기'}</button>
+      <section className="tray-gesture-panel" aria-label="물체 조작 안내">
+        <div className="tray-item-label"><span>이번 물건</span><strong>{TRAY_ITEMS[currentKind].name}</strong><small>{TRAY_ITEMS[currentKind].hint} · {Math.round(angle * 180 / Math.PI) % 360}°</small></div>
+        <div className="tray-gesture-help">
+          <span><b>톡</b> 회전</span><span><b>↔</b> 위치</span><span><b>↓</b> 낙하</span>
         </div>
       </section>
 
