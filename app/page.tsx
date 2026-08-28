@@ -8,6 +8,7 @@ const PegDropGame = lazy(() => import('./pegdrop'));
 const LotteryGame = lazy(() => import('./lottery'));
 const TimingGame = lazy(() => import('./timing'));
 const PerfectCurveGame = lazy(() => import('./circle'));
+const TrayGame = lazy(() => import('./tray'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -17,7 +18,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -45,6 +46,11 @@ export default function Home() {
   if (mode === 'circle') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">별빛 캔버스를 펼치고 있습니다…</p></main>}>
       <PerfectCurveGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'tray') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">균형 쟁반을 준비하고 있습니다…</p></main>}>
+      <TrayGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -96,6 +102,13 @@ export default function Home() {
           <strong>완벽한 곡선</strong>
           <p>오늘의 곡선을 기억해 한 번에 그리고 가장 닮은 한 붓에 도전하세요.</p>
           <b>곡선 뽑기</b>
+        </button>
+        <button className="game-card tray-card" onClick={() => setMode('tray')}>
+          <span className="game-card-art tray-card-art" aria-hidden="true">☕</span>
+          <small>균형과 배치 감각</small>
+          <strong>아슬아슬 트레이</strong>
+          <p>카페 물건을 번갈아 쌓고, 하나라도 떨어뜨리면 바로 패배!</p>
+          <b>균형 잡기</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
