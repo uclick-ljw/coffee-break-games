@@ -7,7 +7,7 @@ const MarbleGame = lazy(() => import('./marbles'));
 const PegDropGame = lazy(() => import('./pegdrop'));
 const LotteryGame = lazy(() => import('./lottery'));
 const TimingGame = lazy(() => import('./timing'));
-const PerfectCircleGame = lazy(() => import('./circle'));
+const PerfectCurveGame = lazy(() => import('./circle'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -44,7 +44,7 @@ export default function Home() {
   );
   if (mode === 'circle') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">별빛 캔버스를 펼치고 있습니다…</p></main>}>
-      <PerfectCircleGame onExit={() => setMode('menu')} />
+      <PerfectCurveGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -91,11 +91,11 @@ export default function Home() {
           <b>2가지 방식</b>
         </button>
         <button className="game-card circle-card" onClick={() => setMode('circle')}>
-          <span className="game-card-art circle-card-art" aria-hidden="true">◯</span>
-          <small>한 붓과 손끝 감각</small>
-          <strong>완벽한 원</strong>
-          <p>별을 감싸는 원을 한 번에 그리고 가장 완벽한 궤도에 도전하세요.</p>
-          <b>그리기 시작</b>
+          <span className="game-card-art circle-card-art" aria-hidden="true">∿</span>
+          <small>다섯 곡선과 손끝 감각</small>
+          <strong>완벽한 곡선</strong>
+          <p>오늘의 곡선을 기억해 한 번에 그리고 가장 닮은 한 붓에 도전하세요.</p>
+          <b>곡선 뽑기</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
