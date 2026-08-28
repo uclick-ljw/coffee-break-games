@@ -43,6 +43,8 @@ button { font: inherit; }
 .timing-card { background: linear-gradient(155deg, #fff, #d9ff8c); }
 .circle-card { background: radial-gradient(circle at 76% 18%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #f8f4ff, #dcd3ff); }
 .tray-card { background: radial-gradient(circle at 79% 18%, #fff8e9 0 3px, transparent 4px), linear-gradient(155deg, #fffaf1, #edc991); }
+.dodge-card { background: radial-gradient(circle at 82% 14%, #fff 0 3px, transparent 4px), linear-gradient(155deg, #fffbe9, #bdebdc); }
+.dodge-card-art { width: 78px; height: 78px; border: 4px solid #fff; border-radius: 50%; background: url('/dodge-animals.jpg') 0 0 / 400% 200%; box-shadow: 0 8px 0 #4ba685, 0 15px 24px #256c5b35; }
 .tray-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #a96f40; border-radius: 50% 50% 43% 43%; background: #fff9ed; box-shadow: 0 9px 0 #a96f40, 0 17px 25px #7d4c2738; }
 .circle-card-art { width: 76px; height: 76px; display: grid; place-items: center; border: 2px solid #9277e8; border-radius: 25px; background: #7959d916; color: #7959d9; font-size: 48px; line-height: 1; box-shadow: 0 0 0 7px #7959d10, 0 12px 24px #4a32933d; }
 .game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
@@ -51,6 +53,88 @@ button { font: inherit; }
 .game-card p { min-height: 42px; margin: 8px 0 20px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .game-card b { padding: 10px 15px; border-radius: 99px; background: var(--ink); color: white; font-size: 12px; }
 .menu-note { margin: 20px 0 0; color: var(--muted); text-align: center; font-size: 12px; }
+
+.dodge-shell {
+  min-height: 100svh;
+  max-width: 620px;
+  margin: auto;
+  padding: 20px 20px 26px;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 12% 12%, #fff 0 2px, transparent 3px),
+    radial-gradient(circle at 88% 38%, #fff7 0 3px, transparent 4px),
+    linear-gradient(155deg, #fffbea, #d9f2e8 64%, #b8e2d3);
+  color: #173c40;
+}
+.dodge-shell button, .dodge-shell select { font: inherit; }
+.dodge-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dodge-topbar p { margin: 0 0 3px; color: #3c9b7a; font-size: 9px; font-weight: 900; letter-spacing: .15em; }
+.dodge-topbar h1 { margin: 0; font-size: clamp(27px, 7vw, 38px); letter-spacing: -.06em; }
+.dodge-topbar button, .dodge-secondary { padding: 9px 13px; border: 1px solid #276c5c30; border-radius: 99px; background: #ffffff8f; color: #35685e; font-size: 11px; font-weight: 850; cursor: pointer; }
+.dodge-animal { --animal-x: 0%; --animal-y: 0%; width: 60px; height: 60px; display: inline-block; flex: 0 0 auto; border: 3px solid #fff; border-radius: 50%; background-image: url('/dodge-animals.jpg'); background-position: var(--animal-x) var(--animal-y); background-size: 400% 200%; box-shadow: 0 7px 18px #19544932; }
+.dodge-setup { min-height: calc(100svh - 78px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.dodge-animal-fan { height: 132px; display: flex; align-items: flex-end; justify-content: center; }
+.dodge-animal-fan .dodge-animal { width: 105px; height: 105px; margin: 0 -14px; border-width: 5px; }
+.dodge-animal-fan .dodge-animal:first-child { transform: rotate(-11deg) translateY(8px); }
+.dodge-animal-fan .dodge-animal:nth-child(2) { z-index: 2; width: 120px; height: 120px; }
+.dodge-animal-fan .dodge-animal:last-child { transform: rotate(11deg) translateY(8px); }
+.dodge-kicker { margin: 18px 0 6px; color: #3d9a7a; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.dodge-setup h2 { margin: 0; font-size: clamp(29px, 8vw, 42px); line-height: 1.16; letter-spacing: -.065em; }
+.dodge-intro { margin: 14px 0 20px; color: #658077; font-size: 12px; line-height: 1.7; }
+.dodge-player-select { width: min(100%, 430px); margin-bottom: 11px; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #30776330; border-radius: 16px; background: #ffffff9c; color: #4d7469; font-size: 12px; font-weight: 900; }
+.dodge-player-select select { padding: 8px 30px 8px 13px; border: 0; border-radius: 99px; background: #204d4b; color: white; font-weight: 900; }
+.dodge-primary { width: min(100%, 430px); padding: 16px; border: 0; border-radius: 16px; background: #204d4b; color: #fff; font-weight: 900; cursor: pointer; box-shadow: 0 7px 0 #55aa89, 0 16px 30px #1d594a25; transition: transform .1s, box-shadow .1s; }
+.dodge-primary:active { transform: translateY(5px); box-shadow: 0 2px 0 #55aa89; }
+.dodge-rules { margin-top: 20px; display: flex; gap: 15px; color: #5e8176; font-size: 9px; font-weight: 850; }
+.dodge-play { padding-top: 13px; }
+.dodge-status { margin-bottom: 9px; padding: 8px 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border: 1px solid #286f5c2b; border-radius: 18px; background: #ffffffb8; box-shadow: 0 10px 22px #1d594a14; }
+.dodge-status::before { content: ""; position: absolute; }
+.dodge-status .dodge-animal { width: 46px; height: 46px; border-color: var(--player-color); box-shadow: 0 0 0 2px #fff; }
+.dodge-status > div { display: grid; gap: 1px; }
+.dodge-status small { color: #709083; font-size: 9px; font-weight: 850; }
+.dodge-status strong { overflow: hidden; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
+.dodge-status > b { color: #1f6056; font-size: 19px; font-variant-numeric: tabular-nums; }
+.dodge-board { width: min(100%, 430px); aspect-ratio: 390 / 540; margin: auto; position: relative; overflow: hidden; border: 1px solid #2d756234; border-radius: 28px; background: #e5f8f5; box-shadow: inset 0 0 35px #1e6d5518, 0 18px 40px #15574625; }
+.dodge-board canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; outline: none; user-select: none; -webkit-user-select: none; }
+.dodge-board.playing { box-shadow: inset 0 0 35px #1e6d5518, 0 18px 40px #15574625, 0 0 0 3px #52b59038; }
+.dodge-ready-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; background: linear-gradient(#e8fbf1b0, #d1eee7d9); backdrop-filter: blur(2px); }
+.dodge-ready-overlay .dodge-animal { width: 106px; height: 106px; border-width: 5px; box-shadow: 0 10px 0 #3f9b79, 0 22px 38px #205d4b38; }
+.dodge-ready-overlay strong { margin-top: 26px; font-size: 26px; letter-spacing: -.05em; }
+.dodge-ready-overlay span { margin-top: 8px; color: #4d7469; font-size: 13px; font-weight: 750; line-height: 1.5; }
+.dodge-ready-overlay i { margin-top: 16px; padding: 9px 14px; border-radius: 99px; background: #204d4b; color: white; font-size: 10px; font-style: normal; font-weight: 900; animation: dodge-pulse .7s ease-in-out infinite alternate; }
+.dodge-help { margin: 9px 0 0; color: #628277; text-align: center; font-size: 9px; font-weight: 800; }
+.dodge-result, .dodge-final { min-height: calc(100svh - 84px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.dodge-result > .dodge-animal { width: 138px; height: 138px; border-width: 6px; box-shadow: 0 12px 0 #4ba685, 0 26px 48px #205d4b30; }
+.dodge-result p, .dodge-payer p { margin: 31px 0 3px; color: #4a9278; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.dodge-result h2 { margin: 0; font-size: clamp(52px, 15vw, 76px); letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+.dodge-result > strong { margin: 3px 0 24px; color: #618076; font-size: 12px; }
+.dodge-result > small { margin-top: 17px; color: #718b82; font-size: 9px; }
+.dodge-final { justify-content: flex-start; padding: 30px 0 16px; }
+.dodge-payer { width: min(100%, 430px); padding: 20px; display: grid; justify-items: center; border: 1px solid #e788673f; border-radius: 26px; background: linear-gradient(145deg, #fff7eb, #ffe1d5); box-shadow: 0 18px 38px #985c4322; }
+.dodge-payer .dodge-animal { width: 92px; height: 92px; border-width: 5px; box-shadow: 0 8px 0 #f08a69, 0 18px 30px #8e51352e; }
+.dodge-payer p { margin-top: 18px; color: #d56f50; }
+.dodge-payer h2 { margin: 0; font-size: 34px; letter-spacing: -.05em; }
+.dodge-payer strong { color: #c45d42; font-size: 16px; }
+.dodge-ranking { width: min(100%, 430px); margin: 12px 0 16px; padding: 0; display: grid; gap: 7px; list-style: none; }
+.dodge-ranking li { padding: 8px 11px; display: grid; grid-template-columns: 22px auto 1fr auto; align-items: center; gap: 9px; border: 1px solid #286f5c22; border-radius: 15px; background: #ffffffa6; text-align: left; }
+.dodge-ranking li > span { color: #3b9576; font-size: 12px; font-weight: 900; text-align: center; }
+.dodge-ranking .dodge-animal { width: 40px; height: 40px; border-width: 2px; box-shadow: none; }
+.dodge-ranking li > div { display: grid; }
+.dodge-ranking li strong { font-size: 12px; }.dodge-ranking li small { color: #779187; font-size: 8px; }
+.dodge-ranking li > b { font-size: 13px; font-variant-numeric: tabular-nums; }
+.dodge-final > .dodge-secondary { margin-top: 11px; background: transparent; text-decoration: underline; }
+@keyframes dodge-pulse { to { transform: translateY(-3px); box-shadow: 0 6px 15px #205d4b36; } }
+
+@media (max-height: 720px) {
+  .dodge-shell { padding-top: 12px; }
+  .dodge-topbar h1 { font-size: 25px; }
+  .dodge-status { margin-bottom: 6px; padding-block: 5px; }
+  .dodge-board { width: min(100%, 360px); }
+  .dodge-help { margin-top: 5px; }
+  .dodge-animal-fan { height: 105px; transform: scale(.82); }
+  .dodge-kicker { margin-top: 8px; }
+  .dodge-intro { margin-block: 9px 13px; }
+}
 
 .tray-shell {
   --tray-brown: #7e5034;

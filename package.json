@@ -15,6 +15,7 @@
     "check:timing": "node --experimental-strip-types scripts/check-timing.ts",
     "check:tower": "node --experimental-strip-types scripts/check-tower.ts",
     "check:tray": "node --experimental-strip-types scripts/check-tray.ts",
+    "check:dodge": "node --experimental-strip-types scripts/check-dodge.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },

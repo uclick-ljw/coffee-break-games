@@ -9,6 +9,7 @@ const LotteryGame = lazy(() => import('./lottery'));
 const TimingGame = lazy(() => import('./timing'));
 const PerfectCurveGame = lazy(() => import('./circle'));
 const TrayGame = lazy(() => import('./tray'));
+const DodgeGame = lazy(() => import('./dodge'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -18,7 +19,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -51,6 +52,11 @@ export default function Home() {
   if (mode === 'tray') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">균형 쟁반을 준비하고 있습니다…</p></main>}>
       <TrayGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'dodge') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">동물 친구들을 깨우고 있습니다…</p></main>}>
+      <DodgeGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -109,6 +115,13 @@ export default function Home() {
           <strong>아슬아슬 트레이</strong>
           <p>카페 물건을 번갈아 쌓고, 하나라도 떨어뜨리면 바로 패배!</p>
           <b>균형 잡기</b>
+        </button>
+        <button className="game-card dodge-card" onClick={() => setMode('dodge')}>
+          <span className="game-card-art dodge-card-art" aria-hidden="true" />
+          <small>손끝 반응과 생존 본능</small>
+          <strong>말랑말랑 대탈출</strong>
+          <p>귀여운 동물을 누른 채 움직여 몰려오는 장난감을 피하세요.</p>
+          <b>동물 뽑기</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
