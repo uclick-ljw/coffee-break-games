@@ -11,6 +11,7 @@
     "check:game": "node --experimental-strip-types scripts/check-game.ts",
     "check:peg": "node --experimental-strip-types scripts/check-peg-game.ts",
     "check:lottery": "node --experimental-strip-types scripts/check-lottery.ts",
+    "check:circle": "node --experimental-strip-types scripts/check-circle.ts",
     "check:timing": "node --experimental-strip-types scripts/check-timing.ts",
     "check:tower": "node --experimental-strip-types scripts/check-tower.ts",
     "start": "vinext start",

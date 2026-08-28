@@ -7,6 +7,7 @@ const MarbleGame = lazy(() => import('./marbles'));
 const PegDropGame = lazy(() => import('./pegdrop'));
 const LotteryGame = lazy(() => import('./lottery'));
 const TimingGame = lazy(() => import('./timing'));
+const PerfectCircleGame = lazy(() => import('./circle'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -16,7 +17,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -39,6 +40,11 @@ export default function Home() {
   if (mode === 'timing') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">스톱워치를 맞추고 있습니다…</p></main>}>
       <TimingGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'circle') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">별빛 캔버스를 펼치고 있습니다…</p></main>}>
+      <PerfectCircleGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -83,6 +89,13 @@ export default function Home() {
           <strong>멈춰!</strong>
           <p>시간을 숨기거나 보면서 목표 초에 가장 가깝게 멈추세요.</p>
           <b>2가지 방식</b>
+        </button>
+        <button className="game-card circle-card" onClick={() => setMode('circle')}>
+          <span className="game-card-art circle-card-art" aria-hidden="true">◯</span>
+          <small>한 붓과 손끝 감각</small>
+          <strong>완벽한 원</strong>
+          <p>별을 감싸는 원을 한 번에 그리고 가장 완벽한 궤도에 도전하세요.</p>
+          <b>그리기 시작</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
