@@ -29,11 +29,10 @@ assert.equal(trayGestureAction(3, 4), 'rotate', '짧게 누르면 회전해야 �
 assert.equal(trayGestureAction(45, 4), 'move', '좌우로 움직였다 놓으면 위치만 바뀌어야 합니다.');
 assert.equal(trayGestureAction(18, TRAY_DROP_DRAG - 1), 'move', '낙하 거리 전에는 떨어지면 안 됩니다.');
 assert.equal(trayGestureAction(18, TRAY_DROP_DRAG), 'drop', '아래로 충분히 끌면 낙하해야 합니다.');
-assert.equal(trayTurnReady(10, 0, 0), false, '움직임이 남아 있으면 시간이 지나도 차례를 넘기면 안 됩니다.');
-assert.equal(trayTurnReady(1.59, 1, 0), false, '안전해 보여도 최소 관찰 시간 전에는 기다려야 합니다.');
-assert.equal(trayTurnReady(1.6, 0.45, 0), true, '안정된 일반 배치는 차례를 넘겨야 합니다.');
-assert.equal(trayTurnReady(2.9, 1, 0.3), false, '위험하게 기운 쟁반은 더 오래 관찰해야 합니다.');
-assert.equal(trayTurnReady(3, 0.9, 0.3), true, '위험한 상태도 충분히 멈춘 뒤에는 진행할 수 있어야 합니다.');
+assert.equal(trayTurnReady(10, 0), false, '움직임이 남아 있으면 시간이 지나도 차례를 넘기면 안 됩니다.');
+assert.equal(trayTurnReady(1.49, 1), false, '최소 관찰 시간 전에는 차례를 넘기면 안 됩니다.');
+assert.equal(trayTurnReady(1.5, 0.49), false, '충분히 멈추기 전에는 차례를 넘기면 안 됩니다.');
+assert.equal(trayTurnReady(1.5, 0.5), true, '고정 바닥에서 충분히 멈춘 뒤에만 차례를 넘겨야 합니다.');
 
 function advance(engine: Awaited<ReturnType<typeof createTrayEngine>>, frames = 900) {
   let stable = 0;
@@ -50,14 +49,23 @@ for (const kind of kinds) {
   advance(engine);
   assert.equal(engine.pieces.length, 1);
   assert.equal(engine.failed(), false, `${TRAY_ITEMS[kind].name}을 중앙에 놓았을 때 바로 무너지면 안 됩니다.`);
-  assert.ok(Math.abs(engine.trayAngle) < 0.3, '중앙 배치는 쟁반의 균형을 유지해야 합니다.');
   engine.dispose();
 }
 
-const falling = await createTrayEngine();
-falling.drop('macaron', TRAY_X_LIMIT, 0);
-advance(falling, 1200);
-assert.equal(falling.failed(), true, '가장자리에 둔 둥근 물체는 결국 떨어져야 합니다.');
-falling.dispose();
+const stableStack = await createTrayEngine();
+stableStack.drop('cake', 0, 0);
+advance(stableStack);
+stableStack.drop('cake', 0, 0);
+advance(stableStack);
+assert.equal(stableStack.failed(), false, '무게중심이 맞는 중앙 쌓기는 유지되어야 합니다.');
+stableStack.dispose();
+
+const collapsedStack = await createTrayEngine();
+collapsedStack.drop('cake', 0, 0);
+advance(collapsedStack);
+collapsedStack.drop('tumbler', 1.05, 0);
+advance(collapsedStack, 1200);
+assert.equal(collapsedStack.failed(), true, '무게중심이 받침을 벗어난 물건은 넘어져 바닥에 닿아야 합니다.');
+collapsedStack.dispose();
 
 console.log('아슬아슬 트레이의 물체 구성, 차례, 실제 낙하 물리 검사 통과');

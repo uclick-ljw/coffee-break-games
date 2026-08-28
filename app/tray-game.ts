@@ -3,7 +3,7 @@ import RAPIER, { type RigidBody, type World } from '@dimforge/rapier3d-determini
 export const TRAY_WIDTH = 420;
 export const TRAY_HEIGHT = 440;
 export const TRAY_SCALE = 53;
-export const TRAY_CENTER_Y = -1.35;
+export const TRAY_BASE_Y = -2.35;
 export const TRAY_HALF_WIDTH = 3.45;
 export const TRAY_DROP_Y = 3.05;
 export const TRAY_X_LIMIT = 3.15;
@@ -113,10 +113,8 @@ export function clampTrayX(value: number) {
   return Math.max(-TRAY_X_LIMIT, Math.min(TRAY_X_LIMIT, value));
 }
 
-export function trayTurnReady(observedSeconds: number, stableSeconds: number, trayAngle: number) {
-  const precarious = Math.abs(trayAngle) > 0.24;
-  return observedSeconds >= (precarious ? 3 : 1.6)
-    && stableSeconds >= (precarious ? 0.9 : 0.45);
+export function trayTurnReady(observedSeconds: number, stableSeconds: number) {
+  return observedSeconds >= 1.5 && stableSeconds >= 0.5;
 }
 
 export function trayGestureAction(deltaX: number, deltaY: number) {
@@ -137,7 +135,6 @@ type PieceBody = { id: number; kind: TrayItemKind; body: RigidBody };
 
 export type TrayEngine = {
   readonly pieces: TrayPiece[];
-  readonly trayAngle: number;
   drop: (kind: TrayItemKind, x: number, angle: number) => number;
   step: (seconds: number) => void;
   settled: () => boolean;
@@ -161,27 +158,34 @@ function addItemCollider(world: World, body: RigidBody, part: TrayPart, density:
   world.createCollider(desc, body);
 }
 
+function lowestPoint(kind: TrayItemKind, body: RigidBody) {
+  const angle = angleOf(body);
+  const sin = Math.sin(angle);
+  const cos = Math.cos(angle);
+  const bodyY = body.translation().y;
+  return Math.min(...TRAY_ITEMS[kind].parts.map((part) => {
+    const centerY = bodyY + part.x * sin + part.y * cos;
+    const extentY = part.kind === 'ball'
+      ? part.radius
+      : Math.abs(part.halfWidth * sin) + Math.abs(part.halfHeight * cos);
+    return centerY - extentY;
+  }));
+}
+
 export async function createTrayEngine(): Promise<TrayEngine> {
   await readyRapier();
   const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
   world.timestep = STEP;
   world.numSolverIterations = 10;
 
-  const tray = world.createRigidBody(
-    RAPIER.RigidBodyDesc.dynamic()
-      .setTranslation(0, TRAY_CENTER_Y, 0)
-      .setAngularDamping(1.25)
-      .setLinearDamping(2)
-      .setAdditionalMass(3.2),
+  const base = world.createRigidBody(
+    RAPIER.RigidBodyDesc.fixed().setTranslation(0, TRAY_BASE_Y, 0),
   );
-  tray.setEnabledTranslations(false, false, false, true);
-  tray.setEnabledRotations(false, false, true, true);
   world.createCollider(
     RAPIER.ColliderDesc.cuboid(TRAY_HALF_WIDTH, 0.11, 0.36)
-      .setDensity(1.1)
-      .setFriction(0.78)
+      .setFriction(0.82)
       .setRestitution(0.01),
-    tray,
+    base,
   );
 
   const bodies: PieceBody[] = [];
@@ -198,9 +202,6 @@ export async function createTrayEngine(): Promise<TrayEngine> {
   const engine: TrayEngine = {
     get pieces() {
       return snapshot();
-    },
-    get trayAngle() {
-      return angleOf(tray);
     },
     drop(kind, x, angle) {
       const id = nextId;
@@ -222,25 +223,23 @@ export async function createTrayEngine(): Promise<TrayEngine> {
     step(seconds) {
       accumulator += Math.min(0.06, Math.max(0, seconds));
       while (accumulator >= STEP) {
-        const trayAngle = angleOf(tray);
-        const trayVelocity = tray.angvel().z;
-        tray.addTorque({ x: 0, y: 0, z: -trayAngle * 7.4 - trayVelocity * 2.25 }, true);
         world.step();
         accumulator -= STEP;
       }
     },
     settled() {
-      if (Math.abs(tray.angvel().z) > 0.018) return false;
       return bodies.every(({ body }) => {
         const linear = body.linvel();
         return Math.hypot(linear.x, linear.y) < 0.03 && Math.abs(body.angvel().z) < 0.03;
       });
     },
     failed() {
-      if (Math.abs(angleOf(tray)) > 0.68) return true;
-      return bodies.some(({ body }) => {
+      const baseTop = TRAY_BASE_Y + 0.11;
+      return bodies.some(({ kind, body }, index) => {
         const position = body.translation();
-        return position.y < -3.45 || Math.abs(position.x) > 4.75;
+        const leftBase = position.y < TRAY_BASE_Y - 0.9 || Math.abs(position.x) > TRAY_HALF_WIDTH + 0.9;
+        const collapsedToBase = index > 0 && lowestPoint(kind, body) <= baseTop + 0.025;
+        return leftBase || collapsedToBase;
       });
     },
     dispose() {
