@@ -5,6 +5,7 @@ import {
   makeTrayQueue,
   TRAY_ITEMS,
   TRAY_DROP_DRAG,
+  TRAY_MAX_ANGLE,
   TRAY_ROTATION_STEP,
   TRAY_X_LIMIT,
   trayNextPlayer,
@@ -49,23 +50,31 @@ for (const kind of kinds) {
   advance(engine);
   assert.equal(engine.pieces.length, 1);
   assert.equal(engine.failed(), false, `${TRAY_ITEMS[kind].name}을 중앙에 놓았을 때 바로 무너지면 안 됩니다.`);
+  assert.ok(Math.abs(engine.trayAngle) <= TRAY_MAX_ANGLE + 0.01, '시소가 관절 제한을 넘어가면 안 됩니다.');
   engine.dispose();
 }
 
-const stableStack = await createTrayEngine();
-stableStack.drop('cake', 0, 0);
-advance(stableStack);
-stableStack.drop('cake', 0, 0);
-advance(stableStack);
-assert.equal(stableStack.failed(), false, '무게중심이 맞는 중앙 쌓기는 유지되어야 합니다.');
-stableStack.dispose();
+const tiltedTray = await createTrayEngine();
+tiltedTray.drop('cake', 2.25, 0);
+advance(tiltedTray, 1200);
+assert.equal(tiltedTray.failed(), false, '한쪽에 놓아 시소가 기울어져도 물건이 판 위에 있으면 살아야 합니다.');
+assert.ok(Math.abs(tiltedTray.trayAngle) > 0.08, '한쪽 무게는 실제 관절을 따라 시소를 기울여야 합니다.');
+assert.ok(Math.abs(tiltedTray.trayAngle) <= TRAY_MAX_ANGLE + 0.01, '시소는 최대 기울기에서 멈춰야 합니다.');
+tiltedTray.dispose();
 
-const collapsedStack = await createTrayEngine();
-collapsedStack.drop('cake', 0, 0);
-advance(collapsedStack);
-collapsedStack.drop('tumbler', 1.05, 0);
-advance(collapsedStack, 1200);
-assert.equal(collapsedStack.failed(), true, '무게중심이 받침을 벗어난 물건은 넘어져 바닥에 닿아야 합니다.');
-collapsedStack.dispose();
+const recoveredTray = await createTrayEngine();
+recoveredTray.drop('cake', 2.25, 0);
+advance(recoveredTray, 1200);
+recoveredTray.drop('cake', -2.25, 0);
+advance(recoveredTray, 1200);
+assert.equal(recoveredTray.failed(), false, '반대편에 물건을 놓아 기울어진 시소를 되살릴 수 있어야 합니다.');
+assert.ok(Math.abs(recoveredTray.trayAngle) < 0.2, '반대편 무게를 더하면 최대 기울기에서 벗어나야 합니다.');
+recoveredTray.dispose();
+
+const falling = await createTrayEngine();
+falling.drop('macaron', TRAY_X_LIMIT, 0);
+advance(falling, 1800);
+assert.equal(falling.failed(), true, '가장자리의 둥근 물건은 기울어진 시소 밖으로 굴러 떨어져야 합니다.');
+falling.dispose();
 
 console.log('아슬아슬 트레이의 물체 구성, 차례, 실제 낙하 물리 검사 통과');

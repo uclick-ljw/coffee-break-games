@@ -6,7 +6,7 @@ import {
   clampTrayX,
   createTrayEngine,
   makeTrayQueue,
-  TRAY_BASE_Y,
+  TRAY_CENTER_Y,
   TRAY_DROP_DRAG,
   TRAY_DROP_Y,
   TRAY_HALF_WIDTH,
@@ -86,7 +86,7 @@ function drawItem(context: CanvasRenderingContext2D, definition: TrayItemDefinit
   context.restore();
 }
 
-function drawTray(canvas: HTMLCanvasElement, pieces: TrayPiece[], ghost: { kind: TrayItemKind; x: number; y: number; angle: number; held: boolean } | null) {
+function drawTray(canvas: HTMLCanvasElement, engine: TrayEngine, pieces: TrayPiece[], ghost: { kind: TrayItemKind; x: number; y: number; angle: number; held: boolean } | null) {
   const ratio = Math.min(2, window.devicePixelRatio || 1);
   if (canvas.width !== TRAY_WIDTH * ratio || canvas.height !== TRAY_HEIGHT * ratio) {
     canvas.width = TRAY_WIDTH * ratio;
@@ -104,11 +104,25 @@ function drawTray(canvas: HTMLCanvasElement, pieces: TrayPiece[], ghost: { kind:
   context.fillRect(0, 15, TRAY_WIDTH, 410);
 
   context.save();
-  context.translate(worldX(0), worldY(TRAY_BASE_Y));
-  const trayWidth = TRAY_HALF_WIDTH * 2 * TRAY_SCALE;
-  context.fillStyle = '#6f472f2b';
-  roundedBox(context, -trayWidth / 2 + 5, 12, trayWidth - 10, 13, 7);
+  context.translate(worldX(0), worldY(TRAY_CENTER_Y));
+  context.fillStyle = '#755642';
+  context.beginPath();
+  context.moveTo(-32, 58);
+  context.lineTo(32, 58);
+  context.lineTo(8, 7);
+  context.lineTo(-8, 7);
+  context.closePath();
   context.fill();
+  context.fillStyle = '#36281f';
+  context.beginPath();
+  context.arc(0, 0, 8, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+
+  context.save();
+  context.translate(worldX(0), worldY(TRAY_CENTER_Y));
+  context.rotate(-engine.trayAngle);
+  const trayWidth = TRAY_HALF_WIDTH * 2 * TRAY_SCALE;
   const trayGradient = context.createLinearGradient(0, -9, 0, 15);
   trayGradient.addColorStop(0, '#f7d89f');
   trayGradient.addColorStop(1, '#a96f40');
@@ -236,7 +250,7 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
           angle,
           held: holding,
         };
-        drawTray(canvasRef.current, engine.pieces, ghost);
+        drawTray(canvasRef.current, engine, engine.pieces, ghost);
       }
       frameId = requestAnimationFrame(frame);
     };
@@ -308,9 +322,9 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
         </header>
         <section className="tray-setup">
           <div className="tray-hero-art" aria-hidden="true"><span>☕</span><i>🍰</i><b>🥐</b></div>
-          <p className="tray-kicker">무너지면 바로 결제!</p>
+          <p className="tray-kicker">떨어뜨리면 바로 결제!</p>
           <h2>카페 물건을 올리고<br />균형을 버티세요</h2>
-          <p className="tray-intro">고정된 바닥 위에 위치와 각도를 정해 쌓습니다.<br />무게중심을 잃고 무너뜨린 사람이 집니다.</p>
+          <p className="tray-intro">기울어지는 시소 위에 위치와 각도를 정해 놓습니다.<br />물건을 판 밖으로 떨어뜨린 사람이 집니다.</p>
           <label className="tray-player-select"><span>참여 인원</span><select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="tray-primary" onClick={startGame}>게임 시작</button>
           <div className="tray-rules"><span>↔ 잡고 이동</span><span>↻ 탭해서 회전</span><span>↓ 아래로 놓기</span></div>
@@ -398,7 +412,7 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
         <div className="tray-result-backdrop">
           <section className="tray-result-card">
             <span aria-hidden="true">💥</span>
-            <p>쌓기가 무너졌습니다</p>
+            <p>물건이 시소 밖으로 떨어졌습니다</p>
             <h2>{PLAYER_NAMES[player]} 패배!</h2>
             <small>오늘 커피는 이 사람이 삽니다.</small>
             <button onClick={restart}>한 판 더</button>

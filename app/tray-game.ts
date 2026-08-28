@@ -1,10 +1,11 @@
-import RAPIER, { type RigidBody, type World } from '@dimforge/rapier3d-deterministic-compat';
+import RAPIER, { type RevoluteImpulseJoint, type RigidBody, type World } from '@dimforge/rapier3d-deterministic-compat';
 
 export const TRAY_WIDTH = 420;
 export const TRAY_HEIGHT = 440;
 export const TRAY_SCALE = 53;
-export const TRAY_BASE_Y = -2.35;
+export const TRAY_CENTER_Y = -1.55;
 export const TRAY_HALF_WIDTH = 3.45;
+export const TRAY_MAX_ANGLE = 0.28;
 export const TRAY_DROP_Y = 3.05;
 export const TRAY_X_LIMIT = 3.15;
 export const TRAY_ROTATION_STEP = Math.PI / 6;
@@ -135,6 +136,7 @@ type PieceBody = { id: number; kind: TrayItemKind; body: RigidBody };
 
 export type TrayEngine = {
   readonly pieces: TrayPiece[];
+  readonly trayAngle: number;
   drop: (kind: TrayItemKind, x: number, angle: number) => number;
   step: (seconds: number) => void;
   settled: () => boolean;
@@ -158,35 +160,39 @@ function addItemCollider(world: World, body: RigidBody, part: TrayPart, density:
   world.createCollider(desc, body);
 }
 
-function lowestPoint(kind: TrayItemKind, body: RigidBody) {
-  const angle = angleOf(body);
-  const sin = Math.sin(angle);
-  const cos = Math.cos(angle);
-  const bodyY = body.translation().y;
-  return Math.min(...TRAY_ITEMS[kind].parts.map((part) => {
-    const centerY = bodyY + part.x * sin + part.y * cos;
-    const extentY = part.kind === 'ball'
-      ? part.radius
-      : Math.abs(part.halfWidth * sin) + Math.abs(part.halfHeight * cos);
-    return centerY - extentY;
-  }));
-}
-
 export async function createTrayEngine(): Promise<TrayEngine> {
   await readyRapier();
   const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
   world.timestep = STEP;
   world.numSolverIterations = 10;
 
-  const base = world.createRigidBody(
-    RAPIER.RigidBodyDesc.fixed().setTranslation(0, TRAY_BASE_Y, 0),
+  const pivot = world.createRigidBody(
+    RAPIER.RigidBodyDesc.fixed().setTranslation(0, TRAY_CENTER_Y, 0),
+  );
+  const tray = world.createRigidBody(
+    RAPIER.RigidBodyDesc.dynamic()
+      .setTranslation(0, TRAY_CENTER_Y, 0)
+      .setAngularDamping(2.4)
+      .setLinearDamping(2)
+      .setAdditionalMass(5.2),
   );
   world.createCollider(
     RAPIER.ColliderDesc.cuboid(TRAY_HALF_WIDTH, 0.11, 0.36)
       .setFriction(0.82)
       .setRestitution(0.01),
-    base,
+    tray,
   );
+  const hinge = world.createImpulseJoint(
+    RAPIER.JointData.revolute(
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 0, z: 1 },
+    ),
+    pivot,
+    tray,
+    true,
+  ) as RevoluteImpulseJoint;
+  hinge.setLimits(-TRAY_MAX_ANGLE, TRAY_MAX_ANGLE);
 
   const bodies: PieceBody[] = [];
   let nextId = 1;
@@ -202,6 +208,9 @@ export async function createTrayEngine(): Promise<TrayEngine> {
   const engine: TrayEngine = {
     get pieces() {
       return snapshot();
+    },
+    get trayAngle() {
+      return angleOf(tray);
     },
     drop(kind, x, angle) {
       const id = nextId;
@@ -228,18 +237,23 @@ export async function createTrayEngine(): Promise<TrayEngine> {
       }
     },
     settled() {
+      if (Math.abs(tray.angvel().z) > 0.025) return false;
       return bodies.every(({ body }) => {
         const linear = body.linvel();
         return Math.hypot(linear.x, linear.y) < 0.03 && Math.abs(body.angvel().z) < 0.03;
       });
     },
     failed() {
-      const baseTop = TRAY_BASE_Y + 0.11;
-      return bodies.some(({ kind, body }, index) => {
+      const trayAngle = angleOf(tray);
+      const sin = Math.sin(trayAngle);
+      const cos = Math.cos(trayAngle);
+      return bodies.some(({ body }) => {
         const position = body.translation();
-        const leftBase = position.y < TRAY_BASE_Y - 0.9 || Math.abs(position.x) > TRAY_HALF_WIDTH + 0.9;
-        const collapsedToBase = index > 0 && lowestPoint(kind, body) <= baseTop + 0.025;
-        return leftBase || collapsedToBase;
+        const dx = position.x;
+        const dy = position.y - TRAY_CENTER_Y;
+        const localX = dx * cos + dy * sin;
+        const localY = -dx * sin + dy * cos;
+        return Math.abs(localX) > TRAY_HALF_WIDTH + 0.9 || localY < -1.05;
       });
     },
     dispose() {
