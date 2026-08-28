@@ -112,6 +112,12 @@ export function clampTrayX(value: number) {
   return Math.max(-TRAY_X_LIMIT, Math.min(TRAY_X_LIMIT, value));
 }
 
+export function trayTurnReady(observedSeconds: number, stableSeconds: number, trayAngle: number) {
+  const precarious = Math.abs(trayAngle) > 0.24;
+  return observedSeconds >= (precarious ? 3 : 1.6)
+    && stableSeconds >= (precarious ? 0.9 : 0.45);
+}
+
 export type TrayPiece = {
   id: number;
   kind: TrayItemKind;
@@ -129,7 +135,6 @@ export type TrayEngine = {
   step: (seconds: number) => void;
   settled: () => boolean;
   failed: () => boolean;
-  forceSleep: () => void;
   dispose: () => void;
 };
 
@@ -218,10 +223,10 @@ export async function createTrayEngine(): Promise<TrayEngine> {
       }
     },
     settled() {
-      if (Math.abs(tray.angvel().z) > 0.035) return false;
+      if (Math.abs(tray.angvel().z) > 0.018) return false;
       return bodies.every(({ body }) => {
         const linear = body.linvel();
-        return Math.hypot(linear.x, linear.y) < 0.065 && Math.abs(body.angvel().z) < 0.055;
+        return Math.hypot(linear.x, linear.y) < 0.03 && Math.abs(body.angvel().z) < 0.03;
       });
     },
     failed() {
@@ -230,10 +235,6 @@ export async function createTrayEngine(): Promise<TrayEngine> {
         const position = body.translation();
         return position.y < -3.45 || Math.abs(position.x) > 4.75;
       });
-    },
-    forceSleep() {
-      tray.sleep();
-      for (const { body } of bodies) body.sleep();
     },
     dispose() {
       world.free();

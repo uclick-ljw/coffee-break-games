@@ -7,6 +7,7 @@ import {
   TRAY_ROTATION_STEP,
   TRAY_X_LIMIT,
   trayNextPlayer,
+  trayTurnReady,
   type TrayItemKind,
 } from '../app/tray-game.ts';
 
@@ -22,6 +23,11 @@ assert.equal(trayNextPlayer(1, 2), 0);
 assert.equal(trayNextPlayer(4, 6), 5);
 assert.equal(trayNextPlayer(5, 6), 0);
 assert.equal(TRAY_ROTATION_STEP, Math.PI / 6);
+assert.equal(trayTurnReady(10, 0, 0), false, '움직임이 남아 있으면 시간이 지나도 차례를 넘기면 안 됩니다.');
+assert.equal(trayTurnReady(1.59, 1, 0), false, '안전해 보여도 최소 관찰 시간 전에는 기다려야 합니다.');
+assert.equal(trayTurnReady(1.6, 0.45, 0), true, '안정된 일반 배치는 차례를 넘겨야 합니다.');
+assert.equal(trayTurnReady(2.9, 1, 0.3), false, '위험하게 기운 쟁반은 더 오래 관찰해야 합니다.');
+assert.equal(trayTurnReady(3, 0.9, 0.3), true, '위험한 상태도 충분히 멈춘 뒤에는 진행할 수 있어야 합니다.');
 
 function advance(engine: Awaited<ReturnType<typeof createTrayEngine>>, frames = 900) {
   let stable = 0;

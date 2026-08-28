@@ -15,6 +15,7 @@ import {
   TRAY_SCALE,
   TRAY_WIDTH,
   trayNextPlayer,
+  trayTurnReady,
   type TrayEngine,
   type TrayItemDefinition,
   type TrayItemKind,
@@ -160,8 +161,8 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
   const playersRef = useRef(2);
   const queueIndexRef = useRef(0);
   const busyRef = useRef(false);
-  const stableFramesRef = useRef(0);
-  const motionFramesRef = useRef(0);
+  const stableSecondsRef = useRef(0);
+  const motionSecondsRef = useRef(0);
   const draggingRef = useRef(false);
 
   const currentKind = queue[queueIndex] ?? 'cake';
@@ -209,15 +210,14 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
       previous = now;
       const engine = engineRef.current;
       if (engine && busyRef.current) {
-        engine.step(elapsed * (motionFramesRef.current > 34 ? 1.8 : 1));
-        motionFramesRef.current += 1;
-        stableFramesRef.current = engine.settled() ? stableFramesRef.current + 1 : 0;
+        engine.step(elapsed);
+        motionSecondsRef.current += elapsed;
+        stableSecondsRef.current = engine.settled() ? stableSecondsRef.current + elapsed : 0;
         if (engine.failed()) {
           busyRef.current = false;
           setBusy(false);
           setPhase('lost');
-        } else if (stableFramesRef.current >= 8 || motionFramesRef.current >= 150) {
-          if (motionFramesRef.current >= 150) engine.forceSleep();
+        } else if (trayTurnReady(motionSecondsRef.current, stableSecondsRef.current, engine.trayAngle)) {
           busyRef.current = false;
           setBusy(false);
           const nextPlayer = trayNextPlayer(playerRef.current, playersRef.current);
@@ -256,8 +256,8 @@ export default function TrayGame({ onExit }: { onExit: () => void }) {
     const engine = engineRef.current;
     if (!engine || busyRef.current || loading || phase !== 'playing') return;
     engine.drop(currentKind, x, angle);
-    stableFramesRef.current = 0;
-    motionFramesRef.current = 0;
+    stableSecondsRef.current = 0;
+    motionSecondsRef.current = 0;
     busyRef.current = true;
     setBusy(true);
   }
