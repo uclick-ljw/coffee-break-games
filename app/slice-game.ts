@@ -12,8 +12,14 @@ export type SliceShape = {
 export type SliceChallenge = SliceShape & {
   rotation: number;
   mirrored: boolean;
+  viewSkew: number;
+  viewTilt: number;
+  viewPerspective: number;
+  depth: number;
   transformed: SlicePoint[];
 };
+
+type SliceView = Pick<SliceChallenge, 'viewSkew' | 'viewTilt' | 'viewPerspective'>;
 
 export type SliceOutcome = {
   player: number;
@@ -99,6 +105,10 @@ export function makeSliceChallenges(players: number, seed: number): SliceChallen
     const shape = shuffled[index % shuffled.length];
     const rotation = (next() - .5) * .65;
     const mirrored = next() > .5;
+    const viewSkew = (next() > .5 ? 1 : -1) * (.12 + next() * .1);
+    const viewTilt = .56 + next() * .1;
+    const viewPerspective = .38 + next() * .14;
+    const depth = 24 + next() * 10;
     const transformed = shape.points.map((point) => {
       const x = (mirrored ? 1 - point.x : point.x) - .5;
       const y = point.y - .5;
@@ -107,8 +117,25 @@ export function makeSliceChallenges(players: number, seed: number): SliceChallen
         y: .5 + x * Math.sin(rotation) + y * Math.cos(rotation),
       };
     });
-    return { ...shape, rotation, mirrored, transformed };
+    return { ...shape, rotation, mirrored, viewSkew, viewTilt, viewPerspective, depth, transformed };
   });
+}
+
+export function projectSlicePoint(point: SlicePoint, view: SliceView): SlicePoint {
+  const x = point.x - .5;
+  const y = point.y - .5;
+  return {
+    x: .5 + x * (1 + y * view.viewPerspective) + y * view.viewSkew,
+    y: .5 + y * view.viewTilt,
+  };
+}
+
+export function unprojectSlicePoint(point: SlicePoint, view: SliceView): SlicePoint {
+  const y = (point.y - .5) / view.viewTilt;
+  return {
+    x: .5 + ((point.x - .5) - y * view.viewSkew) / (1 + y * view.viewPerspective),
+    y: .5 + y,
+  };
 }
 
 export function scoreSlice(player: number, challenge: SliceChallenge, start: SlicePoint, end: SlicePoint): SliceOutcome | null {
