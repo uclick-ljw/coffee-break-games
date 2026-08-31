@@ -45,8 +45,10 @@ button { font: inherit; }
 .tray-card { background: radial-gradient(circle at 79% 18%, #fff8e9 0 3px, transparent 4px), linear-gradient(155deg, #fffaf1, #edc991); }
 .dodge-card { background: radial-gradient(circle at 82% 14%, #fff 0 3px, transparent 4px), linear-gradient(155deg, #fffbe9, #bdebdc); }
 .lander-card { background: radial-gradient(circle at 82% 14%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #f9f7ff, #cbd4ff); }
+.cup-card { background: radial-gradient(circle at 82% 14%, #fff8e5 0 3px, transparent 4px), linear-gradient(155deg, #fff8e9, #f0bfa4); }
 .dodge-card-art { width: 78px; height: 78px; border: 4px solid #fff; border-radius: 50%; background: url('/dodge-animals.jpg') 0 0 / 400% 200%; box-shadow: 0 8px 0 #4ba685, 0 15px 24px #256c5b35; }
 .lander-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 25px; background: #3f4f99; font-size: 47px; box-shadow: 0 8px 0 #25326f, 0 16px 26px #26366b3b; }
+.cup-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff8e8; border-radius: 24px 24px 31px 31px; background: #c56859; font-size: 47px; box-shadow: 0 8px 0 #88463d, 0 16px 26px #78413538; }
 .tray-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #a96f40; border-radius: 50% 50% 43% 43%; background: #fff9ed; box-shadow: 0 9px 0 #a96f40, 0 17px 25px #7d4c2738; }
 .circle-card-art { width: 76px; height: 76px; display: grid; place-items: center; border: 2px solid #9277e8; border-radius: 25px; background: #7959d916; color: #7959d9; font-size: 48px; line-height: 1; box-shadow: 0 0 0 7px #7959d10, 0 12px 24px #4a32933d; }
 .game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
@@ -221,6 +223,87 @@ button { font: inherit; }
   .lander-hero { width: 130px; height: 116px; transform: scale(.82); }
   .lander-kicker { margin-top: 5px; }
   .lander-intro { margin-block: 8px 12px; }
+}
+
+.cup-shell {
+  min-height: 100svh;
+  max-width: 620px;
+  margin: auto;
+  padding: 20px 20px 26px;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 14% 11%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #fff8e9, #f2d1b9 68%, #dba989);
+  color: #4b2b2d;
+}
+.cup-shell button, .cup-shell select { font: inherit; }
+.cup-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cup-topbar p { margin: 0 0 3px; color: #bd6658; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+.cup-topbar h1 { margin: 0; font-size: clamp(27px, 7vw, 38px); letter-spacing: -.06em; }
+.cup-topbar button, .cup-secondary { padding: 9px 13px; border: 1px solid #82483d35; border-radius: 99px; background: #fff9ec9e; color: #7c4b43; font-size: 11px; font-weight: 850; cursor: pointer; }
+.cup-setup { min-height: calc(100svh - 78px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.cup-hero { width: 166px; height: 150px; position: relative; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, #fff8dc 0 37%, #e69b7b3d 38% 56%, transparent 57%); }
+.cup-hero > span { font-size: 112px; filter: drop-shadow(0 17px 15px #79423638); transform: rotate(8deg); }
+.cup-hero .dodge-animal { position: absolute; width: 48px; height: 48px; border-width: 3px; transform: translate(0, 9px); box-shadow: none; }
+.cup-kicker { margin: 12px 0 6px; color: #be6859; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.cup-setup h2 { margin: 0; font-size: clamp(29px, 8vw, 42px); line-height: 1.16; letter-spacing: -.065em; }
+.cup-intro { margin: 14px 0 20px; color: #7c625b; font-size: 12px; line-height: 1.7; }
+.cup-player-select { width: min(100%, 430px); margin-bottom: 11px; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #9e5d4f38; border-radius: 16px; background: #fffaf0a8; color: #765149; font-size: 12px; font-weight: 900; }
+.cup-player-select select { padding: 8px 30px 8px 13px; border: 0; border-radius: 99px; background: #7c403d; color: white; font-weight: 900; }
+.cup-primary { width: min(100%, 430px); padding: 16px; border: 0; border-radius: 16px; background: #7c403d; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 7px 0 #d07b68, 0 16px 30px #7a40362b; transition: transform .1s, box-shadow .1s; }
+.cup-primary:active { transform: translateY(5px); box-shadow: 0 2px 0 #d07b68; }
+.cup-rules { margin-top: 20px; display: flex; gap: 14px; color: #84635a; font-size: 9px; font-weight: 850; }
+.cup-play { padding-top: 12px; }
+.cup-status { margin-bottom: 7px; padding: 7px 11px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; border: 1px solid #93584a32; border-radius: 17px; background: #fffaf0c4; box-shadow: 0 9px 22px #77433316; }
+.cup-status .dodge-animal { width: 43px; height: 43px; border-color: var(--cup-color); box-shadow: 0 0 0 2px #fff; }
+.cup-status > div { min-width: 0; display: grid; gap: 1px; }
+.cup-status small { color: #9a786d; font-size: 8px; font-weight: 850; }
+.cup-status strong { overflow: hidden; font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.cup-status > b { color: #7c403d; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums; }
+.cup-status > b small { display: block; }
+.cup-attempts { width: min(100%, 430px); margin: 0 auto 7px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.cup-attempts span { padding: 6px 8px; border: 1px solid #a36b5c38; border-radius: 99px; background: #fff8eca0; color: #9b756a; font-size: 8px; font-weight: 900; text-align: center; }
+.cup-attempts span.active { border-color: #7c403d; background: #7c403d; color: white; }
+.cup-board { width: min(100%, 430px); aspect-ratio: 390 / 500; margin: auto; position: relative; overflow: hidden; border: 2px solid #8c5146; border-radius: 27px; background: #f8dec7; box-shadow: 0 19px 38px #703e3235; }
+.cup-board canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; user-select: none; -webkit-user-select: none; }
+.cup-board canvas:focus-visible { box-shadow: inset 0 0 0 4px #fff0a7; }
+.cup-board.flying canvas { cursor: default; }
+.cup-ready-hint { position: absolute; left: 50%; top: 29px; width: 250px; padding: 12px 14px; display: grid; gap: 4px; border: 1px solid #fff8e8; border-radius: 16px; background: #6e393bd9; color: white; text-align: center; transform: translateX(-50%); pointer-events: none; box-shadow: 0 8px 22px #5d322b36; }
+.cup-ready-hint strong { font-size: 12px; }.cup-ready-hint span { color: #f7d8c5; font-size: 8px; font-weight: 750; line-height: 1.45; }
+.cup-flying-label { position: absolute; left: 50%; top: 14px; padding: 7px 11px; border-radius: 99px; background: #6e393bc9; color: white; font-size: 8px; font-weight: 900; transform: translateX(-50%); pointer-events: none; }
+.cup-help { margin: 7px 0 0; color: #84665d; text-align: center; font-size: 8px; font-weight: 800; }
+.cup-result, .cup-final { min-height: calc(100svh - 84px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.cup-result > .dodge-animal { width: 124px; height: 124px; border-width: 6px; box-shadow: 0 11px 0 #d27a66, 0 26px 48px #6e3a3035; }
+.cup-result.upright > .dodge-animal { box-shadow: 0 11px 0 #53b48f, 0 26px 48px #246b5135; }
+.cup-result > p, .cup-payer p { margin: 27px 0 2px; color: #bd6858; font-size: 10px; font-weight: 900; letter-spacing: .13em; }
+.cup-result h2 { margin: 0; font-size: clamp(53px, 15vw, 76px); letter-spacing: -.07em; }
+.cup-result > strong { color: #84675f; font-size: 12px; }
+.cup-result > div { width: min(100%, 430px); margin: 22px 0 25px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.cup-result > div span { padding: 10px 4px; border: 1px solid #9b5e5030; border-radius: 13px; background: #fff9ee9e; color: #9a766b; font-size: 8px; }
+.cup-result > div b { display: block; margin-top: 3px; color: #6f3b3a; font-size: 14px; }
+.cup-final { justify-content: flex-start; padding: 29px 0 16px; }
+.cup-payer { width: min(100%, 430px); padding: 19px; display: grid; justify-items: center; border: 1px solid #d97c673d; border-radius: 25px; background: linear-gradient(145deg, #fff7e9, #f7c4b3); box-shadow: 0 18px 38px #7f443721; }
+.cup-payer .dodge-animal { width: 87px; height: 87px; border-width: 5px; box-shadow: 0 8px 0 #d77965, 0 18px 30px #7b41352e; }
+.cup-payer p { margin-top: 15px; color: #be6555; }
+.cup-payer h2 { margin: 0; font-size: 33px; letter-spacing: -.05em; }
+.cup-payer strong { color: #a34e45; }
+.cup-ranking { width: min(100%, 430px); margin: 12px 0 15px; padding: 0; display: grid; gap: 7px; list-style: none; }
+.cup-ranking li { padding: 7px 10px; display: grid; grid-template-columns: 22px auto 1fr auto; align-items: center; gap: 8px; border: 1px solid #995c4d26; border-radius: 14px; background: #fffaf0aa; text-align: left; }
+.cup-ranking li > span { color: #b45f51; font-size: 12px; font-weight: 900; text-align: center; }
+.cup-ranking .dodge-animal { width: 38px; height: 38px; border-width: 2px; box-shadow: none; }
+.cup-ranking li > div { min-width: 0; display: grid; }
+.cup-ranking li strong { font-size: 12px; }.cup-ranking li small { color: #9c7a6f; font-size: 8px; }
+.cup-ranking li > b { font-size: 12px; font-variant-numeric: tabular-nums; }
+.cup-final > .cup-secondary { margin-top: 10px; background: transparent; text-decoration: underline; }
+
+@media (max-height: 720px) {
+  .cup-shell { padding-top: 12px; }
+  .cup-topbar h1 { font-size: 25px; }
+  .cup-status { margin-bottom: 5px; padding-block: 4px; }
+  .cup-attempts { margin-bottom: 5px; }
+  .cup-board { width: min(100%, 350px); }
+  .cup-help { margin-top: 4px; }
+  .cup-hero { width: 130px; height: 116px; transform: scale(.82); }
+  .cup-kicker { margin-top: 5px; }
+  .cup-intro { margin-block: 8px 12px; }
 }
 
 .tray-shell {
