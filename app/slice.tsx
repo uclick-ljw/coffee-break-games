@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { DODGE_ANIMALS, assignDodgeAnimals, type DodgeAnimal } from './dodge-game';
 import { PLAYER_NAMES } from './game';
-import { makeSliceChallenges, projectSlicePoint, rankSlices, scoreSlice, splitPolygon, unprojectSlicePoint, type SliceChallenge, type SliceOutcome, type SlicePoint } from './slice-game';
+import { makeSliceChallenges, projectSlicePoint, rankSlices, scoreSlice, splitPolygon, transformSlicePoint, unprojectSlicePoint, type SliceChallenge, type SliceOutcome, type SlicePoint } from './slice-game';
 
 type Phase = 'setup' | 'ready' | 'cutting' | 'result' | 'final';
 type CutLine = { start: SlicePoint; end: SlicePoint };
@@ -40,7 +40,7 @@ function polygonPath(context: CanvasRenderingContext2D, challenge: SliceChalleng
 }
 
 function drawTexture(context: CanvasRenderingContext2D, challenge: SliceChallenge, offset: SlicePoint) {
-  const at = (x: number, y: number) => canvasPoint({ x, y }, challenge, offset);
+  const at = (x: number, y: number) => canvasPoint(transformSlicePoint({ x, y }, challenge), challenge, offset);
   const stroke = (from: SlicePoint, to: SlicePoint, width = 2) => {
     const a = at(from.x, from.y);
     const b = at(to.x, to.y);
@@ -55,22 +55,30 @@ function drawTexture(context: CanvasRenderingContext2D, challenge: SliceChalleng
   context.strokeStyle = challenge.accent;
   context.fillStyle = challenge.accent;
 
-  if (challenge.id === 'leaf') {
+  if (challenge.id === 'watermelon') {
+    for (let index = 0; index < 5; index += 1) {
+      const top = at(.25 + index * .12, .17);
+      const middle = at(.2 + index * .15, .5);
+      const bottom = at(.28 + index * .11, .83);
+      context.beginPath();
+      context.moveTo(top.x, top.y);
+      context.quadraticCurveTo(middle.x, middle.y, bottom.x, bottom.y);
+      context.lineWidth = 7 - Math.abs(index - 2);
+      context.stroke();
+    }
+  } else if (challenge.id === 'leaf') {
     stroke({ x: .18, y: .67 }, { x: .76, y: .26 }, 4);
     [[.31, .57, .27, .4], [.42, .5, .48, .3], [.53, .42, .66, .34], [.61, .36, .68, .52]].forEach(([x1, y1, x2, y2]) => stroke({ x: x1, y: y1 }, { x: x2, y: y2 }));
   } else if (challenge.id === 'dumpling') {
     for (let index = 0; index < 7; index += 1) stroke({ x: .5, y: .24 }, { x: .23 + index * .09, y: .59 }, 3);
   } else {
-    const marks = challenge.id === 'watermelon'
-      ? [[.35, .55], [.48, .38], [.57, .6], [.67, .5], [.44, .7]]
-      : challenge.id === 'cheese'
+    const marks = challenge.id === 'cheese'
         ? [[.3, .42], [.57, .31], [.67, .62], [.4, .69]]
         : [[.28, .42], [.42, .28], [.58, .55], [.7, .38], [.4, .67], [.62, .72]];
     for (const [x, y] of marks) {
       const point = at(x, y);
       context.beginPath();
-      if (challenge.id === 'watermelon') context.ellipse(point.x, point.y, 3, 7, -.35, 0, Math.PI * 2);
-      else context.ellipse(point.x, point.y, challenge.id === 'cheese' ? 8 : 3, challenge.id === 'cheese' ? 5 : 2, -.2, 0, Math.PI * 2);
+      context.ellipse(point.x, point.y, challenge.id === 'cheese' ? 8 : 3, challenge.id === 'cheese' ? 5 : 2, -.2, 0, Math.PI * 2);
       context.fill();
     }
   }
@@ -78,60 +86,42 @@ function drawTexture(context: CanvasRenderingContext2D, challenge: SliceChalleng
 }
 
 function drawPiece(context: CanvasRenderingContext2D, challenge: SliceChallenge, points: SlicePoint[], offset: SlicePoint) {
-  const top = points.map((point) => canvasPoint(point, challenge, offset));
-  const depth = {
-    x: Math.sign(challenge.viewSkew) * challenge.depth * .22,
-    y: challenge.depth,
-  };
-
   context.save();
-  context.shadowColor = '#3a241c66';
-  context.shadowBlur = 25;
-  context.shadowOffsetY = 9;
-  polygonPath(context, challenge, points, { x: offset.x + depth.x + 10, y: offset.y + depth.y + 13 });
-  context.fillStyle = '#5e39272e';
+  context.shadowColor = '#2d18156f';
+  context.shadowBlur = 28;
+  context.shadowOffsetX = Math.sign(challenge.viewSkew) * 12;
+  context.shadowOffsetY = 20;
+  polygonPath(context, challenge, points, offset);
+  context.fillStyle = '#38221945';
   context.fill();
   context.shadowColor = 'transparent';
-
-  const sideShade = context.createLinearGradient(0, SHAPE_CENTER_Y, 0, SHAPE_CENTER_Y + challenge.depth + 170);
-  sideShade.addColorStop(0, challenge.accent);
-  sideShade.addColorStop(1, '#3a2520');
-  for (let index = 0; index < top.length; index += 1) {
-    const next = (index + 1) % top.length;
-    context.beginPath();
-    context.moveTo(top[index].x, top[index].y);
-    context.lineTo(top[next].x, top[next].y);
-    context.lineTo(top[next].x + depth.x, top[next].y + depth.y);
-    context.lineTo(top[index].x + depth.x, top[index].y + depth.y);
-    context.closePath();
-    context.fillStyle = sideShade;
-    context.fill();
-    context.globalAlpha = .25;
-    context.strokeStyle = '#281a17';
-    context.lineWidth = 1.5;
-    context.stroke();
-    context.globalAlpha = 1;
-  }
-
   polygonPath(context, challenge, points, offset);
   context.fillStyle = challenge.color;
   context.fill();
   polygonPath(context, challenge, points, offset);
   context.clip();
-  const sheen = context.createLinearGradient(70, 80, 310, 300);
-  sheen.addColorStop(0, '#ffffff6f');
-  sheen.addColorStop(.42, '#ffffff0a');
-  sheen.addColorStop(1, '#2f171c38');
+  const center = canvasPoint(transformSlicePoint({ x: .5, y: .52 }, challenge), challenge, offset);
+  const highlight = canvasPoint(transformSlicePoint({ x: .34, y: .29 }, challenge), challenge, offset);
+  const sheen = context.createRadialGradient(highlight.x, highlight.y, 4, center.x, center.y, SHAPE_SIZE * .46);
+  sheen.addColorStop(0, '#fffbeaa8');
+  sheen.addColorStop(.28, '#ffffff31');
+  sheen.addColorStop(.68, '#3a16200c');
+  sheen.addColorStop(1, '#1e0b234f');
   context.fillStyle = sheen;
+  context.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+  const reflected = context.createRadialGradient(center.x + 35, center.y + 40, 5, center.x + 35, center.y + 40, SHAPE_SIZE * .32);
+  reflected.addColorStop(0, '#ffffff1f');
+  reflected.addColorStop(1, '#13090e24');
+  context.fillStyle = reflected;
   context.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
   drawTexture(context, challenge, offset);
   context.restore();
 
   context.save();
   polygonPath(context, challenge, points, offset);
-  context.lineWidth = 4;
+  context.lineWidth = 2.5;
   context.lineJoin = 'round';
-  context.strokeStyle = challenge.accent;
+  context.strokeStyle = `${challenge.accent}c7`;
   context.stroke();
   context.restore();
 }
@@ -329,10 +319,10 @@ export default function SliceGame({ onExit }: { onExit: () => void }) {
           <div className="slice-hero" aria-hidden="true"><span>🍠</span><span>🍉</span><span>🧀</span><i /></div>
           <p className="slice-kicker">비율은 손을 뗀 뒤에만 공개</p>
           <h2>한 줄로 정확히<br />반을 만들어라</h2>
-          <p className="slice-intro">비스듬히 놓인 두꺼운 호떡부터 고구마·나뭇잎까지!<br />원근에 속지 말고 실제 윗면을 50:50으로 나눠보세요.</p>
+          <p className="slice-intro">둥근 수박, 찌그러진 고구마, 부푼 만두까지!<br />겉넓이가 아닌 물체의 실제 부피를 50:50으로 나눠보세요.</p>
           <label className="slice-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="slice-primary" onClick={startGame}>자를 물체 섞기</button>
-          <div className="slice-rules"><span>👀 넓이 가늠</span><span>☝️ 한 번 긋기</span><span>⚖️ 50:50 승리</span></div>
+          <div className="slice-rules"><span>👀 부피 가늠</span><span>☝️ 한 번 긋기</span><span>⚖️ 50:50 승리</span></div>
         </section>
       )}
 
@@ -346,14 +336,14 @@ export default function SliceGame({ onExit }: { onExit: () => void }) {
           <div className={`slice-board ${phase} ${drawing ? 'drawing' : ''}`} style={{ '--slice-player': PLAYER_COLORS[turn] } as CSSProperties}>
             <canvas
               ref={canvasRef}
-              aria-label={`${currentChallenge.name}을 한 줄로 반으로 자르는 영역`}
+              aria-label={`${currentChallenge.name} 한 줄 자르기 영역`}
               onPointerDown={startCut}
               onPointerMove={moveCut}
               onPointerUp={finishCut}
               onPointerCancel={finishCut}
               onContextMenu={(event) => event.preventDefault()}
             />
-            {phase === 'ready' && <div className="slice-ready"><AnimalPortrait animal={currentAnimal} /><strong>{PLAYER_NAMES[turn]} 준비</strong><span>{currentChallenge.hint}<br />기울어진 윗면의 넓이를 가늠하세요</span><button onClick={beginCutting}>내 차례 시작</button></div>}
+            {phase === 'ready' && <div className="slice-ready"><AnimalPortrait animal={currentAnimal} /><strong>{PLAYER_NAMES[turn]} 준비</strong><span>{currentChallenge.hint}<br />겉모양 속 실제 부피를 가늠하세요</span><button onClick={beginCutting}>내 차례 시작</button></div>}
             {phase === 'cutting' && <div className="slice-cut-label">{drawing ? '손을 떼면 바로 공개!' : '물체를 가로질러 한 번에 쓱'}</div>}
           </div>
           <p className={`slice-help ${error ? 'error' : ''}`}>{error || '긋는 동안에는 비율이 보이지 않습니다'}</p>

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { SLICE_SHAPES, makeSliceChallenges, polygonArea, projectSlicePoint, rankSlices, scoreSlice, splitPolygon, unprojectSlicePoint } from '../app/slice-game.ts';
+import { SLICE_SHAPES, makeSliceChallenges, polygonArea, projectSlicePoint, rankSlices, scoreSlice, sliceSurfaceHeight, splitPolygon, transformSlicePoint, unprojectSlicePoint } from '../app/slice-game.ts';
 
 function isConvex(points: { x: number; y: number }[]) {
   let sign = 0;
@@ -25,13 +25,21 @@ for (const shape of SLICE_SHAPES) {
 const challenges = makeSliceChallenges(6, 20260831);
 assert.equal(new Set(challenges.map((shape) => shape.id)).size, 6, 'six players should receive six different objects');
 for (const challenge of challenges) {
-  assert(challenge.viewTilt >= .56 && challenge.viewTilt <= .66);
-  assert(challenge.viewPerspective >= .38 && challenge.viewPerspective <= .52);
+  assert(challenge.viewTilt >= .78 && challenge.viewTilt <= .88);
+  assert(challenge.viewPerspective >= .12 && challenge.viewPerspective <= .22);
   for (const point of challenge.transformed) {
     const restored = unprojectSlicePoint(projectSlicePoint(point, challenge), challenge);
     assert(Math.hypot(restored.x - point.x, restored.y - point.y) < 1e-10, '3D view must map a touch back to the exact surface point');
   }
 }
+assert(sliceSurfaceHeight('watermelon', { x: .5, y: .5 }) > sliceSurfaceHeight('watermelon', { x: .8, y: .5 }), 'a watermelon must be a sphere, not a slab');
+assert(sliceSurfaceHeight('sweet-potato', { x: .5, y: .5 }) > sliceSurfaceHeight('sweet-potato', { x: .15, y: .5 }), 'a sweet potato must have a bulging middle');
+const watermelon = makeSliceChallenges(8, 20260831).find((challenge) => challenge.id === 'watermelon');
+assert(watermelon);
+const centerCut = scoreSlice(0, watermelon, transformSlicePoint({ x: .5, y: 0 }, watermelon), transformSlicePoint({ x: .5, y: 1 }, watermelon));
+const edgeCut = scoreSlice(0, watermelon, transformSlicePoint({ x: .65, y: 0 }, watermelon), transformSlicePoint({ x: .65, y: 1 }, watermelon));
+assert(centerCut && centerCut.error < 1.5, 'a cut through the sphere center must halve its volume');
+assert(edgeCut && edgeCut.error > 10, 'an off-center sphere cut must not halve its volume');
 const invalid = scoreSlice(0, challenges[0], { x: .1, y: .1 }, { x: .18, y: .15 });
 assert.equal(invalid, null, 'a tiny swipe must not count as a cut');
 const valid = scoreSlice(0, challenges[0], { x: 0, y: .5 }, { x: 1, y: .5 });
@@ -39,4 +47,4 @@ assert(valid && valid.left + valid.right > 99.999 && valid.left + valid.right < 
 const ranking = rankSlices([{ ...valid, player: 1, score: 200 }, { ...valid, player: 0, score: 900 }]);
 assert.deepEqual(ranking.map((result) => result.player), [0, 1]);
 
-console.log('slice game checks passed: 8 shapes, exact area split, reversible 3D projection, valid ranking');
+console.log('slice game checks passed: 8 curved solids, reversible view, volume scoring, valid ranking');

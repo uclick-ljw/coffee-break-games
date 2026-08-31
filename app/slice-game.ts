@@ -15,7 +15,6 @@ export type SliceChallenge = SliceShape & {
   viewSkew: number;
   viewTilt: number;
   viewPerspective: number;
-  depth: number;
   transformed: SlicePoint[];
 };
 
@@ -40,15 +39,29 @@ function radialPoints(radii: number[], width = 0.72, height = 0.7) {
   });
 }
 
+function roundedPoints(points: SlicePoint[], rounds = 2) {
+  let rounded = points;
+  for (let round = 0; round < rounds; round += 1) {
+    rounded = rounded.flatMap((point, index) => {
+      const next = rounded[(index + 1) % rounded.length];
+      return [
+        { x: point.x * .75 + next.x * .25, y: point.y * .75 + next.y * .25 },
+        { x: point.x * .25 + next.x * .75, y: point.y * .25 + next.y * .75 },
+      ];
+    });
+  }
+  return rounded;
+}
+
 export const SLICE_SHAPES: SliceShape[] = [
-  { id: 'hotteok', name: '삐뚤한 호떡', hint: '둥글어 보여도 한쪽이 더 두툼해요', color: '#d9903f', accent: '#7e4326', points: radialPoints([.94, 1, .92, 1.04, .9, 1, .95, 1.06, .9, .98, .92, 1.02]) },
-  { id: 'sweet-potato', name: '고구마', hint: '길고 휜 몸통의 넓이를 읽어보세요', color: '#8f4e7a', accent: '#522447', points: [{ x: .16, y: .5 }, { x: .21, y: .31 }, { x: .38, y: .17 }, { x: .59, y: .13 }, { x: .78, y: .23 }, { x: .87, y: .4 }, { x: .82, y: .58 }, { x: .67, y: .75 }, { x: .45, y: .84 }, { x: .25, y: .74 }] },
+  { id: 'hotteok', name: '삐뚤한 호떡', hint: '납작하게 부푼 두께까지 생각하세요', color: '#d9903f', accent: '#7e4326', points: radialPoints(Array.from({ length: 20 }, (_, index) => 1 + Math.sin(index / 20 * Math.PI * 2) * .025)) },
+  { id: 'sweet-potato', name: '고구마', hint: '굽고 찌그러진 몸통의 부피를 읽어보세요', color: '#8f4e7a', accent: '#522447', points: roundedPoints([{ x: .09, y: .5 }, { x: .16, y: .35 }, { x: .35, y: .25 }, { x: .58, y: .22 }, { x: .78, y: .27 }, { x: .91, y: .39 }, { x: .87, y: .54 }, { x: .7, y: .65 }, { x: .47, y: .73 }, { x: .25, y: .68 }, { x: .11, y: .59 }]) },
   { id: 'cheese', name: '치즈 조각', hint: '뾰족한 쪽보다 넓은 쪽이 훨씬 무거워요', color: '#f1c84b', accent: '#a76c20', points: [{ x: .14, y: .3 }, { x: .74, y: .15 }, { x: .88, y: .72 }, { x: .31, y: .84 }, { x: .13, y: .62 }] },
-  { id: 'watermelon', name: '수박 조각', hint: '껍질 쪽의 넓은 면적을 놓치지 마세요', color: '#ee5e67', accent: '#277a4e', points: [{ x: .13, y: .75 }, { x: .19, y: .57 }, { x: .32, y: .37 }, { x: .49, y: .15 }, { x: .64, y: .34 }, { x: .79, y: .54 }, { x: .89, y: .76 }, { x: .56, y: .84 }, { x: .3, y: .82 }] },
+  { id: 'watermelon', name: '통수박', hint: '둥근 구의 중심과 부피를 가늠하세요', color: '#4b9d55', accent: '#1e6339', points: radialPoints(Array(48).fill(1), .78, .78) },
   { id: 'leaf', name: '나뭇잎', hint: '잎의 끝보다 볼록한 몸통을 살펴보세요', color: '#68ad58', accent: '#285d35', points: [{ x: .1, y: .61 }, { x: .2, y: .38 }, { x: .42, y: .19 }, { x: .7, y: .12 }, { x: .89, y: .27 }, { x: .83, y: .5 }, { x: .64, y: .7 }, { x: .36, y: .84 }, { x: .16, y: .77 }] },
-  { id: 'dumpling', name: '왕만두', hint: '주름진 위쪽보다 아랫배가 묵직해요', color: '#f1d6a0', accent: '#a87942', points: [{ x: .13, y: .68 }, { x: .17, y: .45 }, { x: .31, y: .25 }, { x: .51, y: .16 }, { x: .73, y: .24 }, { x: .87, y: .45 }, { x: .88, y: .67 }, { x: .71, y: .81 }, { x: .31, y: .82 }] },
-  { id: 'pear', name: '울퉁불퉁 배', hint: '작은 꼭지 쪽보다 둥근 아랫부분이 넓어요', color: '#b9cf59', accent: '#68782c', points: [{ x: .43, y: .11 }, { x: .57, y: .13 }, { x: .68, y: .3 }, { x: .82, y: .52 }, { x: .82, y: .7 }, { x: .68, y: .84 }, { x: .45, y: .88 }, { x: .24, y: .79 }, { x: .15, y: .6 }, { x: .23, y: .39 }] },
-  { id: 'rice-cake', name: '비뚤어진 절편', hint: '반듯하지 않은 네 모서리를 함께 보세요', color: '#efb9c1', accent: '#a65d6c', points: [{ x: .16, y: .28 }, { x: .72, y: .14 }, { x: .88, y: .43 }, { x: .77, y: .77 }, { x: .27, y: .85 }, { x: .1, y: .55 }] },
+  { id: 'dumpling', name: '왕만두', hint: '주름 아래 부푼 만두소의 부피를 보세요', color: '#f1d6a0', accent: '#a87942', points: roundedPoints([{ x: .13, y: .68 }, { x: .17, y: .45 }, { x: .31, y: .25 }, { x: .51, y: .16 }, { x: .73, y: .24 }, { x: .87, y: .45 }, { x: .88, y: .67 }, { x: .71, y: .81 }, { x: .31, y: .82 }]) },
+  { id: 'pear', name: '울퉁불퉁 배', hint: '작은 꼭지보다 둥글게 부푼 아랫배가 무거워요', color: '#b9cf59', accent: '#68782c', points: roundedPoints([{ x: .43, y: .11 }, { x: .57, y: .13 }, { x: .68, y: .3 }, { x: .82, y: .52 }, { x: .82, y: .7 }, { x: .68, y: .84 }, { x: .45, y: .88 }, { x: .24, y: .79 }, { x: .15, y: .6 }, { x: .23, y: .39 }]) },
+  { id: 'rice-cake', name: '비뚤어진 절편', hint: '완만하게 솟은 떡의 두께도 함께 보세요', color: '#efb9c1', accent: '#a65d6c', points: roundedPoints([{ x: .16, y: .28 }, { x: .72, y: .14 }, { x: .88, y: .43 }, { x: .77, y: .77 }, { x: .27, y: .85 }, { x: .1, y: .55 }]) },
 ];
 
 export function polygonArea(points: SlicePoint[]) {
@@ -62,6 +75,33 @@ export function polygonArea(points: SlicePoint[]) {
 
 function side(point: SlicePoint, start: SlicePoint, end: SlicePoint) {
   return (end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x);
+}
+
+function pointInPolygon(point: SlicePoint, points: SlicePoint[]) {
+  let inside = false;
+  for (let index = 0, previous = points.length - 1; index < points.length; previous = index, index += 1) {
+    const a = points[index];
+    const b = points[previous];
+    if ((a.y > point.y) !== (b.y > point.y) && point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
+}
+
+export function sliceSurfaceHeight(shapeId: string, point: SlicePoint) {
+  const x = point.x - .5;
+  const y = point.y - .5;
+  const ellipse = (width: number, height: number, centerY = 0) => Math.sqrt(Math.max(0, 1 - (x / width) ** 2 - ((y - centerY) / height) ** 2));
+  switch (shapeId) {
+    case 'watermelon': return ellipse(.4, .4);
+    case 'sweet-potato': return .1 + ellipse(.46, .27) * (.72 + .16 * Math.sin((point.x + point.y) * 9));
+    case 'hotteok': return .18 + ellipse(.39, .36) * .38;
+    case 'cheese': return .22 + point.x * .42 + (1 - point.y) * .16;
+    case 'leaf': return .05 + ellipse(.45, .35) * .13 + (point.x - point.y + .5) * .035;
+    case 'dumpling': return .12 + ellipse(.39, .34, .04) * .78;
+    case 'pear': return .1 + ellipse(.35, .39, .08) * (.65 + point.y * .28);
+    case 'rice-cake': return .14 + ellipse(.42, .35) * .48;
+    default: return 1;
+  }
 }
 
 function clipHalfPlane(points: SlicePoint[], start: SlicePoint, end: SlicePoint, keepPositive: boolean) {
@@ -105,20 +145,22 @@ export function makeSliceChallenges(players: number, seed: number): SliceChallen
     const shape = shuffled[index % shuffled.length];
     const rotation = (next() - .5) * .65;
     const mirrored = next() > .5;
-    const viewSkew = (next() > .5 ? 1 : -1) * (.12 + next() * .1);
-    const viewTilt = .56 + next() * .1;
-    const viewPerspective = .38 + next() * .14;
-    const depth = 24 + next() * 10;
-    const transformed = shape.points.map((point) => {
-      const x = (mirrored ? 1 - point.x : point.x) - .5;
-      const y = point.y - .5;
-      return {
-        x: .5 + x * Math.cos(rotation) - y * Math.sin(rotation),
-        y: .5 + x * Math.sin(rotation) + y * Math.cos(rotation),
-      };
-    });
-    return { ...shape, rotation, mirrored, viewSkew, viewTilt, viewPerspective, depth, transformed };
+    const viewSkew = (next() > .5 ? 1 : -1) * (.05 + next() * .06);
+    const viewTilt = .78 + next() * .1;
+    const viewPerspective = .12 + next() * .1;
+    const challengeTransform = { rotation, mirrored };
+    const transformed = shape.points.map((point) => transformSlicePoint(point, challengeTransform));
+    return { ...shape, rotation, mirrored, viewSkew, viewTilt, viewPerspective, transformed };
   });
+}
+
+export function transformSlicePoint(point: SlicePoint, challenge: Pick<SliceChallenge, 'rotation' | 'mirrored'>): SlicePoint {
+  const x = (challenge.mirrored ? 1 - point.x : point.x) - .5;
+  const y = point.y - .5;
+  return {
+    x: .5 + x * Math.cos(challenge.rotation) - y * Math.sin(challenge.rotation),
+    y: .5 + x * Math.sin(challenge.rotation) + y * Math.cos(challenge.rotation),
+  };
 }
 
 export function projectSlicePoint(point: SlicePoint, view: SliceView): SlicePoint {
@@ -140,12 +182,22 @@ export function unprojectSlicePoint(point: SlicePoint, view: SliceView): SlicePo
 
 export function scoreSlice(player: number, challenge: SliceChallenge, start: SlicePoint, end: SlicePoint): SliceOutcome | null {
   if (Math.hypot(end.x - start.x, end.y - start.y) < .22) return null;
-  const { first, second } = splitPolygon(challenge.transformed, start, end);
-  const firstArea = polygonArea(first);
-  const secondArea = polygonArea(second);
-  const total = firstArea + secondArea;
-  if (!total || Math.min(firstArea, secondArea) / total < .04) return null;
-  const left = firstArea / total * 100;
+  let firstVolume = 0;
+  let secondVolume = 0;
+  const cells = 72;
+  for (let row = 0; row < cells; row += 1) {
+    for (let column = 0; column < cells; column += 1) {
+      const point = { x: (column + .5) / cells, y: (row + .5) / cells };
+      if (!pointInPolygon(point, challenge.points)) continue;
+      const transformed = transformSlicePoint(point, challenge);
+      const volume = sliceSurfaceHeight(challenge.id, point);
+      if (side(transformed, start, end) >= 0) firstVolume += volume;
+      else secondVolume += volume;
+    }
+  }
+  const total = firstVolume + secondVolume;
+  if (!total || Math.min(firstVolume, secondVolume) / total < .04) return null;
+  const left = firstVolume / total * 100;
   const right = 100 - left;
   const error = Math.abs(left - 50);
   return {
