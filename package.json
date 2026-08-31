@@ -16,6 +16,7 @@
     "check:tower": "node --experimental-strip-types scripts/check-tower.ts",
     "check:tray": "node --experimental-strip-types scripts/check-tray.ts",
     "check:dodge": "node --experimental-strip-types scripts/check-dodge.ts",
+    "check:lander": "node --experimental-strip-types scripts/check-lander.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },

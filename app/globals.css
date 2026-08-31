@@ -44,7 +44,9 @@ button { font: inherit; }
 .circle-card { background: radial-gradient(circle at 76% 18%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #f8f4ff, #dcd3ff); }
 .tray-card { background: radial-gradient(circle at 79% 18%, #fff8e9 0 3px, transparent 4px), linear-gradient(155deg, #fffaf1, #edc991); }
 .dodge-card { background: radial-gradient(circle at 82% 14%, #fff 0 3px, transparent 4px), linear-gradient(155deg, #fffbe9, #bdebdc); }
+.lander-card { background: radial-gradient(circle at 82% 14%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #f9f7ff, #cbd4ff); }
 .dodge-card-art { width: 78px; height: 78px; border: 4px solid #fff; border-radius: 50%; background: url('/dodge-animals.jpg') 0 0 / 400% 200%; box-shadow: 0 8px 0 #4ba685, 0 15px 24px #256c5b35; }
+.lander-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 25px; background: #3f4f99; font-size: 47px; box-shadow: 0 8px 0 #25326f, 0 16px 26px #26366b3b; }
 .tray-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #a96f40; border-radius: 50% 50% 43% 43%; background: #fff9ed; box-shadow: 0 9px 0 #a96f40, 0 17px 25px #7d4c2738; }
 .circle-card-art { width: 76px; height: 76px; display: grid; place-items: center; border: 2px solid #9277e8; border-radius: 25px; background: #7959d916; color: #7959d9; font-size: 48px; line-height: 1; box-shadow: 0 0 0 7px #7959d10, 0 12px 24px #4a32933d; }
 .game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
@@ -134,6 +136,91 @@ button { font: inherit; }
   .dodge-animal-fan { height: 105px; transform: scale(.82); }
   .dodge-kicker { margin-top: 8px; }
   .dodge-intro { margin-block: 9px 13px; }
+}
+
+.lander-shell {
+  min-height: 100svh;
+  max-width: 620px;
+  margin: auto;
+  padding: 20px 20px 26px;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 13% 10%, #fff 0 1px, transparent 2px), radial-gradient(circle at 88% 25%, #90e7ff 0 2px, transparent 3px), linear-gradient(155deg, #f4f5ff, #d8dfff 65%, #bec9f1);
+  color: #18234e;
+}
+.lander-shell button, .lander-shell select { font: inherit; }
+.lander-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lander-topbar p { margin: 0 0 3px; color: #6376c7; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+.lander-topbar h1 { margin: 0; font-size: clamp(27px, 7vw, 38px); letter-spacing: -.06em; }
+.lander-topbar button, .lander-secondary { padding: 9px 13px; border: 1px solid #34417f32; border-radius: 99px; background: #ffffff9c; color: #35437e; font-size: 11px; font-weight: 850; cursor: pointer; }
+.lander-setup { min-height: calc(100svh - 78px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.lander-hero { width: 166px; height: 152px; position: relative; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, #8fe7ff66, #6475ce1f 56%, transparent 58%); }
+.lander-hero > span { font-size: 112px; filter: drop-shadow(0 17px 15px #2c37724a); transform: rotate(-8deg); }
+.lander-hero .dodge-animal { position: absolute; width: 49px; height: 49px; border-width: 3px; transform: translate(2px, -17px); box-shadow: none; }
+.lander-kicker { margin: 12px 0 6px; color: #6579ca; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.lander-setup h2 { margin: 0; font-size: clamp(29px, 8vw, 42px); line-height: 1.16; letter-spacing: -.065em; }
+.lander-intro { margin: 14px 0 20px; color: #667098; font-size: 12px; line-height: 1.7; }
+.lander-player-select { width: min(100%, 430px); margin-bottom: 11px; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #4d5ca839; border-radius: 16px; background: #ffffffa6; color: #56628f; font-size: 12px; font-weight: 900; }
+.lander-player-select select { padding: 8px 30px 8px 13px; border: 0; border-radius: 99px; background: #29366f; color: white; font-weight: 900; }
+.lander-primary { width: min(100%, 430px); padding: 16px; border: 0; border-radius: 16px; background: #29366f; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 7px 0 #7181d0, 0 16px 30px #29366f29; transition: transform .1s, box-shadow .1s; }
+.lander-primary:active { transform: translateY(5px); box-shadow: 0 2px 0 #7181d0; }
+.lander-rules { margin-top: 20px; display: flex; gap: 14px; color: #657098; font-size: 9px; font-weight: 850; }
+.lander-play { padding-top: 12px; }
+.lander-status { margin-bottom: 7px; padding: 7px 11px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; border: 1px solid #42519532; border-radius: 17px; background: #ffffffc2; box-shadow: 0 9px 22px #2a387319; }
+.lander-status .dodge-animal { width: 43px; height: 43px; border-color: var(--pilot-color); box-shadow: 0 0 0 2px #fff; }
+.lander-status > div { min-width: 0; display: grid; gap: 1px; }
+.lander-status small { color: #7780a3; font-size: 8px; font-weight: 850; }
+.lander-status strong { overflow: hidden; font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.lander-status > b { color: #31417e; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums; }
+.lander-status > b small { display: block; font-size: 7px; }
+.lander-fuel { width: min(100%, 430px); height: 19px; margin: 0 auto 7px; position: relative; overflow: hidden; border: 1px solid #7986bd54; border-radius: 99px; background: #27325b; color: white; }
+.lander-fuel span { height: 100%; display: block; background: linear-gradient(90deg, #f19a55, #ffdd76 40%, #7be3ca); transition: width .08s linear; }
+.lander-fuel b { position: absolute; inset: 0; font-size: 8px; line-height: 17px; text-align: center; text-shadow: 0 1px 2px #14204c; }
+.lander-board { width: min(100%, 430px); aspect-ratio: 390 / 540; margin: auto; position: relative; overflow: hidden; border: 2px solid #344178; border-radius: 27px; background: #111845; box-shadow: 0 19px 38px #1d28543d; }
+.lander-board canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; user-select: none; -webkit-user-select: none; }
+.lander-board canvas:focus-visible { box-shadow: inset 0 0 0 4px #89e9ff; }
+.lander-board.flying canvas { cursor: grabbing; }
+.lander-ready { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; background: linear-gradient(#11184599, #2d397dc9); backdrop-filter: blur(2px); color: white; }
+.lander-ready .dodge-animal { width: 92px; height: 92px; border-width: 5px; box-shadow: 0 9px 0 #5b6fc1, 0 20px 38px #070d2f87; }
+.lander-ready strong { margin-top: 23px; font-size: 25px; letter-spacing: -.04em; }
+.lander-ready span { margin-top: 7px; color: #dfe6ff; font-size: 12px; font-weight: 750; line-height: 1.5; }
+.lander-ready i { margin-top: 14px; padding: 8px 13px; border-radius: 99px; background: #8cecff; color: #162554; font-size: 9px; font-style: normal; font-weight: 900; animation: lander-pulse .7s ease-in-out infinite alternate; }
+.lander-altitude { position: absolute; top: 10px; right: 10px; padding: 6px 9px; border: 1px solid #c8f4ff5c; border-radius: 99px; background: #111845a8; color: #d6f6ff; font-size: 8px; font-weight: 900; pointer-events: none; }
+.lander-help { margin: 7px 0 0; color: #68749f; text-align: center; font-size: 8px; font-weight: 800; }
+.lander-result, .lander-final { min-height: calc(100svh - 84px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.lander-result > .dodge-animal { width: 124px; height: 124px; border-width: 6px; box-shadow: 0 11px 0 #6c7ac1, 0 26px 48px #24306a39; }
+.lander-result.crash > .dodge-animal { box-shadow: 0 11px 0 #e77965, 0 26px 48px #8c3d3439; }
+.lander-result > p, .lander-payer p { margin: 27px 0 2px; color: #6879c8; font-size: 10px; font-weight: 900; letter-spacing: .13em; }
+.lander-result h2 { margin: 0; font-size: clamp(53px, 15vw, 76px); letter-spacing: -.07em; }
+.lander-result > strong { color: #626d95; font-size: 12px; }
+.lander-result > div { width: min(100%, 430px); margin: 22px 0 25px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.lander-result > div span { padding: 10px 4px; border: 1px solid #5262a52b; border-radius: 13px; background: #ffffff9e; color: #727a9d; font-size: 8px; }
+.lander-result > div b { display: block; margin-top: 3px; color: #28356e; font-size: 14px; }
+.lander-final { justify-content: flex-start; padding: 29px 0 16px; }
+.lander-payer { width: min(100%, 430px); padding: 19px; display: grid; justify-items: center; border: 1px solid #e582663d; border-radius: 25px; background: linear-gradient(145deg, #fff7eb, #ffdcd7); box-shadow: 0 18px 38px #87423521; }
+.lander-payer .dodge-animal { width: 87px; height: 87px; border-width: 5px; box-shadow: 0 8px 0 #eb7e69, 0 18px 30px #8e51352e; }
+.lander-payer p { margin-top: 15px; color: #d66f5a; }
+.lander-payer h2 { margin: 0; font-size: 33px; letter-spacing: -.05em; }
+.lander-payer strong { color: #bd5949; }
+.lander-ranking { width: min(100%, 430px); margin: 12px 0 15px; padding: 0; display: grid; gap: 7px; list-style: none; }
+.lander-ranking li { padding: 7px 10px; display: grid; grid-template-columns: 22px auto 1fr auto; align-items: center; gap: 8px; border: 1px solid #42519526; border-radius: 14px; background: #ffffffaa; text-align: left; }
+.lander-ranking li > span { color: #5e70bf; font-size: 12px; font-weight: 900; text-align: center; }
+.lander-ranking .dodge-animal { width: 38px; height: 38px; border-width: 2px; box-shadow: none; }
+.lander-ranking li > div { min-width: 0; display: grid; }
+.lander-ranking li strong { font-size: 12px; }.lander-ranking li small { overflow: hidden; color: #7780a3; font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
+.lander-ranking li > b { font-size: 12px; font-variant-numeric: tabular-nums; }
+.lander-final > .lander-secondary { margin-top: 10px; background: transparent; text-decoration: underline; }
+@keyframes lander-pulse { to { transform: translateY(-3px); box-shadow: 0 6px 15px #8cecff55; } }
+
+@media (max-height: 720px) {
+  .lander-shell { padding-top: 12px; }
+  .lander-topbar h1 { font-size: 25px; }
+  .lander-status { margin-bottom: 5px; padding-block: 4px; }
+  .lander-fuel { margin-bottom: 5px; }
+  .lander-board { width: min(100%, 354px); }
+  .lander-help { margin-top: 4px; }
+  .lander-hero { width: 130px; height: 116px; transform: scale(.82); }
+  .lander-kicker { margin-top: 5px; }
+  .lander-intro { margin-block: 8px 12px; }
 }
 
 .tray-shell {

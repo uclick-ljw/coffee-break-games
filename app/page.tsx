@@ -10,6 +10,7 @@ const TimingGame = lazy(() => import('./timing'));
 const PerfectCurveGame = lazy(() => import('./circle'));
 const TrayGame = lazy(() => import('./tray'));
 const DodgeGame = lazy(() => import('./dodge'));
+const LanderGame = lazy(() => import('./lander'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -19,7 +20,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -57,6 +58,11 @@ export default function Home() {
   if (mode === 'dodge') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">동물 친구들을 깨우고 있습니다…</p></main>}>
       <DodgeGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'lander') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">착륙장을 준비하고 있습니다…</p></main>}>
+      <LanderGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -122,6 +128,13 @@ export default function Home() {
           <strong>말랑말랑 대탈출</strong>
           <p>귀여운 동물을 누른 채 움직여 몰려오는 장난감을 피하세요.</p>
           <b>동물 뽑기</b>
+        </button>
+        <button className="game-card lander-card" onClick={() => setMode('lander')}>
+          <span className="game-card-art lander-card-art" aria-hidden="true">🚀</span>
+          <small>추력과 착륙 감각</small>
+          <strong>아슬아슬 착륙</strong>
+          <p>누르고 밀어 우주선을 조종하고 가장 부드럽게 착륙하세요.</p>
+          <b>엔진 점화</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
