@@ -12,6 +12,7 @@ const TrayGame = lazy(() => import('./tray'));
 const DodgeGame = lazy(() => import('./dodge'));
 const LanderGame = lazy(() => import('./lander'));
 const ParkingGame = lazy(() => import('./parking'));
+const SliceGame = lazy(() => import('./slice'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -21,7 +22,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -69,6 +70,11 @@ export default function Home() {
   if (mode === 'parking') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">주차장을 열고 있습니다…</p></main>}>
       <ParkingGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'slice') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">자를 물체를 고르고 있습니다…</p></main>}>
+      <SliceGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -148,6 +154,13 @@ export default function Home() {
           <strong>한 번에 주차</strong>
           <p>차를 한 번 출발시켜 빈 주차칸에 정확히 멈추세요.</p>
           <b>주차 도전</b>
+        </button>
+        <button className="game-card slice-card" onClick={() => setMode('slice')}>
+          <span className="game-card-art slice-card-art" aria-hidden="true">🍠</span>
+          <small>눈대중과 면적 감각</small>
+          <strong>반으로 쓱</strong>
+          <p>비대칭 물체를 한 줄로 잘라 정확한 50:50을 만드세요.</p>
+          <b>반 나누기</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>

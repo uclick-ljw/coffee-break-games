@@ -46,9 +46,11 @@ button { font: inherit; }
 .dodge-card { background: radial-gradient(circle at 82% 14%, #fff 0 3px, transparent 4px), linear-gradient(155deg, #fffbe9, #bdebdc); }
 .lander-card { background: radial-gradient(circle at 82% 14%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #f9f7ff, #cbd4ff); }
 .parking-card { background: radial-gradient(circle at 82% 14%, #fff7a7 0 3px, transparent 4px), linear-gradient(155deg, #f7fff8, #acd8bd); }
+.slice-card { background: radial-gradient(circle at 82% 14%, #fff5cf 0 3px, transparent 4px), linear-gradient(155deg, #fff9ec, #f1c690); }
 .dodge-card-art { width: 78px; height: 78px; border: 4px solid #fff; border-radius: 50%; background: url('/dodge-animals.jpg') 0 0 / 400% 200%; box-shadow: 0 8px 0 #4ba685, 0 15px 24px #256c5b35; }
 .lander-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 25px; background: #3f4f99; font-size: 47px; box-shadow: 0 8px 0 #25326f, 0 16px 26px #26366b3b; }
 .parking-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 24px; background: #315f50; font-size: 45px; box-shadow: 0 8px 0 #173d33, 0 16px 26px #183f3438; }
+.slice-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff7e4; border-radius: 50% 43% 48% 40%; background: #9c537e; font-size: 44px; box-shadow: 0 8px 0 #63334f, 0 16px 26px #60324838; transform: rotate(-5deg); }
 .tray-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #a96f40; border-radius: 50% 50% 43% 43%; background: #fff9ed; box-shadow: 0 9px 0 #a96f40, 0 17px 25px #7d4c2738; }
 .circle-card-art { width: 76px; height: 76px; display: grid; place-items: center; border: 2px solid #9277e8; border-radius: 25px; background: #7959d916; color: #7959d9; font-size: 48px; line-height: 1; box-shadow: 0 0 0 7px #7959d10, 0 12px 24px #4a32933d; }
 .game-card-art { margin-bottom: auto; font-size: 64px; filter: drop-shadow(0 10px 8px #264c6230); }
@@ -305,6 +307,86 @@ button { font: inherit; }
   .parking-hero { width: 130px; height: 116px; transform: scale(.82); }
   .parking-kicker { margin-top: 5px; }
   .parking-intro { margin-block: 8px 12px; }
+}
+
+.slice-shell {
+  min-height: 100svh;
+  max-width: 620px;
+  margin: auto;
+  padding: 20px 20px 26px;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 14% 10%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #fff9e8, #f3d4a7 68%, #ddb077);
+  color: #482f27;
+}
+.slice-shell button, .slice-shell select { font: inherit; }
+.slice-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.slice-topbar p { margin: 0 0 3px; color: #a8673e; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+.slice-topbar h1 { margin: 0; font-size: clamp(27px, 7vw, 38px); letter-spacing: -.06em; }
+.slice-topbar button, .slice-secondary { padding: 9px 13px; border: 1px solid #77482f35; border-radius: 99px; background: #fffaf0a8; color: #724c38; font-size: 11px; font-weight: 850; cursor: pointer; }
+.slice-setup { min-height: calc(100svh - 78px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.slice-hero { width: 190px; height: 150px; position: relative; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 17px 14px #74472c32); }
+.slice-hero > span { position: absolute; display: grid; place-items: center; font-size: 72px; }
+.slice-hero > span:first-child { left: 5px; bottom: 18px; transform: rotate(-17deg); }
+.slice-hero > span:nth-child(2) { right: 4px; bottom: 17px; transform: rotate(12deg); }
+.slice-hero > span:nth-child(3) { top: 1px; font-size: 64px; transform: rotate(-4deg); }
+.slice-hero > i { position: absolute; width: 170px; height: 4px; background: white; transform: rotate(-23deg); box-shadow: 0 2px 0 #693f2e55; }
+.slice-kicker { margin: 12px 0 6px; color: #a6653c; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.slice-setup h2 { margin: 0; font-size: clamp(29px, 8vw, 42px); line-height: 1.16; letter-spacing: -.065em; }
+.slice-intro { margin: 14px 0 20px; color: #806858; font-size: 12px; line-height: 1.7; }
+.slice-player-select { width: min(100%, 430px); margin-bottom: 11px; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #8d5c3f38; border-radius: 16px; background: #fffaf0a8; color: #735743; font-size: 12px; font-weight: 900; }
+.slice-player-select select { padding: 8px 30px 8px 13px; border: 0; border-radius: 99px; background: #653c33; color: white; font-weight: 900; }
+.slice-primary { width: min(100%, 430px); padding: 16px; border: 0; border-radius: 16px; background: #653c33; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 7px 0 #cf8a55, 0 16px 30px #62372c2b; transition: transform .1s, box-shadow .1s; }
+.slice-primary:active { transform: translateY(5px); box-shadow: 0 2px 0 #cf8a55; }
+.slice-rules { margin-top: 20px; display: flex; gap: 14px; color: #7d6352; font-size: 9px; font-weight: 850; }
+.slice-play { padding-top: 12px; }
+.slice-status { margin-bottom: 7px; padding: 7px 11px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; border: 1px solid #82533c32; border-radius: 17px; background: #fffaf0c4; box-shadow: 0 9px 22px #77433316; }
+.slice-status .dodge-animal { width: 43px; height: 43px; border-color: var(--slice-player); box-shadow: 0 0 0 2px #fff; }
+.slice-status > div { min-width: 0; display: grid; gap: 1px; }
+.slice-status small { color: #987967; font-size: 8px; font-weight: 850; }
+.slice-status strong { overflow: hidden; font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.slice-status > b { color: #6b3e34; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums; }
+.slice-status > b small { display: block; }
+.slice-board { width: min(100%, 430px); aspect-ratio: 390 / 460; margin: auto; position: relative; overflow: hidden; border: 2px solid #754b38; border-radius: 27px; background: #f4d7a7; box-shadow: 0 19px 38px #703e3235; }
+.slice-board canvas, .slice-preview { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+.slice-board canvas { cursor: crosshair; }
+.slice-board.drawing { box-shadow: 0 19px 38px #703e3235, 0 0 0 4px color-mix(in srgb, var(--slice-player) 35%, transparent); }
+.slice-ready { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(#fff6dc66, #5b352ad7); color: white; backdrop-filter: blur(2px); }
+.slice-ready .dodge-animal { width: 91px; height: 91px; border-width: 5px; box-shadow: 0 9px 0 #b57349, 0 20px 38px #4c2b2080; }
+.slice-ready strong { margin-top: 21px; font-size: 25px; letter-spacing: -.04em; }
+.slice-ready span { margin: 7px 0 17px; color: #ffe9cb; font-size: 11px; font-weight: 750; }
+.slice-ready button { padding: 11px 20px; border: 0; border-radius: 99px; background: #fff9df; color: #5e382f; font-size: 10px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #d99b64; }
+.slice-cut-label { position: absolute; left: 50%; top: 10px; padding: 7px 11px; border-radius: 99px; background: #5b382fd9; color: #fff5dc; font-size: 8px; font-weight: 900; transform: translateX(-50%); pointer-events: none; }
+.slice-help { min-height: 16px; margin: 7px 0 0; color: #826757; text-align: center; font-size: 8px; font-weight: 800; }.slice-help.error { color: #bd493f; }
+.slice-result, .slice-final { min-height: calc(100svh - 84px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.slice-preview { width: min(72vw, 300px); height: auto; aspect-ratio: 390 / 460; border: 2px solid #754b38; border-radius: 25px; box-shadow: 0 19px 38px #703e3235; }
+.slice-result > p { margin: 20px 0 3px; color: #a7653e; font-size: 10px; font-weight: 900; letter-spacing: .08em; }
+.slice-result h2 { margin: 0; display: flex; align-items: center; gap: 10px; font-size: clamp(39px, 11vw, 57px); letter-spacing: -.07em; }
+.slice-result h2 span:first-child { color: #9b537e; }.slice-result h2 span:last-child { color: #4b8a70; }.slice-result h2 i { color: #9d826d; font-size: 24px; font-style: normal; }
+.slice-result > strong { margin: 4px 0 20px; color: #785d4d; font-size: 12px; }
+.slice-final { justify-content: flex-start; padding: 29px 0 16px; }
+.slice-payer { width: min(100%, 430px); padding: 19px; display: grid; justify-items: center; border: 1px solid #d97c673d; border-radius: 25px; background: linear-gradient(145deg, #fff7e9, #f7c4b3); box-shadow: 0 18px 38px #7f443721; }
+.slice-payer .dodge-animal { width: 87px; height: 87px; border-width: 5px; box-shadow: 0 8px 0 #d77965, 0 18px 30px #7b41352e; }
+.slice-payer p { margin: 15px 0 2px; color: #be6555; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.slice-payer h2 { margin: 0; font-size: 33px; letter-spacing: -.05em; }
+.slice-payer strong { color: #a34e45; }
+.slice-ranking { width: min(100%, 430px); margin: 12px 0 15px; padding: 0; display: grid; gap: 7px; list-style: none; }
+.slice-ranking li { padding: 7px 10px; display: grid; grid-template-columns: 22px auto 1fr auto; align-items: center; gap: 8px; border: 1px solid #8a594426; border-radius: 14px; background: #fffaf0aa; text-align: left; }
+.slice-ranking li > span { color: #a45e3e; font-size: 12px; font-weight: 900; text-align: center; }
+.slice-ranking .dodge-animal { width: 38px; height: 38px; border-width: 2px; box-shadow: none; }
+.slice-ranking li > div { min-width: 0; display: grid; }.slice-ranking li strong { font-size: 12px; }.slice-ranking li small { overflow: hidden; color: #987868; font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
+.slice-ranking li > b { font-size: 12px; font-variant-numeric: tabular-nums; }
+.slice-final > .slice-secondary { margin-top: 10px; background: transparent; text-decoration: underline; }
+
+@media (max-height: 720px) {
+  .slice-shell { padding-top: 12px; }
+  .slice-topbar h1 { font-size: 25px; }
+  .slice-status { margin-bottom: 5px; padding-block: 4px; }
+  .slice-board { width: min(100%, 360px); }
+  .slice-help { margin-top: 4px; }
+  .slice-hero { height: 112px; transform: scale(.82); }
+  .slice-kicker { margin-top: 5px; }
+  .slice-intro { margin-block: 8px 12px; }
+  .slice-preview { width: min(60vw, 245px); }
 }
 
 .tray-shell {

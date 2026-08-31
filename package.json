@@ -18,6 +18,7 @@
     "check:dodge": "node --experimental-strip-types scripts/check-dodge.ts",
     "check:lander": "node --experimental-strip-types scripts/check-lander.ts",
     "check:parking": "node --experimental-strip-types scripts/check-parking.ts",
+    "check:slice": "node --experimental-strip-types scripts/check-slice.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
