@@ -11,7 +11,7 @@ const PerfectCurveGame = lazy(() => import('./circle'));
 const TrayGame = lazy(() => import('./tray'));
 const DodgeGame = lazy(() => import('./dodge'));
 const LanderGame = lazy(() => import('./lander'));
-const CupFlipGame = lazy(() => import('./cup-flip'));
+const ParkingGame = lazy(() => import('./parking'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -21,7 +21,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'cup';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -66,9 +66,9 @@ export default function Home() {
       <LanderGame onExit={() => setMode('menu')} />
     </Suspense>
   );
-  if (mode === 'cup') return (
-    <Suspense fallback={<main className="menu-shell"><p className="menu-note">컵을 세우고 있습니다…</p></main>}>
-      <CupFlipGame onExit={() => setMode('menu')} />
+  if (mode === 'parking') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">주차장을 열고 있습니다…</p></main>}>
+      <ParkingGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -142,12 +142,12 @@ export default function Home() {
           <p>누르고 밀어 우주선을 조종하고 가장 부드럽게 착륙하세요.</p>
           <b>엔진 점화</b>
         </button>
-        <button className="game-card cup-card" onClick={() => setMode('cup')}>
-          <span className="game-card-art cup-card-art" aria-hidden="true">🥤</span>
-          <small>스와이프와 회전 감각</small>
-          <strong>뒤집어! 컵</strong>
-          <p>컵을 위로 튕겨 한 바퀴 돌리고 바닥으로 바로 세우세요.</p>
-          <b>컵 플립</b>
+        <button className="game-card parking-card" onClick={() => setMode('parking')}>
+          <span className="game-card-art parking-card-art" aria-hidden="true">🚙</span>
+          <small>조향과 제동 감각</small>
+          <strong>한 번에 주차</strong>
+          <p>차를 한 번 출발시켜 빈 주차칸에 정확히 멈추세요.</p>
+          <b>주차 도전</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
