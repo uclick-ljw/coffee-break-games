@@ -1,5 +1,5 @@
 export const PATH_BOARD_SIZE = 5;
-export const PATH_MAX_ROTATIONS = 8;
+export const PATH_ROTATION_BUFFER = 1;
 export const PATH_HEAD_START_SECONDS = 5;
 export const PATH_TURN_SECONDS = 13;
 export const PATH_STEP_MS = 600;

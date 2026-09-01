@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { PATH_HEAD_START_SECONDS, PATH_STEP_MS, PATH_TURN_SECONDS, adjustedPathTime, makePathChallenges, pathProgress, pathTurnCost, rankPathResults, solvedPathDirections, solvePathChallenge, tracePath } from '../app/path-game.ts';
+import { PATH_HEAD_START_SECONDS, PATH_ROTATION_BUFFER, PATH_STEP_MS, PATH_TURN_SECONDS, adjustedPathTime, makePathChallenges, pathProgress, pathTurnCost, rankPathResults, solvedPathDirections, solvePathChallenge, tracePath } from '../app/path-game.ts';
 
 assert.equal(PATH_HEAD_START_SECONDS, 5);
 assert.equal(PATH_TURN_SECONDS, 13);
 assert.equal(PATH_STEP_MS, 600);
+assert.equal(PATH_ROTATION_BUFFER, 1);
 
 for (let seed = 1; seed <= 80; seed += 1) {
   const challenges = makePathChallenges(6, seed);
@@ -12,6 +13,7 @@ for (let seed = 1; seed <= 80; seed += 1) {
     const solved = solvePathChallenge(challenge.directions, challenge.hazards, challenge.start, challenge.exitCell)!;
     assert(solved.rotations >= 3 && solved.rotations <= 4, 'every board needs three to four optimal turns');
     assert.equal(solved.rotations, challenge.optimalRotations);
+    assert.equal(challenge.optimalRotations + PATH_ROTATION_BUFFER, solved.rotations + 1);
     assert(solved.path.length >= 6 && solved.path.length <= 9);
     assert.equal(challenge.hazards.length, 4);
     const directions = solvedPathDirections(challenge);
