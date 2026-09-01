@@ -21,6 +21,7 @@ import {
 type Phase = 'setup' | 'ready' | 'play' | 'result' | 'final';
 
 const ARROWS = ['↑', '→', '↓', '←'];
+const DIRECTION_LABELS = ['위쪽', '오른쪽', '아래쪽', '왼쪽'];
 const PLAYER_COLORS = ['#52e6c2', '#ff8b67', '#a990ff', '#f8ce57', '#ff79b0', '#66b8ff'];
 const FAILURE_LABELS: Record<PathFailure, string> = {
   guard: '경비원에게 잡혔어요',
@@ -37,11 +38,13 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
   const [challenges, setChallenges] = useState(() => makePathChallenges(2, 9107));
   const [directions, setDirections] = useState([...challenges[0].directions]);
   const [thief, setThief] = useState(challenges[0].start);
+  const [runner, setRunner] = useState(() => ({ row: Math.floor(challenges[0].start / PATH_BOARD_SIZE), column: challenges[0].start % PATH_BOARD_SIZE }));
   const [used, setUsed] = useState<number[]>([]);
   const [rotations, setRotations] = useState(0);
   const [timeLeft, setTimeLeft] = useState(PATH_TURN_SECONDS);
   const [launchLeft, setLaunchLeft] = useState(PATH_HEAD_START_SECONDS);
   const [launched, setLaunched] = useState(false);
+  const [resolving, setResolving] = useState(false);
   const [results, setResults] = useState<PathResult[]>([]);
   const [lastResult, setLastResult] = useState<PathResult | null>(null);
 
@@ -55,6 +58,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
   const launchedRef = useRef(false);
   const stepRef = useRef(0);
   const lockedRef = useRef(false);
+  const resolvingRef = useRef(false);
 
   const challenge = challenges[turn] ?? challenges[0];
   const ranked = useMemo(() => rankPathResults(results), [results]);
@@ -70,13 +74,16 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
     launchedRef.current = false;
     stepRef.current = 0;
     lockedRef.current = false;
+    resolvingRef.current = false;
     setDirections(nextDirections);
     setThief(next.start);
+    setRunner({ row: Math.floor(next.start / PATH_BOARD_SIZE), column: next.start % PATH_BOARD_SIZE });
     setUsed([]);
     setRotations(0);
     setTimeLeft(PATH_TURN_SECONDS);
     setLaunchLeft(PATH_HEAD_START_SECONDS);
     setLaunched(false);
+    setResolving(false);
     setLastResult(null);
   }, []);
 
@@ -96,6 +103,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
     };
     setLastResult(result);
     setResults((current) => [...current, result]);
+    setResolving(false);
     setPhase('result');
   }, [challenge, turn]);
 
@@ -106,33 +114,41 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
     setUsed([...usedRef.current]);
     stepRef.current += 1;
     const elapsed = (now - startedAtRef.current) / 1000;
-
-    if (current === challenge.exitCell && direction === challenge.exitDirection) {
-      finishTurn(true, elapsed);
-      return;
-    }
-
     const row = Math.floor(current / PATH_BOARD_SIZE);
     const column = current % PATH_BOARD_SIZE;
     const delta = [[-1, 0], [0, 1], [1, 0], [0, -1]][direction];
+
+    const finishAfterMove = (success: boolean, failure?: PathFailure, targetRow = row + delta[0], targetColumn = column + delta[1]) => {
+      resolvingRef.current = true;
+      setResolving(true);
+      setRunner({ row: targetRow, column: targetColumn });
+      window.setTimeout(() => finishTurn(success, elapsed, failure), PATH_STEP_MS);
+    };
+
+    if (current === challenge.exitCell && direction === challenge.exitDirection) {
+      finishAfterMove(true);
+      return;
+    }
+
     const nextRow = row + delta[0];
     const nextColumn = column + delta[1];
     if (nextRow < 0 || nextRow >= PATH_BOARD_SIZE || nextColumn < 0 || nextColumn >= PATH_BOARD_SIZE) {
-      finishTurn(false, elapsed, 'wall');
+      finishAfterMove(false, 'wall', nextRow, nextColumn);
       return;
     }
     const next = nextRow * PATH_BOARD_SIZE + nextColumn;
     if (challenge.hazards.includes(next)) {
-      finishTurn(false, elapsed, 'guard');
+      finishAfterMove(false, 'guard', nextRow, nextColumn);
       return;
     }
     if (actualPathRef.current.includes(next)) {
-      finishTurn(false, elapsed, 'loop');
+      finishAfterMove(false, 'loop', nextRow, nextColumn);
       return;
     }
     thiefRef.current = next;
     actualPathRef.current = [...actualPathRef.current, next];
     setThief(next);
+    setRunner({ row: nextRow, column: nextColumn });
   }, [challenge, finishTurn]);
 
   useEffect(() => {
@@ -142,6 +158,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
       const elapsed = (now - startedAtRef.current) / 1000;
       setTimeLeft(Math.max(0, PATH_TURN_SECONDS - elapsed));
       if (!launchedRef.current) setLaunchLeft(Math.max(0, (launchAtRef.current - now) / 1000));
+      if (resolvingRef.current) return;
       if (elapsed >= PATH_TURN_SECONDS) {
         finishTurn(false, elapsed, 'timeout');
         return;
@@ -202,6 +219,8 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
 
   const remainingSteps = lastResult ? Math.max(0, lastResult.pathLength - lastResult.progress) : 0;
   const boardCells = Array.from({ length: PATH_BOARD_SIZE ** 2 }, (_, index) => index);
+  const currentDirection = directions[thief];
+  const runnerStyle = { '--path-runner-row': runner.row, '--path-runner-column': runner.column } as CSSProperties;
 
   return (
     <main className="path-shell">
@@ -213,12 +232,12 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
       {phase === 'setup' && (
         <section className="path-setup">
           <div className="path-emblem" aria-hidden="true"><span>↱</span><i>🕵️</i><b>EXIT</b></div>
-          <p className="path-kicker">3초 뒤, 도둑은 멈추지 않는다</p>
+          <p className="path-kicker">5초 뒤, 도둑은 멈추지 않는다</p>
           <h2>화살표를 돌려<br />탈출로를 완성하세요</h2>
           <p>타일을 누르면 시계 방향으로 90° 회전합니다.<br />경비원과 막다른 길을 피해 출구까지 연결하세요.</p>
           <label className="path-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="path-primary" onClick={startGame}>탈출 작전 시작</button>
-          <div className="path-rules"><span>↻ 최대 8회</span><span>🚨 경비원 피하기</span><span>⏱️ 9초 승부</span></div>
+          <div className="path-rules"><span>↻ 최대 8회</span><span>🚨 경비원 피하기</span><span>⏱️ 13초 승부</span></div>
         </section>
       )}
 
@@ -235,7 +254,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
       {(phase === 'play' || phase === 'result') && (
         <section className="path-play" style={{ '--path-player': PLAYER_COLORS[turn] } as CSSProperties}>
           <div className="path-status">
-            <i /><div><small>{PLAYER_NAMES[turn]} 차례 · {turn + 1}/{players}</small><strong>{launched ? '도둑 이동 중!' : `자동 출발 ${launchLeft.toFixed(1)}초`}</strong></div>
+            <i /><div><small>{PLAYER_NAMES[turn]} 차례 · {turn + 1}/{players}</small><strong>{phase === 'result' ? '작전 종료' : !launched ? `첫 이동 ${DIRECTION_LABELS[currentDirection]} · ${launchLeft.toFixed(1)}초` : resolving ? '마지막 움직임 확인 중' : `이동 중 · 다음 ${DIRECTION_LABELS[currentDirection]}`}</strong></div>
             <b>{timeLeft.toFixed(1)}<small>초</small></b>
           </div>
           <div className="path-board-wrap">
@@ -255,10 +274,13 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
                   >
                     <span className="path-arrow">{ARROWS[directions[cell]]}</span>
                     {cell === challenge.exitCell && <small>EXIT</small>}
-                    {cell === thief && <i className="path-thief" aria-hidden="true">🕵️</i>}
+                    {cell === challenge.start && <small className="path-start-label">START</small>}
                   </button>
                 );
               })}
+              <span className={`path-thief-runner ${resolving ? 'resolving' : ''}`} style={runnerStyle} aria-label={`도둑, 다음 이동 ${DIRECTION_LABELS[currentDirection]}`}>
+                <i aria-hidden="true">🕵️</i><b aria-hidden="true">{ARROWS[currentDirection]}</b>
+              </span>
             </div>
             {phase === 'result' && lastResult && (
               <div className={`path-turn-result ${lastResult.success ? 'success' : 'failed'}`}>
@@ -275,7 +297,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
           {phase === 'play' && (
             <div className="path-controls">
               <div className="path-timer"><i style={{ width: `${timeLeft / PATH_TURN_SECONDS * 100}%` }} /></div>
-              <p>{launched ? '도둑 앞쪽 타일은 아직 돌릴 수 있어요' : '길이 완성되면 3초 전에도 바로 출발합니다'}</p>
+              <p>{launched ? '도둑 앞쪽 타일은 아직 돌릴 수 있어요' : '길이 완성되면 5초 전에도 바로 출발합니다'}</p>
               <b>{rotations}<small>/{PATH_MAX_ROTATIONS} 회전</small></b>
             </div>
           )}

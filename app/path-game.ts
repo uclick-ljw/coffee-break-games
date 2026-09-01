@@ -1,8 +1,8 @@
 export const PATH_BOARD_SIZE = 5;
 export const PATH_MAX_ROTATIONS = 8;
-export const PATH_HEAD_START_SECONDS = 3;
-export const PATH_TURN_SECONDS = 9;
-export const PATH_STEP_MS = 460;
+export const PATH_HEAD_START_SECONDS = 5;
+export const PATH_TURN_SECONDS = 13;
+export const PATH_STEP_MS = 600;
 
 export type PathDirection = 0 | 1 | 2 | 3;
 export type PathFailure = 'guard' | 'wall' | 'loop' | 'timeout';
