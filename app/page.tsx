@@ -16,6 +16,7 @@ const SliceGame = lazy(() => import('./slice'));
 const ShadowGame = lazy(() => import('./shadow'));
 const PathGame = lazy(() => import('./path'));
 const CupGame = lazy(() => import('./cups'));
+const LunchGame = lazy(() => import('./lunch'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -25,7 +26,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -93,6 +94,11 @@ export default function Home() {
   if (mode === 'cups') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">컵 아래 구슬을 숨기고 있습니다…</p></main>}>
       <CupGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'lunch') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">도시락 반찬을 준비하고 있습니다…</p></main>}>
+      <LunchGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -200,6 +206,13 @@ export default function Home() {
           <strong>컵 속 구슬</strong>
           <p>구슬을 숨긴 컵을 끝까지 따라가 가장 빠르게 찾아내세요.</p>
           <b>컵 따라가기</b>
+        </button>
+        <button className="game-card lunch-card" onClick={() => setMode('lunch')}>
+          <span className="game-card-art lunch-card-art" aria-hidden="true">🍱</span>
+          <small>공간 판단과 손끝 포장</small>
+          <strong>도시락 빈틈없이</strong>
+          <p>음식을 돌려 담고 가장 빈틈없는 도시락을 완성하세요.</p>
+          <b>도시락 싸기</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>

@@ -22,6 +22,7 @@
     "check:shadow": "node --experimental-strip-types scripts/check-shadow.ts",
     "check:path": "node --experimental-strip-types scripts/check-path.ts",
     "check:cups": "node --experimental-strip-types scripts/check-cups.ts",
+    "check:lunch": "node --experimental-strip-types scripts/check-lunch.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
