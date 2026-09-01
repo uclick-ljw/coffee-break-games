@@ -9,14 +9,17 @@ for (let seed = 1; seed <= 80; seed += 1) {
   const challenges = makePathChallenges(6, seed);
   assert.equal(challenges.length, 6);
   for (const challenge of challenges) {
-    const solved = solvePathChallenge(challenge.directions, challenge.hazards, challenge.start, challenge.exitCell, challenge.exitDirection)!;
-    assert(solved.rotations >= 4 && solved.rotations <= 6, 'every board needs four to six optimal turns');
+    const solved = solvePathChallenge(challenge.directions, challenge.hazards, challenge.start, challenge.exitCell)!;
+    assert(solved.rotations >= 3 && solved.rotations <= 4, 'every board needs three to four optimal turns');
     assert.equal(solved.rotations, challenge.optimalRotations);
-    assert(solved.path.length >= 7 && solved.path.length <= 11);
+    assert(solved.path.length >= 6 && solved.path.length <= 9);
+    assert.equal(challenge.hazards.length, 4);
     const directions = solvedPathDirections(challenge);
     assert.equal(tracePath(challenge, directions).success, true);
-    const usedTurns = challenge.solution.reduce((sum, cell) => sum + pathTurnCost(challenge.directions[cell], directions[cell]), 0);
+    const usedTurns = challenge.solution.slice(0, -1).reduce((sum, cell) => sum + pathTurnCost(challenge.directions[cell], directions[cell]), 0);
     assert.equal(usedTurns, challenge.optimalRotations);
+    directions[challenge.exitCell] = (directions[challenge.exitCell] + 1) % 4 as 0 | 1 | 2 | 3;
+    assert.equal(tracePath(challenge, directions).success, true, 'the exit succeeds without an arrow direction');
   }
   assert.equal(new Set(challenges.map((challenge) => challenge.optimalRotations)).size, 1, 'transformed boards must have equal difficulty');
 }

@@ -125,11 +125,6 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
       window.setTimeout(() => finishTurn(success, elapsed, failure), PATH_STEP_MS);
     };
 
-    if (current === challenge.exitCell && direction === challenge.exitDirection) {
-      finishAfterMove(true);
-      return;
-    }
-
     const nextRow = row + delta[0];
     const nextColumn = column + delta[1];
     if (nextRow < 0 || nextRow >= PATH_BOARD_SIZE || nextColumn < 0 || nextColumn >= PATH_BOARD_SIZE) {
@@ -139,6 +134,13 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
     const next = nextRow * PATH_BOARD_SIZE + nextColumn;
     if (challenge.hazards.includes(next)) {
       finishAfterMove(false, 'guard', nextRow, nextColumn);
+      return;
+    }
+    if (next === challenge.exitCell) {
+      thiefRef.current = next;
+      actualPathRef.current = [...actualPathRef.current, next];
+      setThief(next);
+      finishAfterMove(true, undefined, nextRow, nextColumn);
       return;
     }
     if (actualPathRef.current.includes(next)) {
@@ -234,10 +236,10 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
           <div className="path-emblem" aria-hidden="true"><span>↱</span><i>🕵️</i><b>EXIT</b></div>
           <p className="path-kicker">5초 뒤, 도둑은 멈추지 않는다</p>
           <h2>화살표를 돌려<br />탈출로를 완성하세요</h2>
-          <p>타일을 누르면 시계 방향으로 90° 회전합니다.<br />경비원과 막다른 길을 피해 출구까지 연결하세요.</p>
+          <p>타일을 누르면 시계 방향으로 90° 회전합니다.<br />경비원을 피해 화살표 없는 EXIT 칸에 닿으면 성공입니다.</p>
           <label className="path-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="path-primary" onClick={startGame}>탈출 작전 시작</button>
-          <div className="path-rules"><span>↻ 최대 8회</span><span>🚨 경비원 피하기</span><span>⏱️ 13초 승부</span></div>
+          <div className="path-rules"><span>↻ 정답 3~4회</span><span>🚨 경비원 4명</span><span>⏱️ 13초 승부</span></div>
         </section>
       )}
 
@@ -264,16 +266,17 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
                 const isUsed = used.includes(cell);
                 return isGuard ? (
                   <div className="path-cell path-guard" key={cell} aria-label="경비원"><span>🚨</span></div>
+                ) : cell === challenge.exitCell ? (
+                  <div className="path-cell path-exit" key={cell} role="img" aria-label="탈출 지점"><strong>EXIT</strong></div>
                 ) : (
                   <button
                     key={cell}
-                    className={`path-cell ${cell === challenge.exitCell ? 'path-exit' : ''} ${isUsed ? 'used' : ''} ${cell === thief ? 'current' : ''}`}
+                    className={`path-cell ${isUsed ? 'used' : ''} ${cell === thief ? 'current' : ''}`}
                     onClick={(event) => rotateTile(cell, event.timeStamp)}
                     disabled={phase !== 'play' || isUsed || rotations >= PATH_MAX_ROTATIONS}
-                    aria-label={`${cell === challenge.exitCell ? '출구 ' : ''}${ARROWS[directions[cell]]} 방향 타일`}
+                    aria-label={`${ARROWS[directions[cell]]} 방향 타일`}
                   >
                     <span className="path-arrow">{ARROWS[directions[cell]]}</span>
-                    {cell === challenge.exitCell && <small>EXIT</small>}
                     {cell === challenge.start && <small className="path-start-label">START</small>}
                   </button>
                 );

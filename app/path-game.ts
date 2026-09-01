@@ -12,7 +12,6 @@ export type PathChallenge = {
   hazards: number[];
   start: number;
   exitCell: number;
-  exitDirection: PathDirection;
   solution: number[];
   optimalRotations: number;
 };
@@ -54,12 +53,11 @@ export function solvePathChallenge(
   hazards: number[],
   start: number,
   exitCell: number,
-  exitDirection: PathDirection,
 ) {
-  const terminal = PATH_BOARD_SIZE ** 2;
+  const cellCount = PATH_BOARD_SIZE ** 2;
   const hazardSet = new Set(hazards);
-  const distance: Array<[number, number] | null> = Array(terminal + 1).fill(null);
-  const previous = Array<number>(terminal + 1).fill(-1);
+  const distance: Array<[number, number] | null> = Array(cellCount).fill(null);
+  const previous = Array<number>(cellCount).fill(-1);
   const open = new Set<number>([start]);
   distance[start] = [0, 0];
 
@@ -69,11 +67,10 @@ export function solvePathChallenge(
       if (current < 0 || better(distance[candidate]!, distance[current])) current = candidate;
     }
     open.delete(current);
-    if (current === terminal) break;
+    if (current === exitCell) break;
 
     const point = pointOf(current);
     const targets: Array<{ index: number; direction: PathDirection }> = [];
-    if (current === exitCell) targets.push({ index: terminal, direction: exitDirection });
     for (let direction = 0; direction < DELTAS.length; direction += 1) {
       const row = point.row + DELTAS[direction][0];
       const column = point.column + DELTAS[direction][1];
@@ -94,11 +91,11 @@ export function solvePathChallenge(
     }
   }
 
-  if (!distance[terminal]) return null;
+  if (!distance[exitCell]) return null;
   const path: number[] = [];
-  for (let current = previous[terminal]; current >= 0; current = previous[current]) path.push(current);
+  for (let current = exitCell; current >= 0; current = previous[current]) path.push(current);
   path.reverse();
-  return { rotations: distance[terminal]![0], steps: distance[terminal]![1], path };
+  return { rotations: distance[exitCell]![0], steps: distance[exitCell]![1], path };
 }
 
 function random(seed: number) {
@@ -115,23 +112,18 @@ function makeBaseChallenge(seed: number, targetRotations?: number, targetLength?
   const next = random(seed);
   const start = indexOf(2, 0);
   const exitCell = indexOf(2, 4);
-  const exitDirection: PathDirection = 1;
 
   for (let attempt = 0; attempt < 20000; attempt += 1) {
     const directions = Array.from({ length: PATH_BOARD_SIZE ** 2 }, () => Math.floor(next() * 4) as PathDirection);
     const candidates = Array.from({ length: PATH_BOARD_SIZE ** 2 }, (_, index) => index)
       .filter((index) => index !== start && index !== exitCell)
       .sort(() => next() - .5);
-    const hazards = candidates.slice(0, 5);
-    const solved = solvePathChallenge(directions, hazards, start, exitCell, exitDirection);
-    if (!solved || solved.rotations < 4 || solved.rotations > 6 || solved.path.length < 7 || solved.path.length > 11) continue;
+    const hazards = candidates.slice(0, 4);
+    const solved = solvePathChallenge(directions, hazards, start, exitCell);
+    if (!solved || solved.rotations < 3 || solved.rotations > 4 || solved.path.length < 6 || solved.path.length > 9) continue;
     if (targetRotations !== undefined && solved.rotations !== targetRotations) continue;
     if (targetLength !== undefined && solved.path.length !== targetLength) continue;
-    const hasHalfTurn = solved.path.some((cell, index) => {
-      const target = index + 1 < solved.path.length ? directionBetween(cell, solved.path[index + 1]) : exitDirection;
-      return pathTurnCost(directions[cell], target) === 2;
-    });
-    if (hasHalfTurn) return { directions, hazards, start, exitCell, exitDirection, solution: solved.path, optimalRotations: solved.rotations };
+    return { directions, hazards, start, exitCell, solution: solved.path, optimalRotations: solved.rotations };
   }
   throw new Error('길 퍼즐 생성에 실패했습니다.');
 }
@@ -156,7 +148,6 @@ function rotateChallenge(challenge: PathChallenge, turns: number): PathChallenge
     hazards: challenge.hazards.map((cell) => transformCell(cell, turns)),
     start: transformCell(challenge.start, turns),
     exitCell: transformCell(challenge.exitCell, turns),
-    exitDirection: transformDirection(challenge.exitDirection, turns),
     solution: challenge.solution.map((cell) => transformCell(cell, turns)),
     optimalRotations: challenge.optimalRotations,
   };
@@ -174,10 +165,8 @@ export function makePathChallenges(players: number, seed: number) {
 
 export function solvedPathDirections(challenge: PathChallenge) {
   const directions = [...challenge.directions];
-  challenge.solution.forEach((cell, index) => {
-    directions[cell] = index + 1 < challenge.solution.length
-      ? directionBetween(cell, challenge.solution[index + 1])
-      : challenge.exitDirection;
+  challenge.solution.slice(0, -1).forEach((cell, index) => {
+    directions[cell] = directionBetween(cell, challenge.solution[index + 1]);
   });
   return directions;
 }
@@ -188,8 +177,8 @@ export function tracePath(challenge: PathChallenge, directions = challenge.direc
   const seen = new Set(path);
   let current = start;
   for (let step = 0; step < PATH_BOARD_SIZE ** 2; step += 1) {
+    if (current === challenge.exitCell) return { success: true as const, path };
     const direction = directions[current];
-    if (current === challenge.exitCell && direction === challenge.exitDirection) return { success: true as const, path };
     const point = pointOf(current);
     const row = point.row + DELTAS[direction][0];
     const column = point.column + DELTAS[direction][1];
