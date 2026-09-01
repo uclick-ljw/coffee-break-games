@@ -255,9 +255,14 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
       {(phase === 'play' || phase === 'result') && (
         <section className="path-play" style={{ '--path-player': PLAYER_COLORS[turn] } as CSSProperties}>
           <div className="path-status">
-            <i /><div><small>{PLAYER_NAMES[turn]} 차례 · {turn + 1}/{players}</small><strong>{phase === 'result' ? '작전 종료' : !launched ? `첫 이동 ${DIRECTION_LABELS[currentDirection]} · ${launchLeft.toFixed(1)}초` : resolving ? '마지막 움직임 확인 중' : `이동 중 · 다음 ${DIRECTION_LABELS[currentDirection]}`}</strong></div>
+            <i /><div><small>{PLAYER_NAMES[turn]} 차례 · {turn + 1}/{players}</small><strong>{phase === 'result' ? '작전 종료' : !launched ? `출발 준비 · ${launchLeft.toFixed(1)}초` : resolving ? '마지막 움직임 확인 중' : `이동 중 · 다음 ${DIRECTION_LABELS[currentDirection]}`}</strong></div>
             <b>{timeLeft.toFixed(1)}<small>초</small></b>
           </div>
+          {phase === 'play' && !launched && (
+            <div className="path-launch-banner" aria-label={`첫 출발 방향 ${DIRECTION_LABELS[currentDirection]}`}>
+              <small>첫 출발 방향</small><strong>{ARROWS[currentDirection]}</strong><b>{DIRECTION_LABELS[currentDirection]}</b><span>{launchLeft.toFixed(1)}초 후 출발</span>
+            </div>
+          )}
           <div className="path-board-wrap">
             <div className="path-board" aria-label="5 곱하기 5 탈출 경로 게임판">
               {boardCells.map((cell) => {
@@ -266,7 +271,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
                 return isGuard ? (
                   <div className="path-cell path-guard" key={cell} aria-label="경비원"><span>🚨</span></div>
                 ) : cell === challenge.exitCell ? (
-                  <div className="path-cell path-exit" key={cell} role="img" aria-label="탈출 지점"><strong>EXIT</strong></div>
+                  <div className="path-cell path-exit" key={cell} role="img" aria-label="탈출구 EXIT"><span aria-hidden="true">🚪</span><strong>EXIT</strong><small>탈출구</small></div>
                 ) : (
                   <button
                     key={cell}
@@ -276,11 +281,11 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
                     aria-label={`${ARROWS[directions[cell]]} 방향 타일`}
                   >
                     <span className="path-arrow">{ARROWS[directions[cell]]}</span>
-                    {cell === challenge.start && <small className="path-start-label">START</small>}
+                    {cell === challenge.start && <small className="path-start-label">출발</small>}
                   </button>
                 );
               })}
-              <span className={`path-thief-runner ${resolving ? 'resolving' : ''}`} style={runnerStyle} aria-label={`도둑, 다음 이동 ${DIRECTION_LABELS[currentDirection]}`}>
+              <span className={`path-thief-runner ${!launched ? 'prelaunch' : ''} ${resolving ? 'resolving' : ''}`} style={runnerStyle} aria-label={`도둑, 다음 이동 ${DIRECTION_LABELS[currentDirection]}`}>
                 <i aria-hidden="true">🕵️</i><b aria-hidden="true">{ARROWS[currentDirection]}</b>
               </span>
             </div>
