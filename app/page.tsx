@@ -109,6 +109,7 @@ export default function Home() {
         <p>2명부터 한 기기로 즐기는 빠른 내기 게임</p>
       </header>
       <section className="game-grid" aria-label="게임 선택">
+        <header className="game-cluster-heading"><span>🎲</span><div><h2>운과 반전</h2><p>결과를 예측할 수 없는 짜릿한 한 판</p></div></header>
         <button className="game-card ice-card" onClick={() => setMode('ice')}>
           <span className="game-card-art" aria-hidden="true">🐧</span>
           <small>운과 연쇄 붕괴</small>
@@ -137,26 +138,13 @@ export default function Home() {
           <p>스크래치 복권을 직접 긁고 오늘 커피나 밥을 살 사람을 정하세요.</p>
           <b>게임 시작</b>
         </button>
+        <header className="game-cluster-heading"><span>⚡</span><div><h2>손끝과 순간 감각</h2><p>짧은 판단과 정확한 조작으로 승부</p></div></header>
         <button className="game-card timing-card" onClick={() => setMode('timing')}>
           <span className="game-card-art" aria-hidden="true">⏱️</span>
           <small>감각과 순간 판단</small>
           <strong>멈춰!</strong>
           <p>시간을 숨기거나 보면서 목표 초에 가장 가깝게 멈추세요.</p>
           <b>2가지 방식</b>
-        </button>
-        <button className="game-card circle-card" onClick={() => setMode('circle')}>
-          <span className="game-card-art circle-card-art" aria-hidden="true">∿</span>
-          <small>다섯 곡선과 손끝 감각</small>
-          <strong>완벽한 곡선</strong>
-          <p>오늘의 곡선을 기억해 한 번에 그리고 가장 닮은 한 붓에 도전하세요.</p>
-          <b>곡선 뽑기</b>
-        </button>
-        <button className="game-card tray-card" onClick={() => setMode('tray')}>
-          <span className="game-card-art tray-card-art" aria-hidden="true">☕</span>
-          <small>균형과 배치 감각</small>
-          <strong>아슬아슬 트레이</strong>
-          <p>카페 물건을 번갈아 쌓고, 하나라도 떨어뜨리면 바로 패배!</p>
-          <b>균형 잡기</b>
         </button>
         <button className="game-card dodge-card" onClick={() => setMode('dodge')}>
           <span className="game-card-art dodge-card-art" aria-hidden="true" />
@@ -179,6 +167,14 @@ export default function Home() {
           <p>차를 한 번 출발시켜 빈 주차칸에 정확히 멈추세요.</p>
           <b>주차 도전</b>
         </button>
+        <header className="game-cluster-heading"><span>👀</span><div><h2>눈대중과 집중</h2><p>보고 기억하고 가장 정확하게 맞히기</p></div></header>
+        <button className="game-card circle-card" onClick={() => setMode('circle')}>
+          <span className="game-card-art circle-card-art" aria-hidden="true">∿</span>
+          <small>다섯 곡선과 손끝 감각</small>
+          <strong>완벽한 곡선</strong>
+          <p>오늘의 곡선을 기억해 한 번에 그리고 가장 닮은 한 붓에 도전하세요.</p>
+          <b>곡선 뽑기</b>
+        </button>
         <button className="game-card slice-card" onClick={() => setMode('slice')}>
           <span className="game-card-art slice-card-art" aria-hidden="true">🍠</span>
           <small>눈대중과 면적 감각</small>
@@ -193,19 +189,27 @@ export default function Home() {
           <p>3D 조형물을 돌려 검은 목표 그림자와 가장 정확히 겹치세요.</p>
           <b>그림자 훔치기</b>
         </button>
-        <button className="game-card path-card" onClick={() => setMode('path')}>
-          <span className="game-card-art path-card-art" aria-hidden="true">↱</span>
-          <small>경로 판단과 실시간 회전</small>
-          <strong>길을 바꿔라</strong>
-          <p>화살표를 돌려 경비원을 피하고 도둑의 탈출로를 완성하세요.</p>
-          <b>탈출 작전</b>
-        </button>
         <button className="game-card cup-card" onClick={() => setMode('cups')}>
           <span className="game-card-art cup-card-art" aria-hidden="true" />
           <small>눈썰미와 집중력</small>
           <strong>컵 속 구슬</strong>
           <p>구슬을 숨긴 컵을 끝까지 따라가 가장 빠르게 찾아내세요.</p>
           <b>컵 따라가기</b>
+        </button>
+        <header className="game-cluster-heading"><span>🧩</span><div><h2>배치와 전략</h2><p>공간을 읽고 가장 좋은 수를 선택하기</p></div></header>
+        <button className="game-card tray-card" onClick={() => setMode('tray')}>
+          <span className="game-card-art tray-card-art" aria-hidden="true">☕</span>
+          <small>균형과 배치 감각</small>
+          <strong>아슬아슬 트레이</strong>
+          <p>카페 물건을 번갈아 쌓고, 하나라도 떨어뜨리면 바로 패배!</p>
+          <b>균형 잡기</b>
+        </button>
+        <button className="game-card path-card" onClick={() => setMode('path')}>
+          <span className="game-card-art path-card-art" aria-hidden="true">↱</span>
+          <small>경로 판단과 실시간 회전</small>
+          <strong>길을 바꿔라</strong>
+          <p>화살표를 돌려 경비원을 피하고 도둑의 탈출로를 완성하세요.</p>
+          <b>탈출 작전</b>
         </button>
         <button className="game-card lunch-card" onClick={() => setMode('lunch')}>
           <span className="game-card-art lunch-card-art" aria-hidden="true">🍱</span>
