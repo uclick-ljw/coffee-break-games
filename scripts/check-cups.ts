@@ -3,7 +3,7 @@ import { CUP_ROUNDS, cupRoundScore, finalCupSlot, makeCupChallenges, rankCupResu
 
 assert.equal(CUP_ROUNDS, 3);
 const cupCounts = [3, 4, 5];
-const swapCounts = [5, 7, 9];
+const swapCounts = [7, 9, 11];
 for (let seed = 1; seed <= 100; seed += 1) {
   const games = makeCupChallenges(6, seed);
   assert.equal(games.length, 6);

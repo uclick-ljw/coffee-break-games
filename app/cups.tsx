@@ -9,7 +9,8 @@ type Phase = 'setup' | 'ready' | 'reveal' | 'shuffle' | 'choose' | 'roundResult'
 type CupVisual = { id: number; slot: number };
 
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
-const PLAYER_COLORS = ['#ef604d', '#2c9d91', '#7d69c7', '#e3a62f', '#e66e99', '#4b82ca'];
+const PLAYER_COLORS = ['#168ad5', '#ff8f45', '#8b6edb', '#28a77a', '#e84d9b', '#e6b81e'];
+const PLAYER_CUP_HUES = [200, 23, 250, 152, 325, 43];
 
 function initialCups(challenge: CupChallenge): CupVisual[] {
   return Array.from({ length: challenge.cupCount }, (_, id) => ({ id, slot: id }));
@@ -162,6 +163,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
     '--cup-count': challenge.cupCount,
     '--cup-speed': `${challenge.speedMs}ms`,
     '--cup-player': PLAYER_COLORS[player],
+    '--cup-hue': `${PLAYER_CUP_HUES[player]}deg`,
   } as CSSProperties;
 
   return (
@@ -188,7 +190,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'ready' && (
         <section className="cup-ready">
-          <div className="cup-ready-card" style={{ '--cup-player': PLAYER_COLORS[player] } as CSSProperties}>
+          <div className="cup-ready-card" style={{ '--cup-player': PLAYER_COLORS[player], '--cup-hue': `${PLAYER_CUP_HUES[player]}deg` } as CSSProperties}>
             <img src="/cup-shuffle-cup.png" alt="" />
             <small>{player + 1}/{players}번째 참가자 · {round + 1}/{CUP_ROUNDS} 셔플</small>
             <h2>{PLAYER_NAMES[player]} 준비</h2>
