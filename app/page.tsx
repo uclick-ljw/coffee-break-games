@@ -14,6 +14,7 @@ const LanderGame = lazy(() => import('./lander'));
 const ParkingGame = lazy(() => import('./parking'));
 const SliceGame = lazy(() => import('./slice'));
 const ShadowGame = lazy(() => import('./shadow'));
+const PathGame = lazy(() => import('./path'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -23,7 +24,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -81,6 +82,11 @@ export default function Home() {
   if (mode === 'shadow') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">비밀 조형물을 꺼내고 있습니다…</p></main>}>
       <ShadowGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'path') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">탈출 경로를 숨기고 있습니다…</p></main>}>
+      <PathGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -174,6 +180,13 @@ export default function Home() {
           <strong>그림자 도둑</strong>
           <p>3D 조형물을 돌려 검은 목표 그림자와 가장 정확히 겹치세요.</p>
           <b>그림자 훔치기</b>
+        </button>
+        <button className="game-card path-card" onClick={() => setMode('path')}>
+          <span className="game-card-art path-card-art" aria-hidden="true">↱</span>
+          <small>경로 판단과 실시간 회전</small>
+          <strong>길을 바꿔라</strong>
+          <p>화살표를 돌려 경비원을 피하고 도둑의 탈출로를 완성하세요.</p>
+          <b>탈출 작전</b>
         </button>
       </section>
       <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
