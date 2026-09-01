@@ -18,6 +18,7 @@ const PathGame = lazy(() => import('./path'));
 const CupGame = lazy(() => import('./cups'));
 const LunchGame = lazy(() => import('./lunch'));
 const CenterGame = lazy(() => import('./center'));
+const BombGame = lazy(() => import('./bomb'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -27,7 +28,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -107,6 +108,11 @@ export default function Home() {
       <CenterGame onExit={() => setMode('menu')} />
     </Suspense>
   );
+  if (mode === 'bomb') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">폭탄 숫자를 숨기고 있습니다…</p></main>}>
+      <BombGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">
@@ -143,6 +149,13 @@ export default function Home() {
           <strong>긁어봐!</strong>
           <p>스크래치 복권을 직접 긁고 오늘 커피나 밥을 살 사람을 정하세요.</p>
           <b>게임 시작</b>
+        </button>
+        <button className="game-card bomb-card" onClick={() => setMode('bomb')}>
+          <span className="game-card-art bomb-card-art" aria-hidden="true">💣</span>
+          <small>UP·DOWN과 범위 압박</small>
+          <strong>숫자 폭탄</strong>
+          <p>범위를 좁혀가며 숨은 숫자를 피하고 다음 사람에게 넘기세요.</p>
+          <b>폭탄 숨기기</b>
         </button>
         <header className="game-cluster-heading"><span>⚡</span><div><h2>손끝과 순간 감각</h2><p>짧은 판단과 정확한 조작으로 승부</p></div></header>
         <button className="game-card timing-card" onClick={() => setMode('timing')}>
