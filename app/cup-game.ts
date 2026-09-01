@@ -1,4 +1,4 @@
-export const CUP_ROUNDS = 2;
+export const CUP_ROUNDS = 3;
 
 export type CupSwap = readonly [number, number];
 
@@ -38,9 +38,9 @@ export function finalCupSlot(challenge: CupChallenge) {
 
 export function makeCupChallenge(seed: number, level: number): CupChallenge {
   const next = random(seed);
-  const cupCount = level === 0 ? 3 : 4;
-  const swapCount = level === 0 ? 5 : 7;
-  const speedMs = level === 0 ? 480 : 350;
+  const cupCount = [3, 4, 5][level];
+  const swapCount = [5, 7, 9][level];
+  const speedMs = [480, 350, 280][level];
   const targetCup = Math.floor(next() * cupCount);
 
   for (let attempt = 0; attempt < 100; attempt += 1) {

@@ -1116,6 +1116,7 @@ footer b { color: var(--ink); }
 .cup-spotlight { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 60%, #ffe6a33b, transparent 58%); pointer-events: none; }
 .cup-table-edge { z-index: 0; height: 13px; position: absolute; left: 0; right: 0; bottom: 25px; border-top: 1px solid #d89672; background: #2b171a; box-shadow: 0 -8px 20px #2b111582; }
 .cup-piece { z-index: 3; width: clamp(88px, 27vw, 116px); position: absolute; bottom: 37px; padding: 0; border: 0; background: transparent; cursor: default; transform: translateX(-50%); transform-origin: 50% 100%; transition: left var(--cup-speed) cubic-bezier(.4,.08,.2,1), transform var(--cup-speed) cubic-bezier(.34,1.3,.64,1), filter .18s; }
+.cup-stage.cups-5 .cup-piece { width: clamp(70px, 21vw, 84px); }
 .cup-piece img { width: 100%; display: block; pointer-events: none; user-select: none; filter: drop-shadow(0 14px 8px #160b0c7a); }
 .cup-piece.swapping { z-index: 4; transform: translate(-50%, -17px) rotate(-3deg) scale(1.04); }.cup-piece.swapping:not(.front) { z-index: 2; transform: translate(-50%, 8px) rotate(3deg) scale(.95); filter: brightness(.87); }.cup-piece.swapping.front { z-index: 5; }
 .cup-piece.lifted { z-index: 6; transform: translate(-50%, -105px) rotate(-6deg) scale(1.04); transition-duration: 430ms; }

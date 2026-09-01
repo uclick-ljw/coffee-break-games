@@ -179,10 +179,10 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
           </div>
           <p className="cup-kicker">눈을 떼는 순간, 구슬은 사라진다</p>
           <h2>구슬을 숨긴 컵을<br />끝까지 따라가세요</h2>
-          <p className="cup-intro">한 사람당 두 번 섞습니다.<br />정답과 선택 속도를 합쳐 최종 순위를 정합니다.</p>
+          <p className="cup-intro">한 사람당 세 번, 점점 어렵게 섞습니다.<br />정답과 선택 속도를 합쳐 최종 순위를 정합니다.</p>
           <label className="cup-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="cup-primary" onClick={startGame}>첫 셔플 시작</button>
-          <div className="cup-rules"><span>🥤 3컵 → 4컵</span><span>👀 2라운드</span><span>⚡ 속도 보너스</span></div>
+          <div className="cup-rules"><span>🥤 3컵 → 4컵 → 5컵</span><span>👀 3라운드</span><span>⚡ 속도 보너스</span></div>
         </section>
       )}
 
@@ -192,7 +192,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
             <img src="/cup-shuffle-cup.png" alt="" />
             <small>{player + 1}/{players}번째 참가자 · {round + 1}/{CUP_ROUNDS} 셔플</small>
             <h2>{PLAYER_NAMES[player]} 준비</h2>
-            <p>{round === 0 ? '먼저 3개의 컵으로 눈을 풉니다.' : '이번에는 4개의 컵이 더 빠르게 움직입니다.'}<br />다른 사람은 화면을 보지 마세요.</p>
+            <p>{round === 0 ? '먼저 3개의 컵으로 눈을 풉니다.' : round === 1 ? '이번에는 4개의 컵이 더 빠르게 움직입니다.' : '마지막은 5개의 컵이 가장 빠르게 움직입니다.'}<br />다른 사람은 화면을 보지 마세요.</p>
             <button className="cup-primary" onClick={beginRound}>구슬 위치 보기</button>
           </div>
         </section>
@@ -205,7 +205,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
             <b>{challenge.cupCount}<small> CUPS</small></b>
           </div>
 
-          <div className={`cup-stage phase-${phase}`} style={stageStyle} aria-label={`${challenge.cupCount}개 컵 셔플 게임판`}>
+          <div className={`cup-stage cups-${challenge.cupCount} phase-${phase}`} style={stageStyle} aria-label={`${challenge.cupCount}개 컵 셔플 게임판`}>
             <div className="cup-spotlight" />
             <span className={`cup-ball ${showBall ? 'visible' : ''}`} style={{ left: `${12 + ballSlot * (76 / (challenge.cupCount - 1))}%` }} aria-label={showBall ? '구슬' : undefined} />
             {cups.map((cup) => (
