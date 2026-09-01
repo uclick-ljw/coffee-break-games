@@ -1,5 +1,4 @@
 export const PATH_BOARD_SIZE = 5;
-export const PATH_ROTATION_BUFFER = 1;
 export const PATH_HEAD_START_SECONDS = 5;
 export const PATH_TURN_SECONDS = 13;
 export const PATH_STEP_MS = 600;
@@ -199,14 +198,14 @@ export function pathProgress(actual: number[], solution: number[]) {
   return progress;
 }
 
-export function adjustedPathTime(result: PathResult) {
-  return result.elapsed + Math.max(0, result.rotations - result.optimalRotations) * .3;
+export function pathScore(result: PathResult) {
+  return Math.round(100 - result.elapsed * 2 - result.rotations * 5);
 }
 
 export function rankPathResults(results: PathResult[]) {
   return [...results].sort((a, b) => {
     if (a.success !== b.success) return a.success ? -1 : 1;
-    if (a.success) return adjustedPathTime(a) - adjustedPathTime(b) || a.rotations - b.rotations || a.player - b.player;
+    if (a.success) return pathScore(b) - pathScore(a) || a.elapsed - b.elapsed || a.rotations - b.rotations || a.player - b.player;
     return b.progress - a.progress || a.rotations - b.rotations || b.elapsed - a.elapsed || a.player - b.player;
   });
 }

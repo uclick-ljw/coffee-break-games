@@ -5,12 +5,11 @@ import { PLAYER_NAMES } from './game';
 import {
   PATH_BOARD_SIZE,
   PATH_HEAD_START_SECONDS,
-  PATH_ROTATION_BUFFER,
   PATH_STEP_MS,
   PATH_TURN_SECONDS,
-  adjustedPathTime,
   makePathChallenges,
   pathProgress,
+  pathScore,
   rankPathResults,
   tracePath,
   type PathChallenge,
@@ -61,7 +60,6 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
   const resolvingRef = useRef(false);
 
   const challenge = challenges[turn] ?? challenges[0];
-  const rotationLimit = challenge.optimalRotations + PATH_ROTATION_BUFFER;
   const ranked = useMemo(() => rankPathResults(results), [results]);
   const payer = ranked.at(-1);
 
@@ -194,7 +192,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
   }
 
   function rotateTile(cell: number, now: number) {
-    if (phase !== 'play' || lockedRef.current || usedRef.current.has(cell) || challenge.hazards.includes(cell) || rotationsRef.current >= rotationLimit) return;
+    if (phase !== 'play' || lockedRef.current || usedRef.current.has(cell) || challenge.hazards.includes(cell)) return;
     const next = [...directionsRef.current];
     next[cell] = (next[cell] + 1) % 4 as 0 | 1 | 2 | 3;
     directionsRef.current = next;
@@ -240,7 +238,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
           <p>타일을 누르면 시계 방향으로 90° 회전합니다.<br />경비원을 피해 화살표 없는 EXIT 칸에 닿으면 성공입니다.</p>
           <label className="path-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="path-primary" onClick={startGame}>탈출 작전 시작</button>
-          <div className="path-rules"><span>↻ 최소 횟수 +1회</span><span>🚨 경비원 4명</span><span>⏱️ 13초 승부</span></div>
+          <div className="path-rules"><span>↻ 회전마다 -5점</span><span>🚨 경비원 4명</span><span>⏱️ 1초마다 -2점</span></div>
         </section>
       )}
 
@@ -274,7 +272,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
                     key={cell}
                     className={`path-cell ${isUsed ? 'used' : ''} ${cell === thief ? 'current' : ''}`}
                     onClick={(event) => rotateTile(cell, event.timeStamp)}
-                    disabled={phase !== 'play' || isUsed || rotations >= rotationLimit}
+                    disabled={phase !== 'play' || isUsed}
                     aria-label={`${ARROWS[directions[cell]]} 방향 타일`}
                   >
                     <span className="path-arrow">{ARROWS[directions[cell]]}</span>
@@ -290,9 +288,9 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
               <div className={`path-turn-result ${lastResult.success ? 'success' : 'failed'}`}>
                 <span>{lastResult.success ? '🏃‍➡️' : '🚨'}</span>
                 <small>{lastResult.success ? '탈출 성공' : '작전 실패'}</small>
-                <h2>{lastResult.success ? `${adjustedPathTime(lastResult).toFixed(1)}초` : FAILURE_LABELS[lastResult.failure!]}</h2>
+                <h2>{lastResult.success ? `${pathScore(lastResult)}점` : FAILURE_LABELS[lastResult.failure!]}</h2>
                 <p>{lastResult.success
-                  ? `${lastResult.elapsed.toFixed(1)}초 · ${lastResult.rotations}회 회전${lastResult.rotations > lastResult.optimalRotations ? ` · 페널티 +${((lastResult.rotations - lastResult.optimalRotations) * .3).toFixed(1)}초` : ''}`
+                  ? `기본 100점 · 시간 -${Math.round(lastResult.elapsed * 2)}점 · 회전 -${lastResult.rotations * 5}점`
                   : `정답 경로 ${lastResult.progress}/${lastResult.pathLength}칸 · 출구까지 ${remainingSteps}칸`}</p>
                 <button className="path-primary" onClick={nextPlayer}>{turn + 1 >= players ? '최종 결과 보기' : '화면 가리고 넘기기'}</button>
               </div>
@@ -302,7 +300,7 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
             <div className="path-controls">
               <div className="path-timer"><i style={{ width: `${timeLeft / PATH_TURN_SECONDS * 100}%` }} /></div>
               <p>{launched ? '도둑 앞쪽 타일은 아직 돌릴 수 있어요' : '길이 완성되면 5초 전에도 바로 출발합니다'}</p>
-              <b>{rotations}<small>/{rotationLimit} 회전</small></b>
+              <b>{rotations}<small>회 · -{rotations * 5}점</small></b>
             </div>
           )}
         </section>
@@ -310,9 +308,9 @@ export default function PathGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'final' && payer && (
         <section className="path-final">
-          <div className="path-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.success ? `최종 기록 ${adjustedPathTime(payer).toFixed(1)}초` : `정답 경로 ${payer.progress}/${payer.pathLength}칸`}</strong></div>
+          <div className="path-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.success ? `최종 점수 ${pathScore(payer)}점` : `정답 경로 ${payer.progress}/${payer.pathLength}칸`}</strong></div>
           <ol>{ranked.map((result, index) => (
-            <li key={result.player}><span>{index + 1}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.success ? `${result.elapsed.toFixed(1)}초 · ${result.rotations}회 회전` : `${FAILURE_LABELS[result.failure!]} · ${result.progress}/${result.pathLength}칸`}</small></div><b>{result.success ? `${adjustedPathTime(result).toFixed(1)}초` : '실패'}</b></li>
+            <li key={result.player}><span>{index + 1}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.success ? `${result.elapsed.toFixed(1)}초 · ${result.rotations}회 회전` : `${FAILURE_LABELS[result.failure!]} · ${result.progress}/${result.pathLength}칸`}</small></div><b>{result.success ? `${pathScore(result)}점` : '실패'}</b></li>
           ))}</ol>
           <button className="path-primary" onClick={startGame}>새 경로로 한 판 더</button>
           <button className="path-secondary" onClick={onExit}>게임 선택으로</button>
