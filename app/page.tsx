@@ -17,6 +17,7 @@ const ShadowGame = lazy(() => import('./shadow'));
 const PathGame = lazy(() => import('./path'));
 const CupGame = lazy(() => import('./cups'));
 const LunchGame = lazy(() => import('./lunch'));
+const CenterGame = lazy(() => import('./center'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -26,7 +27,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -99,6 +100,11 @@ export default function Home() {
   if (mode === 'lunch') return (
     <Suspense fallback={<main className="menu-shell"><p className="menu-note">도시락 반찬을 준비하고 있습니다…</p></main>}>
       <LunchGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
+  if (mode === 'center') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">불규칙한 물체를 준비하고 있습니다…</p></main>}>
+      <CenterGame onExit={() => setMode('menu')} />
     </Suspense>
   );
   return (
@@ -181,6 +187,13 @@ export default function Home() {
           <strong>반으로 쓱</strong>
           <p>비대칭 물체를 한 줄로 잘라 정확한 50:50을 만드세요.</p>
           <b>반 나누기</b>
+        </button>
+        <button className="game-card center-card" onClick={() => setMode('center')}>
+          <span className="game-card-art center-card-art" aria-hidden="true"><i />＋</span>
+          <small>부피 판단과 무게중심 감각</small>
+          <strong>중심을 찍어라</strong>
+          <p>한쪽이 더 두껍고 큰 3D 물체를 돌려 살펴보고 무게중심을 찍으세요.</p>
+          <b>한 점 승부</b>
         </button>
         <button className="game-card shadow-card" onClick={() => setMode('shadow')}>
           <span className="game-card-art shadow-card-art" aria-hidden="true">◆</span>

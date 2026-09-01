@@ -23,6 +23,7 @@
     "check:path": "node --experimental-strip-types scripts/check-path.ts",
     "check:cups": "node --experimental-strip-types scripts/check-cups.ts",
     "check:lunch": "node --experimental-strip-types scripts/check-lunch.ts",
+    "check:center": "node --experimental-strip-types scripts/check-center.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },

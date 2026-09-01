@@ -77,7 +77,7 @@ function side(point: SlicePoint, start: SlicePoint, end: SlicePoint) {
   return (end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x);
 }
 
-function pointInPolygon(point: SlicePoint, points: SlicePoint[]) {
+export function pointInPolygon(point: SlicePoint, points: SlicePoint[]) {
   let inside = false;
   for (let index = 0, previous = points.length - 1; index < points.length; previous = index, index += 1) {
     const a = points[index];
