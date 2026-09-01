@@ -77,5 +77,5 @@ export function cupRoundScore(correct: boolean, decisionMs: number, level: numbe
 }
 
 export function rankCupResults(results: CupResult[]) {
-  return [...results].sort((a, b) => b.score - a.score || b.correct - a.correct || a.decisionMs - b.decisionMs || a.player - b.player);
+  return [...results].sort((a, b) => b.correct - a.correct || b.score - a.score || a.decisionMs - b.decisionMs || a.player - b.player);
 }

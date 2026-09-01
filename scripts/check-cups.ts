@@ -20,7 +20,7 @@ assert(cupRoundScore(true, 500, 1) > cupRoundScore(true, 2500, 1));
 assert.equal(cupRoundScore(false, 100, 1), 0);
 const ranked = rankCupResults([
   { player: 0, score: 220, correct: 2, decisionMs: 2000 },
-  { player: 1, score: 120, correct: 1, decisionMs: 800 },
+  { player: 1, score: 999, correct: 1, decisionMs: 800 },
   { player: 2, score: 220, correct: 2, decisionMs: 1800 },
 ]);
 assert.deepEqual(ranked.map((result) => result.player), [2, 0, 1]);
