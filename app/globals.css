@@ -54,6 +54,8 @@ button { font: inherit; }
 .bomb-card b { background: #5a1f29; }
 .measure-card { border-color: #7476c9; background: radial-gradient(circle at 84% 15%, #66f3ff 0 3px, transparent 4px), linear-gradient(155deg, #f2f5ff, #bfc3f5); }
 .measure-card > b { background: #34356f; }
+.dart-card { border-color: #725bd0; background: radial-gradient(circle at 84% 15%, #ff6b98 0 3px, transparent 4px), linear-gradient(155deg, #f8f3ff, #c9bafd); }
+.dart-card > b { background: #3c246e; }
 .shadow-card { border-color: #6f62a6; background: radial-gradient(circle at 78% 15%, #d8cbff 0 3px, transparent 4px), linear-gradient(155deg, #272049, #0c0d1d); color: #f5f1ff; box-shadow: 0 18px 40px #130d376b; }
 .shadow-card small, .shadow-card p { color: #c1b6e5; }.shadow-card b { background: #d7c9ff; color: #21183e; }
 .path-card { border-color: #376e69; background: radial-gradient(circle at 80% 16%, #85f7d5 0 3px, transparent 4px), linear-gradient(155deg, #173d3b, #071a20); color: #edfff9; box-shadow: 0 18px 40px #092e2c66; }
@@ -69,6 +71,7 @@ button { font: inherit; }
 .center-card-art { width: 78px; height: 78px; position: relative; display: grid; place-items: center; overflow: hidden; border: 3px solid #fff; border-radius: 43% 57% 54% 46%; background: linear-gradient(145deg, #9b81df, #4a3d80); color: #fff; font-size: 39px; font-style: normal; box-shadow: 0 8px 0 #3a2e69, 0 16px 26px #382b6938; transform: rotate(7deg); }.center-card-art i { width: 10px; height: 10px; position: absolute; left: 27%; top: 33%; border: 2px solid #ffdb65; border-radius: 50%; }
 .bomb-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 3px solid #fff0d4; border-radius: 27px; background: radial-gradient(circle at 66% 25%, #fff 0 2px, transparent 3px), linear-gradient(145deg, #482438, #170e22); font-size: 43px; box-shadow: 0 8px 0 #691f2b, 0 16px 26px #6e2a293f; transform: rotate(-6deg); }
 .measure-card-art { width: 82px; height: 82px; display: grid; place-items: center; border: 3px solid #e9faff; border-radius: 25px; background: linear-gradient(145deg, #373a87, #171a4b); font-size: 48px; box-shadow: 0 9px 0 #24265f, 0 18px 28px #24265f55; transform: rotate(3deg); }
+.dart-card-art { width: 82px; height: 82px; display: grid; place-items: center; border: 3px solid #f3eaff; border-radius: 50%; background: radial-gradient(circle, #5d43b5 0 31%, #27134f 33% 49%, #8a6cf0 51% 54%, #160b32 56%); color: #ff79a4; font-size: 48px; text-shadow: 0 0 13px #ff5e97; box-shadow: 0 9px 0 #3c246e, 0 18px 28px #38236c55; transform: rotate(-12deg); }
 .shadow-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #d9cbff; border-radius: 25px; background: linear-gradient(145deg, #8a76ed, #392c78); color: #f7f3ff; font-size: 42px; text-shadow: 12px 10px #090713aa; box-shadow: 0 9px 0 #17132f, 0 18px 30px #08061788; transform: rotate(8deg); }
 .path-card-art { width: 78px; height: 78px; display: grid; place-items: center; border: 2px solid #8af4d5; border-radius: 21px; background: repeating-linear-gradient(0deg, #123a38 0 13px, #174a45 14px 15px); color: #81f1d0; font-size: 49px; text-shadow: 9px 8px #03110f; box-shadow: 0 9px 0 #061c1b, 0 18px 30px #020c0b88; transform: rotate(-4deg); }
 .cup-card-art { width: 82px; height: 82px; background: url('/cup-shuffle-cup.png') center / contain no-repeat; filter: drop-shadow(0 10px 7px #77382f45); transform: rotate(-5deg); }
@@ -1220,3 +1223,98 @@ footer b { color: var(--ink); }
 .pour-stream i { display: none; }
 .pour-glass { left: 58%; }
 @media (max-height: 720px) { .pour-stream { height: 32px; top: 69px; } }
+
+/* Spinning dart board */
+.dart-shell { --dart-player: #4ceaff; min-height: 100svh; padding: 18px clamp(14px, 4vw, 26px) 26px; overflow: hidden; position: relative; background: radial-gradient(circle at 50% 22%, #33257b 0, #161239 37%, #090b1b 76%); color: #f8f7ff; font-family: var(--font-sans, sans-serif); }
+.dart-shell::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle, #fff 0 1px, transparent 1.6px); background-size: 42px 42px; opacity: .07; }
+.dart-topbar { z-index: 2; width: min(100%, 620px); margin: auto; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dart-topbar p { margin: 0; color: #a88cff; font-size: 8px; font-weight: 950; letter-spacing: .18em; }
+.dart-topbar h1 { margin: 1px 0 0; font-size: 28px; line-height: 1; letter-spacing: -.055em; }
+.dart-topbar button, .dart-secondary { padding: 8px 10px; border: 1px solid #b4a7ff3d; border-radius: 99px; background: #ffffff0b; color: #d9d5f3; font-size: 9px; font-weight: 850; cursor: pointer; }
+.dart-primary { width: min(100%, 430px); padding: 14px 18px; border: 0; border-radius: 17px; background: linear-gradient(135deg, #7e5cff, #d452ff); color: white; font-size: 14px; font-weight: 950; cursor: pointer; box-shadow: 0 5px 0 #4d2b9c, 0 14px 29px #9f48ff45; transition: transform .1s, box-shadow .1s; }
+.dart-primary:active { transform: translateY(4px); box-shadow: 0 1px 0 #4d2b9c, 0 8px 17px #9f48ff35; }
+.dart-setup { min-height: calc(100svh - 72px); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; text-align: center; }
+.dart-hero { width: 270px; height: 202px; position: relative; display: grid; place-items: center; }
+.dart-hero > div { width: 154px; height: 154px; position: relative; display: grid; place-items: center; border: 12px solid #7560e4; border-radius: 50%; background: radial-gradient(circle at 39% 32%, #7062c7, #252253 52%, #11132d 72%); box-shadow: inset 0 0 0 7px #aaa0ff25, 0 0 34px #8e64ff65, 0 22px 31px #0008; animation: dart-hero-spin 6.5s linear infinite; }
+.dart-hero > div::before { content: ''; width: 48px; aspect-ratio: 1; border: 6px solid #5f4fc0; border-radius: 50%; background: #171a38; box-shadow: inset 0 0 12px #000a; }
+.dart-hero > div > span { position: absolute; color: #fff; font-size: 19px; font-weight: 950; }
+.dart-hero > div > i { width: 5px; height: 80px; position: absolute; left: calc(50% - 2.5px); top: -46px; border-radius: 99px 99px 1px 1px; background: linear-gradient(#ff6f9c 0 47%, #e7ecff 47% 75%, transparent 75%); transform: rotate(var(--dart-angle)); transform-origin: 50% 123px; filter: drop-shadow(0 3px 4px #0008); }
+.dart-hero > b { position: absolute; left: calc(50% - 13px); bottom: 4px; color: #5df3ff; font-size: 49px; text-shadow: 0 0 18px #50e9ff; transform: rotate(-90deg); }
+.dart-kicker { margin: 5px 0 4px; color: #60eeff; font-size: 10px; font-weight: 950; letter-spacing: .13em; }
+.dart-setup h2 { margin: 0; font-size: clamp(32px, 9vw, 47px); line-height: 1.08; letter-spacing: -.07em; }
+.dart-setup > p:not(.dart-kicker) { margin: 13px 0 17px; color: #bab6d6; font-size: 11px; line-height: 1.7; }
+.dart-setup label { width: min(100%, 430px); margin-bottom: 11px; padding: 9px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #a897ff40; border-radius: 16px; background: #ffffff0c; color: #dedaf4; font-size: 12px; font-weight: 900; }
+.dart-setup select { padding: 8px 29px 8px 13px; border: 0; border-radius: 99px; background: #785ee3; color: white; font-weight: 900; }
+.dart-rules { margin-top: 17px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; color: #a9a4c3; font-size: 9px; font-weight: 850; }
+.dart-handoff { min-height: calc(100svh - 72px); display: grid; place-items: center; text-align: center; }
+.dart-handoff > div { width: min(100%, 430px); padding: 29px 22px; border: 1px solid color-mix(in srgb, var(--dart-player) 58%, #9b79ff); border-radius: 29px; background: radial-gradient(circle at 50% 0, color-mix(in srgb, var(--dart-player) 24%, transparent), #ffffff09 60%); box-shadow: 0 25px 50px #0009; }
+.dart-round-icon { display: block; color: var(--dart-player); font-size: 82px; line-height: 1; text-shadow: 0 0 25px color-mix(in srgb, var(--dart-player) 70%, transparent); }
+.dart-handoff small { display: block; margin-top: 12px; color: var(--dart-player); font-size: 9px; font-weight: 950; letter-spacing: .1em; }
+.dart-handoff h2 { margin: 5px 0 9px; font-size: 35px; letter-spacing: -.055em; }
+.dart-handoff > div > strong { color: #fff1a6; font-size: 14px; }
+.dart-handoff p { margin: 8px 0 22px; color: #bbb6d3; font-size: 10px; line-height: 1.65; }
+.dart-play { padding-top: 11px; position: relative; }
+.dart-status { width: min(100%, 430px); margin: 0 auto 7px; padding: 8px 11px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border: 1px solid color-mix(in srgb, var(--dart-player) 45%, #8e70ed); border-radius: 17px; background: #ffffff0d; box-shadow: 0 11px 25px #0006; }
+.dart-status > i { width: 8px; height: 42px; border-radius: 99px; background: var(--dart-player); box-shadow: 0 0 17px var(--dart-player); }
+.dart-status > div { min-width: 0; display: grid; }
+.dart-status small { color: #aaa4c1; font-size: 8px; font-weight: 850; }
+.dart-status strong { overflow: hidden; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.dart-status > b { color: var(--dart-player); font-size: 28px; font-variant-numeric: tabular-nums; text-shadow: 0 0 13px color-mix(in srgb, var(--dart-player) 70%, transparent); }
+.dart-status > b small { margin-left: 2px; color: #bbb6d1; }
+.dart-timer { width: min(100%, 430px); height: 6px; margin: 0 auto 7px; overflow: hidden; border-radius: 99px; background: #ffffff14; }
+.dart-timer i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ff5f92, #ffe36b 54%, var(--dart-player)); box-shadow: 0 0 10px var(--dart-player); transition: width .045s linear; }
+.dart-arena { width: min(100%, 430px); height: min(58svh, 455px); min-height: 390px; margin: auto; padding: 0; position: relative; display: block; overflow: hidden; border: 1px solid #a58eff4d; border-radius: 31px; background: radial-gradient(circle at 50% 28%, #3a3073 0, #191838 36%, #0c0d20 72%); color: white; cursor: crosshair; touch-action: manipulation; user-select: none; box-shadow: inset 0 0 65px #0007, 0 24px 47px #000a; }
+.dart-arena::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 49px, #c6bcff08 50px 51px), repeating-linear-gradient(0deg, transparent 0 49px, #c6bcff08 50px 51px); }
+.dart-arena.shot-miss::after { content: '✦'; z-index: 8; position: absolute; left: 50%; top: 222px; color: #ff668f; font-size: 50px; line-height: 1; text-shadow: 0 0 11px #ff547f, 0 0 28px #ff315f; pointer-events: none; animation: dart-clash .34s ease-out forwards; }
+.dart-arena:focus-visible { outline: 3px solid var(--dart-player); outline-offset: 3px; }
+.dart-arena.shot-miss { animation: dart-stage-shake .25s ease-in-out 2; }
+.dart-speed { z-index: 4; position: absolute; left: 14px; top: 13px; padding: 7px 9px; display: flex; align-items: baseline; gap: 3px; border: 1px solid #afa1ff35; border-radius: 13px; background: #0d0f25c9; color: #dcd7f4; box-shadow: 0 7px 17px #0006; }
+.dart-speed span { color: #63eeff; font-size: 17px; }
+.dart-speed strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+.dart-speed small { color: #8e89a7; font-size: 7px; }
+.dart-rotor { z-index: 2; width: 230px; height: 230px; position: absolute; left: calc(50% - 115px); top: 35px; transform-origin: 50% 50%; will-change: transform; }
+.dart-disc { width: 170px; height: 170px; position: absolute; left: 30px; top: 30px; display: grid; place-items: center; border: 12px solid #6653c7; border-radius: 50%; background: repeating-conic-gradient(from 8deg, #ffffff1c 0 1deg, transparent 1deg 15deg), conic-gradient(from 18deg, #556bcc 0 17%, #302d62 17% 43%, #824b93 43% 51%, #2e2b61 51% 76%, #3e8494 76% 88%, #302d62 88%); box-shadow: inset 0 0 0 7px #d4ceff18, inset 0 -23px 39px #05061375, 0 0 31px #7258e478, 0 17px 29px #0009; }
+.dart-arena.shot-hit .dart-disc { animation: dart-board-hit .18s ease-out; }
+.dart-disc::before, .dart-disc::after { content: ''; position: absolute; border-radius: 50%; }
+.dart-disc::before { inset: 23px; border: 2px dashed #b9afff46; }
+.dart-disc::after { width: 42px; aspect-ratio: 1; border: 5px solid #5748ac; background: #15172e; box-shadow: inset 0 0 13px #000b; }
+.dart-disc > i { width: 5px; height: 5px; position: absolute; border-radius: 50%; background: #bcb4ff; box-shadow: 0 0 8px #bcb4ff; }
+.dart-disc > i:nth-child(1) { top: 14px; }.dart-disc > i:nth-child(2) { right: 16px; bottom: 36px; }.dart-disc > i:nth-child(3) { left: 18px; bottom: 35px; }
+.dart-disc strong { z-index: 2; margin-top: -8px; color: white; font-size: 24px; line-height: 1; }
+.dart-disc small { z-index: 2; margin-top: 27px; position: absolute; color: #aaa5c4; font-size: 7px; font-weight: 900; }
+.dart-stuck { width: 8px; height: 116px; position: absolute; left: calc(50% - 4px); top: -1px; transform: rotate(var(--dart-angle)); transform-origin: 50% 116px; filter: drop-shadow(0 4px 5px #0009); }
+.dart-stuck i { width: 4px; height: 43px; position: absolute; left: 2px; top: 0; border-radius: 99px; background: linear-gradient(var(--dart-color), #e9efff 73%); box-shadow: 0 0 8px var(--dart-color); }
+.dart-stuck i::after { content: ''; width: 0; height: 0; position: absolute; left: -3px; bottom: -7px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 9px solid #eef2ff; }
+.dart-stuck b { width: 20px; height: 22px; position: absolute; left: -6px; top: -5px; background: var(--dart-color); clip-path: polygon(0 0, 50% 23%, 100% 0, 78% 100%, 50% 75%, 22% 100%); }
+.dart-stuck.neutral { filter: drop-shadow(0 3px 6px #ffbf2b8a); }.dart-stuck.neutral i { background: linear-gradient(#ffd45f, #fff3bd 73%); }.dart-stuck.neutral b { opacity: .86; }
+.dart-projectile { z-index: 6; width: 12px; height: 84px; position: absolute; left: 50%; bottom: 52px; opacity: 1; pointer-events: none; transform: translateX(-50%); }
+.dart-projectile i { width: 5px; height: 59px; position: absolute; left: 3px; bottom: 0; border-radius: 99px; background: linear-gradient(#f4f6ff, var(--dart-player)); box-shadow: 0 0 9px var(--dart-player); }
+.dart-projectile i::before { content: ''; width: 0; height: 0; position: absolute; left: -4px; top: -9px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 11px solid #f8fbff; }
+.dart-projectile b { width: 27px; height: 28px; position: absolute; left: -8px; bottom: -5px; background: var(--dart-player); clip-path: polygon(0 100%, 50% 73%, 100% 100%, 78% 0, 50% 24%, 22% 0); filter: drop-shadow(0 0 7px var(--dart-player)); }
+.dart-projectile.flying { animation: dart-flight .18s cubic-bezier(.4, 0, .8, .4) forwards; }
+.dart-projectile.hit { opacity: 0; transform: translate(-50%, -113px); }
+.dart-projectile.miss { animation: dart-bounce .34s ease-out forwards; }
+.dart-launcher { z-index: 5; width: 72px; height: 58px; position: absolute; left: calc(50% - 36px); bottom: -4px; display: grid; place-items: center; border: 2px solid #8e7df35c; border-radius: 26px 26px 0 0; background: linear-gradient(#343167, #15172f); box-shadow: inset 0 4px 11px #ffffff13, 0 -6px 24px #785ee64a; }
+.dart-launcher i { width: 18px; height: 30px; position: absolute; top: -9px; border: 3px solid #9687ee; border-radius: 9px 9px 3px 3px; background: #191a35; }
+.dart-launcher span { margin-top: 25px; color: #8ef6ff; font-size: 8px; font-weight: 950; letter-spacing: .13em; }
+.dart-arena > p { z-index: 7; position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; color: #d8d4ed; font-size: 8px; font-weight: 900; text-align: center; pointer-events: none; }
+.dart-ammo { width: min(100%, 430px); margin: 10px auto 0; display: flex; justify-content: center; gap: 13px; }
+.dart-ammo i { width: 6px; height: 28px; position: relative; border-radius: 99px; background: #6e688d; transform: rotate(16deg); box-shadow: 0 0 0 2px #ffffff0c; }
+.dart-ammo i::after { content: ''; width: 14px; height: 10px; position: absolute; left: -4px; bottom: -3px; background: #8d86aa; clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+.dart-ammo i.hit { background: var(--dart-player); box-shadow: 0 0 9px var(--dart-player); }.dart-ammo i.miss { background: #ff537e; opacity: .32; transform: rotate(72deg); }
+.dart-round-result { min-height: calc(100svh - 72px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.dart-result-disc { width: 170px; aspect-ratio: 1; margin-bottom: 20px; display: flex; align-items: baseline; justify-content: center; padding-top: 51px; border: 12px solid #755fe2; border-radius: 50%; background: radial-gradient(circle, #443d83, #171932 70%); box-shadow: inset 0 0 0 7px #d3ccff18, 0 0 38px color-mix(in srgb, var(--dart-player) 55%, #8456ff), 0 20px 32px #0009; }
+.dart-result-disc span { color: var(--dart-player); font-size: 55px; font-weight: 950; line-height: 1; text-shadow: 0 0 18px var(--dart-player); }.dart-result-disc small { color: #bbb6d0; font-size: 12px; }
+.dart-round-result > p { margin: 0; color: #aa96ff; font-size: 10px; font-weight: 950; letter-spacing: .12em; }.dart-round-result h2 { margin: 5px 0; font-size: 34px; letter-spacing: -.055em; }.dart-round-result > strong { margin-bottom: 22px; color: #bcb7d0; font-size: 11px; }
+.dart-final { min-height: calc(100svh - 72px); padding: 23px 0 14px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.dart-payer { width: min(100%, 430px); padding: 20px; border: 1px solid #a17dff52; border-radius: 26px; background: radial-gradient(circle at 50% 0, #714bdb52, #ffffff09 62%); box-shadow: 0 23px 46px #0008; }.dart-payer > span { font-size: 54px; filter: drop-shadow(0 13px 10px #0008); }.dart-payer p { margin: 9px 0 3px; color: #73f0ff; font-size: 10px; font-weight: 950; letter-spacing: .1em; }.dart-payer h2 { margin: 0; font-size: 35px; letter-spacing: -.055em; }.dart-payer strong { color: #beb9d2; font-size: 11px; }
+.dart-final ol { width: min(100%, 430px); margin: 13px 0 15px; padding: 0; display: grid; gap: 7px; list-style: none; }.dart-final li { padding: 9px 11px; display: grid; grid-template-columns: 23px 8px 1fr auto; align-items: center; gap: 9px; border: 1px solid #aa92ff2d; border-radius: 14px; background: #ffffff09; text-align: left; }.dart-final li > i { width: 8px; height: 37px; border-radius: 99px; }.dart-final li > div { min-width: 0; display: grid; }.dart-final li strong { font-size: 12px; }.dart-final li small { overflow: hidden; color: #aaa5bc; font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }.dart-final li > span { color: #70efff; font-size: 13px; font-weight: 950; }.dart-final li > span small { margin-left: 2px; }.dart-final li > b { font-size: 12px; }
+.dart-final > .dart-secondary { margin-top: 10px; border: 0; background: transparent; text-decoration: underline; }
+@keyframes dart-hero-spin { to { transform: rotate(360deg); } }
+@keyframes dart-flight { to { transform: translate(-50%, -113px); } }
+@keyframes dart-bounce { from { opacity: 1; transform: translate(-50%, -113px) rotate(0); } to { opacity: 0; transform: translate(145px, -55px) rotate(125deg); } }
+@keyframes dart-stage-shake { 33% { transform: translateX(-5px); } 66% { transform: translateX(5px); } }
+@keyframes dart-board-hit { 50% { filter: brightness(1.35); transform: scale(.965); } }
+@keyframes dart-clash { from { opacity: 1; transform: translate(-50%, -50%) scale(.45) rotate(0); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.55) rotate(35deg); } }
+@media (max-height: 720px) { .dart-shell { padding-top: 10px; }.dart-topbar h1 { font-size: 24px; }.dart-play { padding-top: 5px; }.dart-status { margin-bottom: 5px; padding-block: 5px; }.dart-arena { width: min(100%, 350px); height: 365px; min-height: 0; }.dart-rotor { top: 22px; transform: scale(.87); }.dart-projectile { bottom: 45px; }.dart-launcher { bottom: -6px; }.dart-hero { height: 145px; transform: scale(.78); margin-block: -10px; }.dart-setup > p:not(.dart-kicker) { margin-block: 8px 11px; }.dart-rules { margin-top: 11px; }.dart-handoff > div { padding-block: 21px; } }
+@media (prefers-reduced-motion: reduce) { .dart-shell::before, .dart-hero > div { animation: none; } }

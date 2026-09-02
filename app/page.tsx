@@ -20,6 +20,7 @@ const LunchGame = lazy(() => import('./lunch'));
 const CenterGame = lazy(() => import('./center'));
 const BombGame = lazy(() => import('./bomb'));
 const MeasureGame = lazy(() => import('./measure'));
+const DartGame = lazy(() => import('./dart'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -29,7 +30,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb' | 'measure';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb' | 'measure' | 'dart';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -119,6 +120,11 @@ export default function Home() {
       <MeasureGame onExit={() => setMode('menu')} />
     </Suspense>
   );
+  if (mode === 'dart') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">회전판을 돌리고 있습니다…</p></main>}>
+      <DartGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">
@@ -170,6 +176,13 @@ export default function Home() {
           <strong>멈춰!</strong>
           <p>시간을 숨기거나 보면서 목표 초에 가장 가깝게 멈추세요.</p>
           <b>2가지 방식</b>
+        </button>
+        <button className="game-card dart-card" onClick={() => setMode('dart')}>
+          <span className="game-card-art dart-card-art" aria-hidden="true">➤</span>
+          <small>회전과 빈틈 타이밍</small>
+          <strong>빙글 꽂아라</strong>
+          <p>움직이는 회전판의 빈틈을 읽고 다트를 최대한 많이 꽂으세요.</p>
+          <b>3발 × 3라운드</b>
         </button>
         <button className="game-card dodge-card" onClick={() => setMode('dodge')}>
           <span className="game-card-art dodge-card-art" aria-hidden="true" />
