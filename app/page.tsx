@@ -19,6 +19,7 @@ const CupGame = lazy(() => import('./cups'));
 const LunchGame = lazy(() => import('./lunch'));
 const CenterGame = lazy(() => import('./center'));
 const BombGame = lazy(() => import('./bomb'));
+const MeasureGame = lazy(() => import('./measure'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -28,7 +29,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb' | 'measure';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -113,6 +114,11 @@ export default function Home() {
       <BombGame onExit={() => setMode('menu')} />
     </Suspense>
   );
+  if (mode === 'measure') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">눈금을 지우고 있습니다…</p></main>}>
+      <MeasureGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">
@@ -187,6 +193,13 @@ export default function Home() {
           <b>주차 도전</b>
         </button>
         <header className="game-cluster-heading"><span>👀</span><div><h2>눈대중과 집중</h2><p>보고 기억하고 가장 정확하게 맞히기</p></div></header>
+        <button className="game-card measure-card" onClick={() => setMode('measure')}>
+          <span className="game-card-art measure-card-art" aria-hidden="true">🫗</span>
+          <small>기억과 물 조절 감각</small>
+          <strong>눈금 없이 따라라</strong>
+          <p>목표 수위를 기억하고 남은 물줄기까지 계산해 한 번에 따르세요.</p>
+          <b>물 따르기</b>
+        </button>
         <button className="game-card circle-card" onClick={() => setMode('circle')}>
           <span className="game-card-art circle-card-art" aria-hidden="true">∿</span>
           <small>다섯 곡선과 손끝 감각</small>
