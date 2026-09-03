@@ -1,7 +1,8 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
-import Image from 'next/image';
 import { makeLotteryTickets, type LotteryTicket } from './lottery-game';
 
 type Phase = 'setup' | 'pick' | 'reveal' | 'result';
@@ -81,7 +82,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
           <div className="festival-sign" aria-hidden="true">
             <span>오늘</span>
             <div><b>복불복 한판</b><small>긁어서 정하는 오늘의 한턱</small></div>
-            <Image src="/korean-lottery-mascot.png" alt="" width={640} height={640} priority />
+            <img src="/korean-lottery-mascot.png" alt="" width="640" height="640" />
           </div>
           <p className="lottery-kicker">꽝 복권은 설정한 수만큼 정확히 들어갑니다</p>
           <h2 id="lottery-setup-title">몇 명이서, 몇 명이 살까요?</h2>
@@ -111,7 +112,7 @@ export default function LotteryGame({ onExit }: { onExit: () => void }) {
             <b>꽝 {penalties}장</b>
           </div>
           <div className="pick-intro">
-            <Image src="/korean-lottery-mascot.png" alt="" width={640} height={640} />
+            <img src="/korean-lottery-mascot.png" alt="" width="640" height="640" />
             <p>마음이 가는 한턱 복권<br />한 장을 고르세요</p>
           </div>
           <div className="ticket-wall" aria-label="스크래치 복권">
