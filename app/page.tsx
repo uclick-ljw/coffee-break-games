@@ -21,6 +21,7 @@ const CenterGame = lazy(() => import('./center'));
 const BombGame = lazy(() => import('./bomb'));
 const MeasureGame = lazy(() => import('./measure'));
 const DartGame = lazy(() => import('./dart'));
+const BalloonGame = lazy(() => import('./balloon'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -30,7 +31,7 @@ const ROULETTE_LABELS: Record<RouletteResult, string> = {
   pass: '차례 통과',
 };
 
-type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb' | 'measure' | 'dart';
+type GameMode = 'menu' | 'ice' | 'marbles' | 'pegdrop' | 'lottery' | 'timing' | 'circle' | 'tray' | 'dodge' | 'lander' | 'parking' | 'slice' | 'shadow' | 'path' | 'cups' | 'lunch' | 'center' | 'bomb' | 'measure' | 'dart' | 'balloon';
 
 export default function Home() {
   const [mode, setMode] = useState<GameMode>('menu');
@@ -125,6 +126,11 @@ export default function Home() {
       <DartGame onExit={() => setMode('menu')} />
     </Suspense>
   );
+  if (mode === 'balloon') return (
+    <Suspense fallback={<main className="menu-shell"><p className="menu-note">풍선에 바람을 넣고 있습니다…</p></main>}>
+      <BalloonGame onExit={() => setMode('menu')} />
+    </Suspense>
+  );
   return (
     <main className="menu-shell">
       <header className="menu-hero">
@@ -168,6 +174,13 @@ export default function Home() {
           <strong>숫자 폭탄</strong>
           <p>범위를 좁혀가며 숨은 숫자를 피하고 다음 사람에게 넘기세요.</p>
           <b>폭탄 숨기기</b>
+        </button>
+        <button className="game-card balloon-card" onClick={() => setMode('balloon')}>
+          <span className="game-card-art balloon-card-art" aria-hidden="true">🎈</span>
+          <small>배짱과 위험 넘기기</small>
+          <strong>터질까 말까</strong>
+          <p>풍선을 길게 부풀려 다음 사람에게 아슬아슬하게 넘기세요.</p>
+          <b>풍선 하나</b>
         </button>
         <header className="game-cluster-heading"><span>⚡</span><div><h2>손끝과 순간 감각</h2><p>짧은 판단과 정확한 조작으로 승부</p></div></header>
         <button className="game-card timing-card" onClick={() => setMode('timing')}>

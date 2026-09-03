@@ -27,6 +27,7 @@
     "check:bomb": "node --experimental-strip-types scripts/check-bomb.ts",
     "check:measure": "node --experimental-strip-types scripts/check-measure.ts",
     "check:dart": "node --experimental-strip-types scripts/check-dart.ts",
+    "check:balloon": "node --experimental-strip-types scripts/check-balloon.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
