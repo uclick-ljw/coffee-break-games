@@ -177,7 +177,7 @@ export const GAMES: readonly GameInfo[] = [
   },
   {
     id: 'untangle', category: 'strategy', icon: '🪢', kicker: '공간 판단과 엉킨 선', title: '엉킨 선 풀어라',
-    description: '점을 끌어 복잡한 빨간 선을 깔끔한 파란 선으로 바꾸세요.', action: '선 풀기',
+    description: '8개의 점을 안팎으로 옮겨 14개의 엉킨 선을 풀어보세요.', action: '선 풀기',
     players: '2~6명', time: '1인 25초', goal: '선이 서로 교차하지 않게 모든 매듭을 푸세요.',
     controls: '동그란 점을 손가락으로 끌어 옮기세요. 서로 닿거나 겹친 선도 풀어야 합니다.', result: '남은 교차 수가 적을수록 높은 순위. 모두 풀었다면 완료 시간을 비교합니다.',
   },

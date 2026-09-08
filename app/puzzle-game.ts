@@ -41,8 +41,13 @@ export function hasPopMove(board: PopTile[]) { return board.some((tile) => popGr
 
 export type Point = { x: number; y: number };
 export type Edge = readonly [number, number];
-export const THREAD_EDGES: readonly Edge[] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 2], [2, 4], [0, 4]];
-export const THREAD_SLOTS: Point[] = Array.from({ length: 6 }, (_, i) => ({ x: 200 + Math.cos(i * Math.PI / 3) * 150, y: 200 + Math.sin(i * Math.PI / 3) * 150 }));
+// Two nested four-node loops with bridges and two face diagonals. Unlike the
+// old outer-only graph, arranging every node around a circle cannot solve it.
+export const THREAD_EDGES: readonly Edge[] = [
+  [0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4],
+  [0, 4], [1, 5], [2, 6], [3, 7], [4, 6], [0, 5],
+];
+export const THREAD_SLOTS: Point[] = Array.from({ length: 8 }, (_, i) => ({ x: 200 + Math.cos(i * Math.PI / 4) * 155, y: 200 + Math.sin(i * Math.PI / 4) * 155 }));
 
 function cross(a: Point, b: Point, c: Point) { return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); }
 function segmentDistance(point: Point, a: Point, b: Point) {
@@ -73,6 +78,18 @@ export function threadConflicts(points: Point[], edges = THREAD_EDGES): [number,
   return conflicts;
 }
 
+export function threadRequiresThreeNodes(points: Point[]): boolean {
+  const masks = threadConflicts(points).map(([i, j]) => [...THREAD_EDGES[i], ...THREAD_EDGES[j]].reduce((mask, id) => mask | (1 << id), 0));
+  // A crossing cannot disappear unless one of its endpoints moves. Reject any
+  // layout whose initial conflicts could all be affected by just one/two nodes.
+  for (let a = 0; a < points.length; a++) {
+    for (let b = a; b < points.length; b++) {
+      if (masks.every((mask) => mask & ((1 << a) | (1 << b)))) return false;
+    }
+  }
+  return true;
+}
+
 export function makeThreads(random = Math.random): Point[] {
   for (let attempt = 0; attempt < 100; attempt++) {
     const points = THREAD_SLOTS.map((point) => ({ ...point }));
@@ -81,9 +98,9 @@ export function makeThreads(random = Math.random): Point[] {
       [points[i], points[j]] = [points[j], points[i]];
     }
     const count = threadConflicts(points).length;
-    if (count >= 6 && count <= 9) return points;
+    if (count >= 16 && count <= 22 && threadRequiresThreeNodes(points)) return points;
   }
-  return [0, 2, 4, 1, 3, 5].map((i) => ({ ...THREAD_SLOTS[i] }));
+  return [5, 4, 0, 2, 6, 7, 3, 1].map((i) => ({ ...THREAD_SLOTS[i] }));
 }
 
 export function variantThreads(points: Point[], player: number): Point[] {

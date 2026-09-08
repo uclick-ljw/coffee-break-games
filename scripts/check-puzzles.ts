@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { CAT_PUZZLES, POP_COLS, POP_ROWS, THREAD_SLOTS, catEscaped, comparePuzzle, hasPopMove, makePopBoard, makeThreads, moveThread, popGroup, rankPuzzles, removePopGroup, slideCat, solveCat, threadConflicts, validCatBoard, variantCat, variantPop, variantThreads, type PopTile } from '../app/puzzle-game.ts';
+import { CAT_PUZZLES, POP_COLS, POP_ROWS, THREAD_EDGES, THREAD_SLOTS, catEscaped, comparePuzzle, hasPopMove, makePopBoard, makeThreads, moveThread, popGroup, rankPuzzles, removePopGroup, slideCat, solveCat, threadConflicts, threadRequiresThreeNodes, validCatBoard, variantCat, variantPop, variantThreads, type PopTile } from '../app/puzzle-game.ts';
 
 let seed = 73;
 const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 2 ** 32; };
@@ -27,15 +27,36 @@ for (let trial = 0; trial < 80; trial++) {
     assert.equal(new Set(board.map(({ x, y }) => `${x},${y}`)).size, board.length);
   }
 }
-assert.equal(threadConflicts(THREAD_SLOTS).length, 0, '정답 배치는 교차 없음');
-for (let i = 0; i < 60; i++) {
+const threadSolution = [{ x: 200, y: 30 }, { x: 370, y: 200 }, { x: 200, y: 370 }, { x: 30, y: 200 }, { x: 200, y: 120 }, { x: 280, y: 200 }, { x: 200, y: 280 }, { x: 120, y: 200 }];
+assert.equal(THREAD_EDGES.length, 14);
+assert.equal(THREAD_SLOTS.length, 8);
+assert.equal(threadConflicts(threadSolution).length, 0, '안쪽·바깥쪽 배치로 해결 가능');
+assert.equal(threadRequiresThreeNodes(threadSolution), false, '완성된 판을 어려운 시작 판으로 선택하지 않음');
+for (let player = 0; player < 6; player++) {
+  const solution = variantThreads(threadSolution, player);
+  assert.equal(threadConflicts(solution).length, 0, '모든 참가자에게 해결 가능한 배치가 있음');
+  for (let i = 0; i < solution.length; i++) {
+    assert.ok(solution[i].x >= 26 && solution[i].x <= 374 && solution[i].y >= 26 && solution[i].y <= 374);
+    assert.deepEqual(moveThread(solution, i, solution[i]), solution, '정답의 점 간격이 실제 드래그 제한을 충족');
+  }
+}
+for (let i = 0; i < 200; i++) {
   const points = makeThreads(random);
   const count = threadConflicts(points).length;
-  assert.ok(count >= 6 && count <= 9);
-  for (let player = 0; player < 6; player++) assert.equal(threadConflicts(variantThreads(points, player)).length, count);
+  assert.equal(points.length, 8);
+  assert.ok(count >= 16 && count <= 22);
+  assert.ok(threadRequiresThreeNodes(points), '한두 점만 움직여서는 풀 수 없는 시작 배치');
+  for (let player = 0; player < 6; player++) {
+    const rotated = variantThreads(points, player);
+    assert.equal(threadConflicts(rotated).length, count);
+    assert.ok(threadRequiresThreeNodes(rotated), '참가자별 방향을 바꾸어도 난이도 유지');
+  }
   assert.equal(moveThread(points, 0, points[1]), points, '점을 겹쳐서 해결할 수 없음');
 }
-assert.ok(threadConflicts(Array.from({ length: 6 }, (_, i) => ({ x: 30 + i * 55, y: 200 }))).length > 0, '일렬로 포개는 편법 방지');
+const fallbackThreads = makeThreads(() => 0);
+assert.ok(threadConflicts(fallbackThreads).length >= 16 && threadConflicts(fallbackThreads).length <= 22);
+assert.ok(threadRequiresThreeNodes(fallbackThreads), '재시도 한도에 도달해도 쉬운 판으로 퇴행하지 않음');
+assert.ok(threadConflicts(Array.from({ length: 8 }, (_, i) => ({ x: 30 + i * 45, y: 200 }))).length > 0, '일렬로 포개는 편법 방지');
 assert.equal(threadConflicts([{ x: 0, y: 0 }, { x: 100, y: 100 }, { x: 0, y: 100 }, { x: 100, y: 0 }], [[0, 1], [2, 3]]).length, 1);
 assert.equal(threadConflicts([{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 50, y: 0 }, { x: 50, y: 100 }], [[0, 1], [2, 3]]).length, 1, '점 위로 선을 겹쳐도 교차');
 for (const [index, board] of CAT_PUZZLES.entries()) {
