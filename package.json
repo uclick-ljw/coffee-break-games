@@ -30,7 +30,6 @@
     "check:balloon": "node --experimental-strip-types scripts/check-balloon.ts",
     "check:catalog": "node --experimental-strip-types scripts/check-catalog.ts",
     "check:puzzles": "node --experimental-strip-types scripts/check-puzzles.ts",
-    "check:domino": "node --experimental-strip-types scripts/check-domino.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
