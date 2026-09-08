@@ -1564,3 +1564,63 @@ footer b { color: var(--ink); }
 @keyframes balloon-hero-float { to { transform: translateY(-13px) rotate(4deg) scale(1.04); } }@keyframes balloon-spark { to { opacity: .25; transform: scale(.55); } }@keyframes balloon-mini-pulse { to { transform: translateY(-4px) rotate(2deg); } }@keyframes balloon-wobble { from { transform: scaleX(var(--balloon-x)) scaleY(var(--balloon-y)) rotate(-2deg) translateX(-2px); } to { transform: scaleX(var(--balloon-x)) scaleY(var(--balloon-y)) rotate(2deg) translateX(2px); } }@keyframes balloon-danger { from { transform: scaleX(var(--balloon-x)) scaleY(var(--balloon-y)) rotate(-2.5deg) translateX(-3px); } to { transform: scaleX(var(--balloon-x)) scaleY(var(--balloon-y)) rotate(2.5deg) translateX(3px); } }@keyframes balloon-pop-in { from { opacity: 0; transform: scale(.2) rotate(-18deg); } }@keyframes balloon-fragment { from { opacity: 1; transform: rotate(var(--pop-angle)) translateY(-18px) scale(.5); } to { opacity: 0; transform: rotate(var(--pop-angle)) translateY(-103px) scale(1); } }
 @media (max-height: 720px) { .balloon-shell { padding-top: 10px; }.balloon-topbar h1 { font-size: 24px; }.balloon-hero { height: 160px; transform: scale(.78); margin-block: -8px; }.balloon-setup > p:not(.balloon-kicker) { margin-block: 8px 11px; }.balloon-rules { margin-top: 10px; }.balloon-play { padding-top: 5px; }.balloon-status { margin-bottom: 5px; padding-block: 5px; }.balloon-stage { width: min(100%, 350px); height: 380px; min-height: 0; }.balloon-object { top: 27px; transform: scale(.86); }.balloon-mini { height: 113px; }.balloon-handoff > div { padding-block: 14px 18px; }.balloon-pop { height: 170px; transform: scale(.82); } }
 @media (prefers-reduced-motion: reduce) { .balloon-shell::before, .balloon-hero > span, .balloon-hero > i, .balloon-mini, .balloon-object > span, .balloon-pop span, .balloon-pop i { animation: none; } }
+.domino-shell { --domino-player: #168ad5; max-width: 560px; min-height: 100svh; margin: 0 auto; padding: 20px 16px 32px; color: #e9f8f5; background: #0e242d; }
+.domino-shell button, .domino-shell select { font: inherit; cursor: pointer; }
+.domino-shell button:disabled { opacity: .4; cursor: default; }
+.domino-shell button:focus-visible, .domino-shell select:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.domino-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 22px; }
+.domino-header p { margin: 0 0 4px; color: #78a5ad; font-size: 12px; letter-spacing: .09em; }
+.domino-header h1 { margin: 0; font-size: 24px; }
+.domino-header button { flex-shrink: 0; background: #203e49; color: #d3ecee; border: 1px solid #3d5c65; border-radius: 12px; padding: 12px; font-size: 14px; }
+.domino-setup h2, .domino-ready h2, .domino-final h2 { font-size: clamp(26px, 7vw, 36px); line-height: 1.35; letter-spacing: -.04em; }
+.domino-setup h2 em { font-style: normal; color: #a5f2d5; }
+.domino-setup p, .domino-ready p, .domino-outcome p { font-size: 16px; line-height: 1.65; color: #b7cfd3; }
+.domino-board { position: relative; width: 100%; border: 1px solid #3e626b; border-radius: 18px; overflow: hidden; background: #102b36; isolation: isolate; }
+.domino-board canvas { display: block; width: 100%; aspect-ratio: 480 / 380; }
+.domino-board-note { position: absolute; bottom: 13px; left: 50%; transform: translateX(-50%); padding: 9px 16px; border-radius: 10px; background: #041b25e8; color: #bbffdf; white-space: nowrap; font-weight: 800; }
+.domino-rules { display: grid; gap: 12px; margin: 24px 0; padding: 20px; border-left: 3px solid #55d3b0; background: #193842; font-size: 15px; line-height: 1.5; }
+.domino-players { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; }
+.domino-players select { min-height: 48px; min-width: 100px; padding: 8px 16px; border-radius: 10px; color: #fff; background: #1b404b; border: 1px solid #53757f; }
+.domino-primary { width: 100%; min-height: 54px; padding: 14px; border: 0; border-radius: 13px; background: #b5f4d8; color: #0c352e; font-size: 17px; font-weight: 850; }
+.domino-primary span { font-size: 14px; font-weight: 500; }
+.domino-fine { text-align: center; color: #8bb0b9 !important; font-size: 13px !important; line-height: 1.65; }
+.domino-ready { text-align: center; padding: 30px 0; }
+.domino-avatar { display: inline-grid; place-items: center; height: 84px; width: 84px; border-radius: 28px; background: var(--domino-player); color: #fff; font-size: 36px; box-shadow: 0 12px 35px #0004; }
+.domino-turn { display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--domino-player); padding: 12px; background: #1c3b46; border-radius: 6px; }
+.domino-turn span { color: #b4cdd2; font-size: 14px; }
+.domino-metrics { display: flex; justify-content: space-between; padding: 14px 5px; }
+.domino-metrics > div:last-child { text-align: right; }
+.domino-metrics span { display: block; color: #9bbcc5; font-size: 13px; }
+.domino-metrics b { font-size: 27px; line-height: 1.4; }
+.domino-metrics small { margin-left: 5px; font-size: 14px; font-weight: 500; }
+.domino-metrics .urgent { color: #ff91a8; }
+.domino-marker { position: absolute; display: grid; place-items: center; width: 27px; height: 27px; transform: translate(-50%, -50%); border-radius: 50%; background: #0a283be6; color: #c3eff0; border: 1px solid #96c9d0; font-size: 12px !important; font-weight: 800; padding: 0; }
+.domino-marker.selected { background: #ff537c; color: #fff; border-color: #ffc0d1; z-index: 2; }
+.domino-marker.used { border-color: #ff779b; color: #ffd1df; }
+.domino-tools { display: grid; gap: 10px; padding-top: 12px; }
+.domino-inventory { display: flex; gap: 8px; }
+.domino-inventory button { flex: 1; min-height: 49px; background: #26434e; border: 1px solid #486570; color: #e6f6f7; border-radius: 10px; font-size: 14px; }
+.domino-inventory button small { display: block; font-size: 12px; color: #aec8ce; margin-top: 3px; }
+.domino-inventory button.selected { border-color: #ff81a2; background: #633044; }
+.domino-rotation { display: flex; justify-content: center; align-items: center; gap: 20px; }
+.domino-rotation button { min-width: 86px; min-height: 44px; border-radius: 10px; border: 1px solid #62818d; color: #e5f8fc; background: #20404e; }
+.domino-rotation b { min-width: 44px; text-align: center; }
+.domino-zoom { position: absolute; bottom: 7px; right: 8px; min-height: 44px; padding: 7px 12px; background: #092632ed; color: #ffd1df; border: 1px solid #b3768c; border-radius: 10px; font-size: 13px !important; }
+.domino-candidates { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.domino-candidates button { min-height: 44px; background: #1e404c; border: 1px solid #648693; border-radius: 8px; color: #e5f6f8; font-weight: 800; }
+.domino-candidates small { font-size: 12px; margin-left: 4px; font-weight: 400; color: #8ab5c2; }
+.domino-candidates button.selected { background: #8e3a56; border-color: #ff91b2; }
+.domino-candidates button.used { border-color: #f47b9c; }
+.domino-notice { min-height: 46px; margin: 12px 0 8px; font-size: 14px; line-height: 1.55; color: #c4dce1; }
+.domino-watch { text-align: center; font-size: 21px; color: #a5f2d5; padding: 20px 0; }
+.domino-watch small { display: block; font-size: 14px; color: #a1bdc5; margin-top: 14px; }
+.domino-outcome { text-align: center; padding-top: 12px; }
+.domino-final ol { padding: 0; list-style: none; display: grid; gap: 10px; margin: 28px 0; }
+.domino-final li { display: flex; align-items: center; gap: 12px; padding: 17px 12px; background: #1a3a46; border: 1px solid #3a5f69; border-radius: 13px; }
+.domino-final li > b { min-width: 35px; font-size: 20px; }
+.domino-final li i { width: 12px; height: 12px; border-radius: 50%; }
+.domino-final li div { flex: 1; }
+.domino-final li small { display: block; font-size: 12px; color: #9dbac3; margin-top: 4px; }
+.domino-final li em { display: flex; align-items: baseline; gap: 3px; font-size: 26px; font-style: normal; color: #b5f4d8; }
+.domino-secondary { width: 100%; padding: 15px; margin-top: 10px; color: #b4cbd3; border: 1px solid #466772; border-radius: 12px; background: transparent; }
+@media (max-width: 360px) { .domino-shell { padding: 14px 10px 25px; } .domino-header h1 { font-size: 21px; } .domino-candidates { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; } .domino-rotation { gap: 12px; } }

@@ -23,7 +23,8 @@ export type GameId =
   | 'lunch'
   | 'pop'
   | 'untangle'
-  | 'cat';
+  | 'cat'
+  | 'domino';
 
 export type GameInfo = {
   id: GameId;
@@ -49,6 +50,13 @@ export const GAME_CATEGORIES = [
 ] as const;
 
 export const GAMES: readonly GameInfo[] = [
+  {
+    id: 'domino', category: 'strategy', icon: '🁢', kicker: '배치와 연쇄 물리', title: '도미노 한 방',
+    description: '도미노 3개로 갈림길과 코너를 이어 가장 멀리 쓰러뜨리세요.', action: '게임 시작',
+    players: '2~6명', time: '1인 약 40초', goal: '세 개의 도미노로 가장 많은 도미노를 쓰러뜨리세요.',
+    controls: '30초 안에 12개 후보 중 번호를 눌러 배치하고 15°씩 회전하세요. 다른 후보를 누르면 이동합니다. 한 번 밀면 배치가 확정됩니다.',
+    result: '60° 이상 기운 도미노 수가 많은 순, 같으면 배치 시간이 짧은 순입니다. 다른 사람은 배치와 결과를 보지 마세요.',
+  },
   {
     id: 'ice', category: 'luck', icon: '🐧', kicker: '운과 연쇄 붕괴', title: '얼음깨기',
     description: '룰렛 색에 맞춰 얼음을 깨고 펭귄을 지키세요.', action: '게임 시작',

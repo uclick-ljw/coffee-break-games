@@ -26,6 +26,7 @@ const BalloonGame = lazy(() => import('./balloon'));
 const PopGame = lazy(() => import('./puzzles').then((module) => ({ default: module.PopGame })));
 const UntangleGame = lazy(() => import('./puzzles').then((module) => ({ default: module.UntangleGame })));
 const CatGame = lazy(() => import('./puzzles').then((module) => ({ default: module.CatGame })));
+const DominoGame = lazy(() => import('./domino'));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -62,6 +63,7 @@ const GAME_VIEWS: Record<GameId, { component: GameComponent; loading: string }> 
   pop: { component: PopGame, loading: '블록을 섞고 있습니다…' },
   untangle: { component: UntangleGame, loading: '선을 엉키고 있습니다…' },
   cat: { component: CatGame, loading: '고양이의 탈출로를 준비하고 있습니다…' },
+  domino: { component: DominoGame, loading: '도미노를 세우고 있습니다…' },
 };
 
 function GameArt({ game }: { game: GameInfo }) {
