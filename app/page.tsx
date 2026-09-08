@@ -23,6 +23,9 @@ const BombGame = lazy(() => import('./bomb'));
 const MeasureGame = lazy(() => import('./measure'));
 const DartGame = lazy(() => import('./dart'));
 const BalloonGame = lazy(() => import('./balloon'));
+const PopGame = lazy(() => import('./puzzles').then((module) => ({ default: module.PopGame })));
+const UntangleGame = lazy(() => import('./puzzles').then((module) => ({ default: module.UntangleGame })));
+const CatGame = lazy(() => import('./puzzles').then((module) => ({ default: module.CatGame })));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -56,6 +59,9 @@ const GAME_VIEWS: Record<GameId, { component: GameComponent; loading: string }> 
   measure: { component: MeasureGame, loading: '눈금을 지우고 있습니다…' },
   dart: { component: DartGame, loading: '회전판을 돌리고 있습니다…' },
   balloon: { component: BalloonGame, loading: '풍선에 바람을 넣고 있습니다…' },
+  pop: { component: PopGame, loading: '블록을 섞고 있습니다…' },
+  untangle: { component: UntangleGame, loading: '선을 엉키고 있습니다…' },
+  cat: { component: CatGame, loading: '고양이의 탈출로를 준비하고 있습니다…' },
 };
 
 function GameArt({ game }: { game: GameInfo }) {
@@ -208,7 +214,7 @@ export default function Home() {
             </Fragment>
           ))}
         </section>
-        <p className="menu-note">설명은 10초, 한 판은 약 1분.</p>
+        <p className="menu-note">설명은 짧게, 한 판은 가볍게. 인원에 따라 플레이 시간이 달라져요.</p>
       </main>
     );
   }
@@ -234,7 +240,7 @@ export default function Home() {
           </button>
         </div>
 
-        <p className="launch-count"><b>{GAMES.length}개</b>의 1분 게임 · 2~6명 · 소리 없이 플레이</p>
+        <p className="launch-count"><b>{GAMES.length}개</b>의 짧은 게임 · 2~6명 · 소리 없이 플레이</p>
       </section>
     </main>
   );

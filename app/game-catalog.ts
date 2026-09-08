@@ -20,7 +20,10 @@ export type GameId =
   | 'cups'
   | 'tray'
   | 'path'
-  | 'lunch';
+  | 'lunch'
+  | 'pop'
+  | 'untangle'
+  | 'cat';
 
 export type GameInfo = {
   id: GameId;
@@ -165,6 +168,24 @@ export const GAMES: readonly GameInfo[] = [
     description: '음식을 돌려 담고 가장 빈틈없는 도시락을 완성하세요.', action: '도시락 싸기',
     players: '2~6명', time: '약 1분', goal: '랜덤 도시락 칸을 음식으로 빈틈없이 채우세요.',
     controls: '음식을 끌어 옮기고 눌러 회전하며, 놓은 뒤에도 다시 배치할 수 있습니다.', result: '도시락 전체 면적 대비 채운 면적이 가장 넓은 사람이 이깁니다.',
+  },
+  {
+    id: 'pop', category: 'strategy', icon: '🧩', kicker: '세 번의 선택과 연쇄 배치', title: '딱 세 번만 터뜨려',
+    description: '블록이 떨어질 자리까지 읽고 세 번의 선택으로 크게 터뜨리세요.', action: '세 수 승부',
+    players: '2~6명', time: '1인 25초', goal: '딱 세 번으로 최대한 많은 블록을 없애세요.',
+    controls: '같은 색이 2개 이상 붙은 덩어리를 눌러 확인하고 한 번 더 눌러 터뜨리세요.', result: '없앤 블록 수가 많은 순서로, 동점이면 짧은 시간 순으로 순위를 정합니다.',
+  },
+  {
+    id: 'untangle', category: 'strategy', icon: '🪢', kicker: '공간 판단과 엉킨 선', title: '엉킨 선 풀어라',
+    description: '점을 끌어 복잡한 빨간 선을 깔끔한 파란 선으로 바꾸세요.', action: '선 풀기',
+    players: '2~6명', time: '1인 25초', goal: '선이 서로 교차하지 않게 모든 매듭을 푸세요.',
+    controls: '동그란 점을 손가락으로 끌어 옮기세요. 서로 닿거나 겹친 선도 풀어야 합니다.', result: '남은 교차 수가 적을수록 높은 순위. 모두 풀었다면 완료 시간을 비교합니다.',
+  },
+  {
+    id: 'cat', category: 'strategy', icon: '🐈', kicker: '상자 밀기와 탈출 경로', title: '고양이 꺼내줘',
+    description: '상자를 밀어 길을 만들고 두 방에 갇힌 고양이를 구출하세요.', action: '고양이 구출',
+    players: '2~6명', time: '1인 25초', goal: '고양이를 오른쪽 출구까지 밀어 두 마리를 구출하세요.',
+    controls: '상자는 화살표 방향으로만 밀 수 있어요. 한 번 밀어 놓을 때마다 1수입니다.', result: '구출 수, 구출에 쓴 이동 수, 구출 시간 순서로 비교합니다. 같은 기록은 공동 순위입니다.',
   },
 ];
 
