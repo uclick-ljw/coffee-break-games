@@ -23,7 +23,8 @@ export type GameId =
   | 'lunch'
   | 'pop'
   | 'untangle'
-  | 'cat';
+  | 'cat'
+  | 'sand';
 
 export type GameInfo = {
   id: GameId;
@@ -49,6 +50,12 @@ export const GAME_CATEGORIES = [
 ] as const;
 
 export const GAMES: readonly GameInfo[] = [
+  {
+    id: 'sand', category: 'strategy', icon: '⛏️', kicker: '직접 파는 길과 구슬의 흐름', title: '모래길 파기',
+    description: '모래를 쓸어 길을 만들고 구슬을 높은 점수통으로 보내세요.', action: '모래 파기',
+    players: '2~6명', time: '1인 25초 + 도착 대기', goal: '구슬 18개를 10·30·50점 통으로 보내 높은 점수를 모으세요.',
+    controls: '손가락으로 모래를 긁어 길을 파세요. 구슬은 계속 움직이고 회색 바위는 팔 수 없습니다.', result: '25초간 파고 최대 4초간 도착을 기다립니다. 통 바닥에 도착한 점수 합계로 순위를 정하며 동점은 공동 순위입니다.',
+  },
   {
     id: 'ice', category: 'luck', icon: '🐧', kicker: '운과 연쇄 붕괴', title: '얼음깨기',
     description: '룰렛 색에 맞춰 얼음을 깨고 펭귄을 지키세요.', action: '게임 시작',

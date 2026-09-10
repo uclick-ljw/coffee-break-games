@@ -1,5 +1,32 @@
 @import 'tailwindcss';
 
+.sand-card { background: linear-gradient(145deg, #fff0ce, #e9c991); }
+.puzzle-shell.sand-shell { --puzzle-accent: #126d75; --puzzle-soft: #e5eee7; background: linear-gradient(160deg, #faf6e9, #e1eee9); }
+.sand-shell h1, .sand-shell h2 { font-weight: 800; }
+.sand-shell .puzzle-topbar { margin-bottom: 14px; }
+.sand-play { max-width: 440px; }
+.sand-hud { display: flex; justify-content: space-between; gap: 8px; padding: 12px 2px 8px; }
+.sand-hud > div:last-child { text-align: right; }
+.sand-hud span { display: block; font-size: 14px; color: #4d635f; }
+.sand-hud strong { display: block; font-size: 28px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.sand-hud small { font-size: 14px; font-weight: 650; }
+.sand-hud .sand-urgent strong { color: #b44030; }
+.sand-timer { height: 4px; margin-bottom: 10px; background: #b7cfca; border-radius: 4px; overflow: hidden; }
+.sand-timer i { display: block; height: 100%; background: #13757d; transition: width .08s linear; }
+.sand-stage { position: relative; width: min(100%, calc((100svh - 248px) * .76923)); min-width: 240px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 0 #173a4930, 0 14px 35px #173a4920; background: #133d4b; }
+.sand-board { display: block; width: 100%; aspect-ratio: 400 / 520; touch-action: none; user-select: none; cursor: crosshair; }
+.sand-board:focus-visible { outline: 3px solid #f2b63b; outline-offset: -4px; }
+.sand-pause { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 28px; color: white; background: #0c2634e8; text-align: center; }
+.sand-pause h2 { font-size: 26px; }
+.sand-pause p { font-size: 16px; }
+.sand-status { min-height: 24px; font-size: 14px; font-weight: 750; color: #265b60; text-align: center; margin: 12px 0 6px; line-height: 1.5; }
+.sand-legend { font-size: 14px; text-align: center; color: #526762; margin: 0; }
+.sand-breakdown { display: flex; gap: 8px; margin: 24px 0; }
+.sand-breakdown > div { flex: 1; display: grid; gap: 9px; padding: 15px 5px; border: 1px solid #c5d6d0; border-radius: 15px; background: #fff8; }
+.sand-breakdown b { font-size: 14px; color: #37655d; }
+.sand-breakdown span { font-size: 22px; font-weight: 800; }
+@media (max-height: 730px) { .puzzle-shell.sand-shell { padding-top: 12px; } .sand-shell .puzzle-topbar { margin-bottom: 8px; } .sand-shell .puzzle-turn { padding-block: 9px; } .sand-hud { padding-top: 8px; } .sand-stage { width: min(100%, calc((100svh - 290px) * .76923)); } }
+
 /* Three pocket puzzles: shared turn UI, distinct play surfaces. */
 .pop-card { background: linear-gradient(145deg, #fff5fc, #d8dbff); }
 .untangle-card { background: linear-gradient(145deg, #effbff, #bedeea); }
