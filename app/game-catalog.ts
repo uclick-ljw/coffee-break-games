@@ -25,8 +25,7 @@ export type GameId =
   | 'untangle'
   | 'cat'
   | 'sand'
-  | 'hole'
-  | 'demolition';
+  | 'hole';
 
 export type GameInfo = {
   id: GameId;
@@ -57,15 +56,8 @@ export const GAMES: readonly GameInfo[] = [
     id: 'hole', category: 'skill', isNew: true, icon: '🕳️', kicker: '먹을수록 커지는 30초', title: '블랙홀 대청소',
     description: '작은 장난감부터 꿀꺽! 구멍을 키워 큰 장난감까지 삼키세요.', action: '30초 대청소',
     players: '2~6명', time: '1인 30초', goal: '장난감을 삼켜 가장 높은 점수를 모으세요.',
-    controls: '게임판을 누른 채 손가락을 움직이면 구멍이 따라갑니다. 초록 테두리 장난감부터 먹으세요.',
-    result: '같은 배치에서 30초씩 도전합니다. 삼킨 장난감의 합계 점수가 높은 순서이며 동점은 공동 순위입니다.',
-  },
-  {
-    id: 'demolition', category: 'strategy', isNew: true, icon: '💥', kicker: '세 발과 연쇄 붕괴', title: '세 발 철거왕',
-    description: '아래 기둥? 위쪽 무게추? 세 발로 구조물을 크게 무너뜨리세요.', action: '당겨서 발사',
-    players: '2~6명', time: '1인 약 30~50초', goal: '세 발을 쏴 구조물의 블록을 아래 수거장으로 떨어뜨리세요.',
-    controls: '아래 발사 구역을 뒤로 당겨 방향과 힘을 정하고 놓으세요. 블록이 멈추면 다음 발을 쏠 수 있습니다.',
-    result: '같은 구조물에 세 발씩 도전합니다. 수거장에 떨어진 블록의 점수 합계로 순위를 정하며 동점은 공동 순위입니다.',
+    controls: '아래 조작 패드를 누르고 원하는 방향으로 미세요. 초록 테두리부터 먹으면 구멍이 커집니다. 10초 연습도 가능해요.',
+    result: '같은 구성의 판을 좌우·상하로 뒤집어 30초씩 도전합니다. 장난감의 합계 점수가 높은 순서이며 동점은 공동 순위입니다.',
   },
   {
     id: 'sand', category: 'strategy', icon: '⛏️', kicker: '직접 파는 길과 구슬의 흐름', title: '모래길 파기',

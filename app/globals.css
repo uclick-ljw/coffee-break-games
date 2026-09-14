@@ -1,26 +1,49 @@
 @import 'tailwindcss';
 
 .hole-card { background: linear-gradient(135deg, #c9f9ec, #b8dfef); }
-.demolition-card { background: linear-gradient(135deg, #ffedc5, #ffd0a2); }
 .game-cluster-heading.new-games-heading { padding: 18px; border-radius: 20px; background: #e5f1ff; border: 1px solid #b9d7f9; }
-.puzzle-shell.arcade-shell { --puzzle-accent: #176b84; --puzzle-soft: #dcedf1; background: linear-gradient(155deg, #f3fbff, #d8e9f1); }
-.puzzle-shell.arcade-demolition { --puzzle-accent: #aa5726; background: linear-gradient(155deg, #fff9ed, #f6e2c9); }
+.puzzle-shell.arcade-shell { --puzzle-accent: #176b84; --puzzle-soft: #dcedf1; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: linear-gradient(155deg, #f3fbff, #d8e9f1); }
 .arcade-shell h1, .arcade-shell h2 { font-weight: 850; }
 .arcade-shell .puzzle-topbar { margin-bottom: 12px; }
 .arcade-hud { display: flex; justify-content: space-between; gap: 8px; padding: 12px 0 10px; }
 .arcade-hud span { display: block; font-size: 14px; color: #526478; }
 .arcade-hud strong { display: block; font-size: 29px; font-weight: 850; font-variant-numeric: tabular-nums; }
 .arcade-hud small { font-size: 14px; margin-left: 3px; }
-.arcade-hud > div:last-child { text-align: right; }
-.arcade-hud .arcade-tier { font-size: 18px; padding-top: 7px; }
-.arcade-stage { position: relative; width: min(100%, calc((100svh - 252px) * .83333)); min-width: 235px; margin: auto; border-radius: 20px; overflow: hidden; background: #152b45; box-shadow: 0 7px 0 #12344a24, 0 18px 40px #17374c22; }
+.arcade-hud > div:nth-child(2) { margin-left: auto; text-align: right; }
+.arcade-stage { position: relative; width: min(100%, calc((100svh - 340px) * .83333)); min-width: 225px; margin: auto; border-radius: 20px; overflow: hidden; background: #152b45; box-shadow: 0 7px 0 #12344a24, 0 18px 40px #17374c22; }
 .arcade-board { display: block; width: 100%; aspect-ratio: 400 / 480; touch-action: none; user-select: none; cursor: grab; }
 .arcade-board:focus-visible { outline: 3px solid #50e6de; outline-offset: -4px; }
 .arcade-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 26px; text-align: center; color: white; background: #142d48ed; }
 .arcade-overlay h2 { font-size: 24px; }
 .arcade-status, .arcade-legend { font-size: 14px; line-height: 1.5; text-align: center; color: #42596c; margin: 10px 0 0; }
 .arcade-status { font-weight: 750; }
-@media (max-height: 730px) { .puzzle-shell.arcade-shell { padding-top: 10px; } .arcade-shell .puzzle-turn { padding-block: 8px; } .arcade-hud { padding: 7px 0; } .arcade-hud strong { font-size: 23px; } .arcade-stage { width: min(100%, calc((100svh - 270px) * .83333)); } .arcade-status { margin-top: 7px; } }
+.hole-pause-button { align-self: center; width: 44px; height: 44px; margin-left: 9px; border-radius: 14px; border: 1px solid #accbd2; background: #fff9; color: #176b84; font-size: 22px; cursor: pointer; }
+.hole-pause-button:disabled { opacity: .45; }
+.hole-urgent strong { color: #be3c46; }
+.hole-growth { margin: 0 auto 10px; }
+.hole-growth > div { display: flex; justify-content: space-between; gap: 6px; font-size: 13px; color: #29576a; margin-bottom: 4px; }
+.hole-growth strong { font-weight: 850; }
+.hole-growth progress { display: block; width: 100%; height: 7px; border: 0; border-radius: 8px; overflow: hidden; accent-color: #158576; background: #bbd3d8; }
+.hole-growth progress::-webkit-progress-bar { background: #bbd3d8; }
+.hole-growth progress::-webkit-progress-value { background: #158576; border-radius: 8px; }
+.hole-growth progress::-moz-progress-bar { background: #158576; }
+.hole-pad { position: relative; height: 78px; margin-top: 13px; border-radius: 19px; border: 1px solid #a9c4d0; background: #fff9; color: #305d71; touch-action: none; user-select: none; cursor: grab; overflow: hidden; }
+.hole-pad > span { display: block; padding-top: 13px; text-align: center; font-size: 14px; font-weight: 800; pointer-events: none; }
+.hole-pad b { font-size: 21px; margin-right: 7px; }
+.hole-pad small { display: block; margin-top: 3px; font-size: 12px; font-weight: 500; color: #536f7f; }
+.hole-pad:focus-visible { outline: 3px solid #158576; outline-offset: 3px; }
+.hole-pad[aria-disabled="true"] { opacity: .55; }
+.hole-stick-base { position: absolute; width: 64px; height: 64px; margin: -32px; border: 2px solid #176b8455; border-radius: 50%; background: #bdd5df70; pointer-events: none; }
+.hole-stick-base i { position: absolute; left: 16px; top: 16px; width: 28px; height: 28px; border-radius: 50%; background: var(--puzzle-player); box-shadow: 0 2px 6px #1236; }
+.hole-countdown { background: #102d4699; pointer-events: none; }
+.hole-countdown h2 { font-size: 86px; color: #b3ffe7; line-height: 1; }
+.hole-countdown p { font-size: 14px; font-weight: 750; }
+.hole-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 25px 0; }
+.hole-breakdown > div { display: grid; gap: 8px; padding: 15px 3px; border-radius: 14px; background: #fff9; border: 1px solid #c6d9dd; }
+.hole-breakdown b, .hole-breakdown small { font-size: 12px; color: #3a6978; }
+.hole-breakdown span { font-size: 22px; font-weight: 800; }
+.arcade-shell .hole-practice-end { min-height: 40px; padding: 9px; margin-top: 8px; }
+@media (max-height: 730px) { .puzzle-shell.arcade-shell { padding-top: 10px; } .arcade-shell .puzzle-turn { padding-block: 7px; } .arcade-hud { padding: 5px 0; } .arcade-hud strong { font-size: 23px; } .arcade-stage { width: min(100%, calc((100svh - 345px) * .83333)); } .arcade-status { margin-top: 6px; font-size: 12px; } .hole-pad { height: 66px; margin-top: 10px; } .hole-pad > span { padding-top: 7px; } }
 
 .sand-card { background: linear-gradient(145deg, #fff0ce, #e9c991); }
 .puzzle-shell.sand-shell { --puzzle-accent: #126d75; --puzzle-soft: #e5eee7; background: linear-gradient(160deg, #faf6e9, #e1eee9); }

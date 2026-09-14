@@ -20,10 +20,10 @@ assert.notEqual(pickRandomGame(GAMES[0].id, () => 0).id, GAMES[0].id, '다시 �
 console.log(`게임 목록 ${GAMES.length}개와 랜덤 선택 규칙을 확인했습니다.`);
 const sections = gameSections();
 assert.equal(sections[0].id, 'new');
-assert.deepEqual(sections[0].games.map((game) => game.id), ['hole', 'demolition']);
+assert.deepEqual(sections[0].games.map((game) => game.id), ['hole']);
 assert.equal(sections.flatMap((section) => section.games).length, GAMES.length);
 assert.equal(new Set(sections.flatMap((section) => section.games.map((game) => game.id))).size, GAMES.length);
 const merged = gameSections(GAMES.map((game) => ({ ...game, isNew: false })));
 assert.ok(!merged.some((section) => section.id === 'new'));
 assert.ok(merged.find((section) => section.id === 'skill')?.games.some((game) => game.id === 'hole'));
-assert.ok(merged.find((section) => section.id === 'strategy')?.games.some((game) => game.id === 'demolition'));
+assert.ok(GAMES.every((game) => !String(game.id).includes('demolition')));

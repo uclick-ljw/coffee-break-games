@@ -28,7 +28,6 @@ const UntangleGame = lazy(() => import('./puzzles').then((module) => ({ default:
 const CatGame = lazy(() => import('./puzzles').then((module) => ({ default: module.CatGame })));
 const SandGame = lazy(() => import('./sand'));
 const HoleGame = lazy(() => import('./arcade').then((module) => ({ default: module.HoleGame })));
-const DemolitionGame = lazy(() => import('./arcade').then((module) => ({ default: module.DemolitionGame })));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -67,7 +66,6 @@ const GAME_VIEWS: Record<GameId, { component: GameComponent; loading: string }> 
   cat: { component: CatGame, loading: '고양이의 탈출로를 준비하고 있습니다…' },
   sand: { component: SandGame, loading: '모래와 구슬을 준비하고 있습니다…' },
   hole: { component: HoleGame, loading: '장난감을 펼치고 있습니다…' },
-  demolition: { component: DemolitionGame, loading: '철거 현장을 준비하고 있습니다…' },
 };
 
 function GameArt({ game }: { game: GameInfo }) {
