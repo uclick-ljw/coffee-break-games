@@ -24,11 +24,14 @@ export type GameId =
   | 'pop'
   | 'untangle'
   | 'cat'
-  | 'sand';
+  | 'sand'
+  | 'hole'
+  | 'demolition';
 
 export type GameInfo = {
   id: GameId;
   category: GameCategoryId;
+  isNew?: boolean;
   icon: string;
   artClass?: string;
   kicker: string;
@@ -50,6 +53,20 @@ export const GAME_CATEGORIES = [
 ] as const;
 
 export const GAMES: readonly GameInfo[] = [
+  {
+    id: 'hole', category: 'skill', isNew: true, icon: '🕳️', kicker: '먹을수록 커지는 30초', title: '블랙홀 대청소',
+    description: '작은 장난감부터 꿀꺽! 구멍을 키워 큰 장난감까지 삼키세요.', action: '30초 대청소',
+    players: '2~6명', time: '1인 30초', goal: '장난감을 삼켜 가장 높은 점수를 모으세요.',
+    controls: '게임판을 누른 채 손가락을 움직이면 구멍이 따라갑니다. 초록 테두리 장난감부터 먹으세요.',
+    result: '같은 배치에서 30초씩 도전합니다. 삼킨 장난감의 합계 점수가 높은 순서이며 동점은 공동 순위입니다.',
+  },
+  {
+    id: 'demolition', category: 'strategy', isNew: true, icon: '💥', kicker: '세 발과 연쇄 붕괴', title: '세 발 철거왕',
+    description: '아래 기둥? 위쪽 무게추? 세 발로 구조물을 크게 무너뜨리세요.', action: '당겨서 발사',
+    players: '2~6명', time: '1인 약 30~50초', goal: '세 발을 쏴 구조물의 블록을 아래 수거장으로 떨어뜨리세요.',
+    controls: '아래 발사 구역을 뒤로 당겨 방향과 힘을 정하고 놓으세요. 블록이 멈추면 다음 발을 쏠 수 있습니다.',
+    result: '같은 구조물에 세 발씩 도전합니다. 수거장에 떨어진 블록의 점수 합계로 순위를 정하며 동점은 공동 순위입니다.',
+  },
   {
     id: 'sand', category: 'strategy', icon: '⛏️', kicker: '직접 파는 길과 구슬의 흐름', title: '모래길 파기',
     description: '모래를 쓸어 길을 만들고 구슬을 높은 점수통으로 보내세요.', action: '모래 파기',
@@ -195,6 +212,14 @@ export const GAMES: readonly GameInfo[] = [
     controls: '상자는 화살표 방향으로만 밀 수 있어요. 한 번 밀어 놓을 때마다 1수입니다.', result: '구출 수, 구출에 쓴 이동 수, 구출 시간 순서로 비교합니다. 같은 기록은 공동 순위입니다.',
   },
 ];
+
+// New status is explicit: removing it restores the original category, never expires on its own.
+export function gameSections(games: readonly GameInfo[] = GAMES) {
+  return [
+    { id: 'new', icon: '✨', title: '신규 게임', description: '새로 들어온 게임부터 한 판!', games: games.filter((game) => game.isNew) },
+    ...GAME_CATEGORIES.map((category) => ({ ...category, games: games.filter((game) => !game.isNew && game.category === category.id) })),
+  ].filter((section) => section.games.length);
+}
 
 export function pickRandomGame(previousId?: GameId, random = Math.random): GameInfo {
   const pool = previousId && GAMES.length > 1 ? GAMES.filter((game) => game.id !== previousId) : GAMES;

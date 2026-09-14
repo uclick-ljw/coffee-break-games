@@ -1,5 +1,27 @@
 @import 'tailwindcss';
 
+.hole-card { background: linear-gradient(135deg, #c9f9ec, #b8dfef); }
+.demolition-card { background: linear-gradient(135deg, #ffedc5, #ffd0a2); }
+.game-cluster-heading.new-games-heading { padding: 18px; border-radius: 20px; background: #e5f1ff; border: 1px solid #b9d7f9; }
+.puzzle-shell.arcade-shell { --puzzle-accent: #176b84; --puzzle-soft: #dcedf1; background: linear-gradient(155deg, #f3fbff, #d8e9f1); }
+.puzzle-shell.arcade-demolition { --puzzle-accent: #aa5726; background: linear-gradient(155deg, #fff9ed, #f6e2c9); }
+.arcade-shell h1, .arcade-shell h2 { font-weight: 850; }
+.arcade-shell .puzzle-topbar { margin-bottom: 12px; }
+.arcade-hud { display: flex; justify-content: space-between; gap: 8px; padding: 12px 0 10px; }
+.arcade-hud span { display: block; font-size: 14px; color: #526478; }
+.arcade-hud strong { display: block; font-size: 29px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.arcade-hud small { font-size: 14px; margin-left: 3px; }
+.arcade-hud > div:last-child { text-align: right; }
+.arcade-hud .arcade-tier { font-size: 18px; padding-top: 7px; }
+.arcade-stage { position: relative; width: min(100%, calc((100svh - 252px) * .83333)); min-width: 235px; margin: auto; border-radius: 20px; overflow: hidden; background: #152b45; box-shadow: 0 7px 0 #12344a24, 0 18px 40px #17374c22; }
+.arcade-board { display: block; width: 100%; aspect-ratio: 400 / 480; touch-action: none; user-select: none; cursor: grab; }
+.arcade-board:focus-visible { outline: 3px solid #50e6de; outline-offset: -4px; }
+.arcade-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 26px; text-align: center; color: white; background: #142d48ed; }
+.arcade-overlay h2 { font-size: 24px; }
+.arcade-status, .arcade-legend { font-size: 14px; line-height: 1.5; text-align: center; color: #42596c; margin: 10px 0 0; }
+.arcade-status { font-weight: 750; }
+@media (max-height: 730px) { .puzzle-shell.arcade-shell { padding-top: 10px; } .arcade-shell .puzzle-turn { padding-block: 8px; } .arcade-hud { padding: 7px 0; } .arcade-hud strong { font-size: 23px; } .arcade-stage { width: min(100%, calc((100svh - 270px) * .83333)); } .arcade-status { margin-top: 7px; } }
+
 .sand-card { background: linear-gradient(145deg, #fff0ce, #e9c991); }
 .puzzle-shell.sand-shell { --puzzle-accent: #126d75; --puzzle-soft: #e5eee7; background: linear-gradient(160deg, #faf6e9, #e1eee9); }
 .sand-shell h1, .sand-shell h2 { font-weight: 800; }

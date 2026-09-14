@@ -2,7 +2,7 @@
 
 import { Fragment, lazy, Suspense, useMemo, useRef, useState, type ComponentType, type CSSProperties } from 'react';
 import { boardRadius, iceSize, makeIce, PLAYER_NAMES, resolveHit, ROULETTE_RESULTS, type Ice, type RouletteResult } from './game';
-import { GAME_CATEGORIES, GAMES, pickRandomGame, type GameId, type GameInfo } from './game-catalog';
+import { gameSections, GAMES, pickRandomGame, type GameId, type GameInfo } from './game-catalog';
 
 const MarbleGame = lazy(() => import('./marbles'));
 const PegDropGame = lazy(() => import('./pegdrop'));
@@ -27,6 +27,8 @@ const PopGame = lazy(() => import('./puzzles').then((module) => ({ default: modu
 const UntangleGame = lazy(() => import('./puzzles').then((module) => ({ default: module.UntangleGame })));
 const CatGame = lazy(() => import('./puzzles').then((module) => ({ default: module.CatGame })));
 const SandGame = lazy(() => import('./sand'));
+const HoleGame = lazy(() => import('./arcade').then((module) => ({ default: module.HoleGame })));
+const DemolitionGame = lazy(() => import('./arcade').then((module) => ({ default: module.DemolitionGame })));
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ROULETTE_LABELS: Record<RouletteResult, string> = {
@@ -64,6 +66,8 @@ const GAME_VIEWS: Record<GameId, { component: GameComponent; loading: string }> 
   untangle: { component: UntangleGame, loading: '선을 엉키고 있습니다…' },
   cat: { component: CatGame, loading: '고양이의 탈출로를 준비하고 있습니다…' },
   sand: { component: SandGame, loading: '모래와 구슬을 준비하고 있습니다…' },
+  hole: { component: HoleGame, loading: '장난감을 펼치고 있습니다…' },
+  demolition: { component: DemolitionGame, loading: '철거 현장을 준비하고 있습니다…' },
 };
 
 function GameArt({ game }: { game: GameInfo }) {
@@ -192,13 +196,13 @@ export default function Home() {
           <p>비슷한 방식끼리 모아두었습니다. 카드를 누르면 규칙부터 보여드려요.</p>
         </header>
         <section className="game-grid" aria-label="게임 선택">
-          {GAME_CATEGORIES.map((category) => (
+          {gameSections().map((category) => (
             <Fragment key={category.id}>
-              <header className="game-cluster-heading">
+              <header className={'game-cluster-heading' + (category.id === 'new' ? ' new-games-heading' : '')}>
                 <span>{category.icon}</span>
                 <div><h2>{category.title}</h2><p>{category.description}</p></div>
               </header>
-              {GAMES.filter((game) => game.category === category.id).map((game) => (
+              {category.games.map((game) => (
                 <button
                   key={game.id}
                   type="button"
