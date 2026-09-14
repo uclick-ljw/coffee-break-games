@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -218,9 +219,9 @@ export default function CenterGame({ onExit }: { onExit: () => void }) {
     </section>}
 
     {phase === 'final' && payer && <section className="center-final">
-      <div className="center-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>평균 오차 {(payer.averageError * 100).toFixed(1)}% · {payer.score}점</strong></div>
-      <div className="center-reveal"><p>가장 아쉬웠던 세 번의 선택</p><div>{payer.outcomes.map((outcome, index) => <article key={outcome.round}><CenterCanvas challenge={outcome.challenge} angles={{ yaw: outcome.challenge.targetYaw, pitch: outcome.challenge.targetPitch }} outcome={outcome} reveal /><small>{index + 1}R · 오차 {(outcome.error * 100).toFixed(1)}%</small></article>)}</div><footer><span><i className="guess" />내 선택</span><span><i className="answer" />무게중심</span></footer></div>
-      <ol>{ranked.map((result, index) => <li key={result.player}><span>{index + 1}</span><i style={{ background: COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>평균 오차 {(result.averageError * 100).toFixed(1)}%</small></div><b>{result.score}점</b></li>)}</ol>
+      <div className="center-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>평균 오차 {(payer.averageError * 100).toFixed(1)}%</strong></div>
+      <div className="center-reveal"><p>{PLAYER_NAMES[payer.player]}의 선택 복기</p><div>{payer.outcomes.map((outcome, index) => <article key={outcome.round}><CenterCanvas challenge={outcome.challenge} angles={{ yaw: outcome.challenge.targetYaw, pitch: outcome.challenge.targetPitch }} outcome={outcome} reveal /><small>{index + 1}R · 오차 {(outcome.error * 100).toFixed(1)}%</small></article>)}</div><footer><span><i className="guess" />내 선택</span><span><i className="answer" />무게중심</span></footer></div>
+      <ol>{ranked.map((result) => <li key={result.player}><span>{result.rank}</span><i style={{ background: COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>평균 오차 {(result.averageError * 100).toFixed(1)}%</small></div><b>{result.score}점</b></li>)}</ol>
       <button className="center-primary" onClick={startGame}>새 입체로 한 판 더</button><button className="center-secondary" onClick={onExit}>게임 선택으로</button>
     </section>}
   </main>;

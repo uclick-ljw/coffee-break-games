@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -243,8 +244,8 @@ export default function ShadowGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'final' && payer && (
         <section className="shadow-final">
-          <div className="shadow-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>그림자 일치율 {(payer.score / 10).toFixed(1)}%</strong></div>
-          <ol>{ranked.map((result, index) => <li key={result.player}><span>{index + 1}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.modelName} · {result.elapsed.toFixed(1)}초</small></div><b>{(result.score / 10).toFixed(1)}%</b></li>)}</ol>
+          <div className="shadow-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>그림자 일치율 {(payer.score / 10).toFixed(1)}%</strong></div>
+          <ol>{ranked.map((result) => <li key={result.player}><span>{result.rank}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.modelName} · {result.elapsed.toFixed(1)}초</small></div><b>{(result.score / 10).toFixed(1)}%</b></li>)}</ol>
           <button className="shadow-primary" onClick={startGame}>새 조형물로 한 판 더</button>
           <button className="shadow-secondary" onClick={onExit}>게임 선택으로</button>
         </section>

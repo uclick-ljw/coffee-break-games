@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export type ShadowPoint = { x: number; y: number };
 export type ShadowVec3 = { x: number; y: number; z: number };
 export type ShadowBox = ShadowVec3 & { width: number; height: number; depth: number };
@@ -178,5 +180,5 @@ export function makeShadowChallenges(players: number, seed: number): ShadowChall
 }
 
 export function rankShadowResults(results: ShadowResult[]) {
-  return [...results].sort((a, b) => b.score - a.score || a.elapsed - b.elapsed || a.player - b.player);
+  return rankResults(results, (a, b) => b.score - a.score || Math.round(a.elapsed * 10) - Math.round(b.elapsed * 10));
 }

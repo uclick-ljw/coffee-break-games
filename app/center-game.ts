@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 import { SLICE_SHAPES, pointInPolygon, transformSlicePoint, type SlicePoint, type SliceShape } from './slice-game.ts';
 
 export const CENTER_ROUNDS = 3;
@@ -262,10 +264,10 @@ export function scoreCenterGuess(player: number, round: number, challenge: Cente
   return { player, round, challenge, guess, error, score: Math.max(0, Math.round(100 - error * 450)) };
 }
 
-export function rankCenterPlayers(outcomes: CenterOutcome[], players: number): CenterPlayerResult[] {
-  return Array.from({ length: players }, (_, player) => {
+export function rankCenterPlayers(outcomes: CenterOutcome[], players: number): (CenterPlayerResult & { rank: number })[] {
+  return rankResults(Array.from({ length: players }, (_, player) => {
     const playerOutcomes = outcomes.filter((outcome) => outcome.player === player);
     const averageError = playerOutcomes.reduce((sum, outcome) => sum + outcome.error, 0) / Math.max(1, playerOutcomes.length);
     return { player, outcomes: playerOutcomes, averageError, score: Math.round(playerOutcomes.reduce((sum, outcome) => sum + outcome.score, 0) / Math.max(1, playerOutcomes.length)) };
-  }).sort((a, b) => a.averageError - b.averageError || a.player - b.player);
+  }), (a, b) => Math.round(a.averageError * 1000) - Math.round(b.averageError * 1000));
 }

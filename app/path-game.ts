@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export const PATH_BOARD_SIZE = 5;
 export const PATH_HEAD_START_SECONDS = 5;
 export const PATH_TURN_SECONDS = 13;
@@ -22,7 +24,7 @@ export type PathResult = {
   rotations: number;
   optimalRotations: number;
   progress: number;
-  pathLength: number;
+  remainingSteps: number;
   failure?: PathFailure;
 };
 
@@ -192,10 +194,28 @@ export function tracePath(challenge: PathChallenge, directions = challenge.direc
   return { success: false as const, path, failure: 'loop' as const };
 }
 
-export function pathProgress(actual: number[], solution: number[]) {
-  let progress = 0;
-  while (progress + 1 < actual.length && progress + 1 < solution.length && actual[progress + 1] === solution[progress + 1]) progress += 1;
-  return progress;
+export function pathProgress(actual: number[], challenge: PathChallenge) {
+  // Distance to EXIT through safe cells, independent of the generator's example solution.
+  const distances = Array<number>(PATH_BOARD_SIZE ** 2).fill(Infinity);
+  const queue = [challenge.exitCell];
+  distances[challenge.exitCell] = 0;
+  for (let head = 0; head < queue.length; head++) {
+    const current = queue[head];
+    const { row, column } = pointOf(current);
+    for (const [dy, dx] of DELTAS) {
+      const y = row + dy, x = column + dx;
+      if (y < 0 || y >= PATH_BOARD_SIZE || x < 0 || x >= PATH_BOARD_SIZE) continue;
+      const next = indexOf(y, x);
+      if (challenge.hazards.includes(next) || distances[next] !== Infinity) continue;
+      distances[next] = distances[current] + 1;
+      queue.push(next);
+    }
+  }
+  const remainingSteps = distances[actual.at(-1) ?? challenge.start];
+  const initial = distances[challenge.start];
+  const progress = remainingSteps === 0 ? 100 : Number.isFinite(initial) && initial > 0
+    ? Math.max(0, Math.round((1 - remainingSteps / initial) * 100)) : 0;
+  return { progress, remainingSteps };
 }
 
 export function pathScore(result: PathResult) {
@@ -203,9 +223,9 @@ export function pathScore(result: PathResult) {
 }
 
 export function rankPathResults(results: PathResult[]) {
-  return [...results].sort((a, b) => {
+  return rankResults(results, (a, b) => {
     if (a.success !== b.success) return a.success ? -1 : 1;
-    if (a.success) return pathScore(b) - pathScore(a) || a.elapsed - b.elapsed || a.rotations - b.rotations || a.player - b.player;
-    return b.progress - a.progress || a.rotations - b.rotations || b.elapsed - a.elapsed || a.player - b.player;
+    if (a.success) return pathScore(b) - pathScore(a) || Math.round(a.elapsed * 10) - Math.round(b.elapsed * 10) || a.rotations - b.rotations;
+    return b.progress - a.progress;
   });
 }

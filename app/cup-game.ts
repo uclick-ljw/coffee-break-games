@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export const CUP_ROUNDS = 3;
 
 export type CupSwap = readonly [number, number];
@@ -77,5 +79,5 @@ export function cupRoundScore(correct: boolean, decisionMs: number, level: numbe
 }
 
 export function rankCupResults(results: CupResult[]) {
-  return [...results].sort((a, b) => b.correct - a.correct || b.score - a.score || a.decisionMs - b.decisionMs || a.player - b.player);
+  return rankResults(results, (a, b) => b.correct - a.correct || b.score - a.score || (a.correct > 0 ? Math.round(a.decisionMs / 100) - Math.round(b.decisionMs / 100) : 0));
 }

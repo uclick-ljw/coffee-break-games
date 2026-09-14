@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import {
@@ -227,14 +228,14 @@ export default function PerfectCurveGame({ onExit }: { onExit: () => void }) {
         <section className="circle-result">
           <p className="circle-result-label">오늘의 곡선 · {CURVES[shape].label}</p>
           <div className="circle-buyer-card" style={{ '--player-color': PLAYER_COLORS[buyer.player] } as React.CSSProperties}>
-            <CurvePreview result={buyer} large />
-            <div><span>☕ 오늘 커피 살 사람</span><h2>참가자 {buyer.player + 1}</h2><strong>{buyer.score}<small>점</small></strong></div>
+            {ranked.filter((item) => item.rank === buyer.rank).length === 1 && <CurvePreview result={buyer} large />}
+            <div><ResultVerdict results={ranked} numbered /><strong>{buyer.score}<small>점</small></strong></div>
           </div>
           <ol className="circle-ranking">
-            {ranked.map((result, index) => (
-              <li key={result.player} className={result.player === buyer.player ? 'buyer' : ''}>
+            {ranked.map((result) => (
+              <li key={result.player} className={result.rank === buyer.rank ? 'buyer' : ''}>
                 <CurvePreview result={result} />
-                <b>{index + 1}</b>
+                <b>{result.rank}</b>
                 <span>참가자 {result.player + 1}<small>형태 정확도 {result.accuracy}</small></span>
                 <strong>{result.score}</strong>
               </li>

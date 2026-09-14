@@ -32,6 +32,7 @@
     "check:puzzles": "node --experimental-strip-types scripts/check-puzzles.ts",
     "check:sand": "node --experimental-strip-types scripts/check-sand.ts",
     "check:arcade": "node --experimental-strip-types scripts/check-arcade.ts",
+    "check:ranking": "node --experimental-strip-types scripts/check-ranking.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },

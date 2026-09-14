@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { PLAYER_NAMES } from './game';
 import { BOMB_MAX, BOMB_MIN, BOMB_TURN_MS, makeBombRound, playableBounds, resolveBombPick } from './bomb-game';
 
-type Phase = 'setup' | 'play' | 'checking' | 'exploded';
+type Phase = 'setup' | 'ready' | 'play' | 'checking' | 'exploded';
 const COLORS = ['#27c9e8', '#ff8b4c', '#a980f4', '#54d18e', '#f462a0', '#f1cf4e'];
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 const clock = () => performance.now();
-const numbers = Array.from({ length: BOMB_MAX }, (_, index) => index + 1);
 
 export default function BombGame({ onExit }: { onExit: () => void }) {
   const [phase, setPhase] = useState<Phase>('setup');
@@ -24,7 +23,10 @@ export default function BombGame({ onExit }: { onExit: () => void }) {
   const [turns, setTurns] = useState(1);
   const [deadline, setDeadline] = useState(0);
   const [timeLeft, setTimeLeft] = useState(BOMB_TURN_MS);
+  const pending = useRef(false);
   const playable = useMemo(() => playableBounds(low, high), [high, low]);
+  const numbers = Array.from({ length: playable.high - playable.low + 1 }, (_, index) => playable.low + index);
+  const columns = Math.min(6, Math.ceil(Math.sqrt(numbers.length)));
 
   useEffect(() => {
     if (phase !== 'play') return;
@@ -57,12 +59,26 @@ export default function BombGame({ onExit }: { onExit: () => void }) {
     setTimeoutLoss(false);
     setTurns(1);
     setTimeLeft(BOMB_TURN_MS);
+    setPhase('ready');
+  }
+
+  function beginTurn() {
+    if (phase !== 'ready') return;
+    pending.current = false;
+    setTimeLeft(BOMB_TURN_MS);
     setDeadline(clock() + BOMB_TURN_MS);
     setPhase('play');
   }
 
   async function chooseNumber(choice: number) {
-    if (phase !== 'play') return;
+    if (phase !== 'play' || pending.current) return;
+    pending.current = true;
+    if (clock() >= deadline) {
+      setTimeoutLoss(true);
+      setLoser(player);
+      setPhase('exploded');
+      return;
+    }
     const result = resolveBombPick({ bomb, low, high }, choice);
     setSelected(choice);
     setPhase('checking');
@@ -81,8 +97,7 @@ export default function BombGame({ onExit }: { onExit: () => void }) {
     setPlayer((current) => (current + 1) % players);
     setTurns((current) => current + 1);
     setTimeLeft(BOMB_TURN_MS);
-    setDeadline(clock() + BOMB_TURN_MS);
-    setPhase('play');
+    setPhase('ready');
   }
 
   return <main className={`bomb-shell ${phase === 'exploded' ? 'exploded' : ''}`} style={{ '--bomb-player': COLORS[player] } as CSSProperties}>
@@ -97,11 +112,19 @@ export default function BombGame({ onExit }: { onExit: () => void }) {
       <div className="bomb-rules"><span>🎯 중앙 60%만 선택</span><span>⏱️ 턴당 6초</span><span>💥 맞히면 패배</span></div>
     </section>}
 
+    {phase === 'ready' && <section className="bomb-setup bomb-handoff">
+      <div className="bomb-hero" aria-hidden="true"><span>💣</span></div>
+      <p className="bomb-kicker">{turns}턴 · 기기를 넘겨주세요</p>
+      <h2>{PLAYER_NAMES[player]} 차례</h2>
+      <p>준비 버튼을 누른 뒤 6초가 시작됩니다.<br />기기를 넘기는 동안에는 시간이 줄지 않아요.</p>
+      <button className="bomb-primary" onClick={beginTurn}>받았어요 · 6초 시작</button>
+    </section>}
+
     {(phase === 'play' || phase === 'checking') && <section className={`bomb-play ${phase}`}>
       <div className="bomb-turn"><i /><div><small>{player + 1}/{players}번째 참가자 · {turns}턴</small><strong>{PLAYER_NAMES[player]} 차례</strong></div><b>{Math.ceil(timeLeft / 1000)}<small>초</small></b></div>
       <div className="bomb-fuse" aria-label={`남은 시간 ${Math.ceil(timeLeft / 1000)}초`}><i style={{ width: `${timeLeft / BOMB_TURN_MS * 100}%` }}><span>🔥</span></i></div>
       <div className="bomb-range" key={`${low}-${high}`}><small>폭탄이 숨어 있는 범위</small><div><b>{low}</b><span>—</span><b>{high}</b></div><p>{playable.low}부터 {playable.high}까지 선택 가능</p></div>
-      <div className="bomb-board" aria-label="숫자 선택판">
+      <div className="bomb-board bomb-picks" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }} aria-label="숫자 선택판">
         {numbers.map((number) => {
           const inRange = number >= low && number <= high;
           const canPick = number >= playable.low && number <= playable.high;
@@ -109,7 +132,7 @@ export default function BombGame({ onExit }: { onExit: () => void }) {
         })}
         {feedback && <div className={`bomb-feedback ${feedback.toLowerCase()}`}><span>{feedback === 'UP' ? '↑' : '↓'}</span><strong>{feedback}</strong><small>{selected}보다 {feedback === 'UP' ? '높다' : '낮다'}!</small></div>}
       </div>
-      <p className="bomb-tip">가장자리 안전 선택은 잠겨 있습니다. 빛나는 숫자 중 하나를 고르세요.</p>
+      <p className="bomb-tip">현재 선택할 수 있는 숫자만 표시됩니다. 하나를 골라주세요.</p>
     </section>}
 
     {phase === 'exploded' && loser !== null && <section className="bomb-result" role="dialog" aria-modal="true" aria-labelledby="bomb-result-title">

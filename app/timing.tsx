@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -128,7 +129,7 @@ export default function TimingGame({ onExit }: { onExit: () => void }) {
             </select>
           </label>
           <button className="timing-primary" onClick={startGame}>{modeName} 시작</button>
-          <p className="timing-rule">한 명씩 도전하고 기록은 마지막까지 공개되지 않습니다.</p>
+          <p className="timing-rule">한 명씩 도전하고 기록은 마지막까지 공개되지 않습니다.<br />0.01초 단위 오차로 비교하며, 같은 오차는 공동 순위입니다.</p>
         </section>
       )}
 
@@ -175,14 +176,13 @@ export default function TimingGame({ onExit }: { onExit: () => void }) {
           <p className="timing-result-label">최종 결과 · 목표 {formatTiming(target)}초</p>
           <div className="buyer-card">
             <span aria-hidden="true">☕</span>
-            <p>오늘 커피 살 사람</p>
-            <h2>참가자 {buyer.player + 1}</h2>
+            <ResultVerdict results={ranked} numbered />
             <small>목표에서 {formatTiming(buyer.error)}초 벗어남</small>
           </div>
           <ol className="timing-ranking">
-            {ranked.map((result, index) => (
-              <li key={result.player} className={result.player === buyer.player ? 'buyer' : ''}>
-                <b>{index + 1}</b>
+            {ranked.map((result) => (
+              <li key={result.player} className={result.rank === buyer.rank ? 'buyer' : ''}>
+                <b>{result.rank}</b>
                 <span>참가자 {result.player + 1}</span>
                 <strong>{formatTiming(result.elapsed)}초</strong>
                 <small>± {formatTiming(result.error)}초</small>

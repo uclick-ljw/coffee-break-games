@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export type CurvePoint = { x: number; y: number };
 export type CurveShape = 'circle' | 'drop' | 'heart' | 'infinity' | 'spiral';
 
@@ -128,5 +130,5 @@ export function scoreCurve(player: number, shape: CurveShape, points: CurvePoint
 }
 
 export function rankCurves(results: CurveResult[]) {
-  return [...results].sort((a, b) => b.score - a.score || a.player - b.player);
+  return rankResults(results, (a, b) => b.score - a.score);
 }

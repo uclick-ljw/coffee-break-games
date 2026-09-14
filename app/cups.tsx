@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
@@ -181,7 +182,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
           </div>
           <p className="cup-kicker">눈을 떼는 순간, 구슬은 사라진다</p>
           <h2>구슬을 숨긴 컵을<br />끝까지 따라가세요</h2>
-          <p className="cup-intro">한 사람당 세 번, 점점 어렵게 섞습니다.<br />정답과 선택 속도를 합쳐 최종 순위를 정합니다.</p>
+          <p className="cup-intro">한 사람당 세 번, 점점 어렵게 섞습니다.<br />정답 수 → 합계 점수 → 빠른 선택 순서입니다.<br />선택 시간은 0.1초 단위 · 모두 오답이면 공동 순위입니다.</p>
           <label className="cup-player-select">참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
           <button className="cup-primary" onClick={startGame}>첫 셔플 시작</button>
           <div className="cup-rules"><span>🥤 3컵 → 4컵 → 5컵</span><span>👀 3라운드</span><span>⚡ 속도 보너스</span></div>
@@ -232,7 +233,7 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
             <div className={`cup-result ${lastCorrect ? 'correct' : 'wrong'}`}>
               <small>{lastCorrect ? '정확히 찾았습니다' : '구슬을 놓쳤습니다'}</small>
               <h2>{lastCorrect ? `+${lastScore}점` : '0점'}</h2>
-              <p>{lastCorrect ? '정답 점수와 빠른 선택 보너스가 합산됐습니다.' : '다음 셔플에서 만회할 수 있습니다.'}</p>
+              <p>{lastCorrect ? '정답 점수와 빠른 선택 보너스가 합산됐습니다.' : round + 1 < CUP_ROUNDS ? '다음 셔플에서 만회할 수 있습니다.' : '세 번의 도전이 모두 끝났습니다.'}</p>
               <button className="cup-primary" onClick={continueGame}>{round + 1 < CUP_ROUNDS ? '더 빠른 셔플 도전' : player + 1 < players ? '화면 가리고 넘기기' : '최종 결과 보기'}</button>
             </div>
           )}
@@ -241,9 +242,9 @@ export default function CupGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'final' && payer && (
         <section className="cup-final">
-          <div className="cup-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.score}점 · {payer.correct}/{CUP_ROUNDS} 정답</strong></div>
-          <ol>{ranked.map((result, index) => (
-            <li key={result.player}><span>{index + 1}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.correct}/{CUP_ROUNDS} 정답 · 선택 {(result.decisionMs / 1000).toFixed(1)}초</small></div><b>{result.score}점</b></li>
+          <div className="cup-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>{payer.score}점 · {payer.correct}/{CUP_ROUNDS} 정답</strong></div>
+          <ol>{ranked.map((result) => (
+            <li key={result.player}><span>{result.rank}</span><i style={{ background: PLAYER_COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.correct}/{CUP_ROUNDS} 정답 · 선택 {(result.decisionMs / 1000).toFixed(1)}초</small></div><b>{result.score}점</b></li>
           ))}</ol>
           <button className="cup-primary" onClick={startGame}>새 셔플로 한 판 더</button>
           <button className="cup-secondary" onClick={exitGame}>게임 선택으로</button>

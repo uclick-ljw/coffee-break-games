@@ -1,4 +1,6 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
+import { rankResults } from './ranking';
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -317,7 +319,7 @@ export default function DodgeGame({ onExit }: { onExit: () => void }) {
   }
 
   const currentAnimal = animals[player] ?? DODGE_ANIMALS[0];
-  const ranking = [...results].sort((a, b) => b.milliseconds - a.milliseconds);
+  const ranking = rankResults(results, (a, b) => Math.round(b.milliseconds / 10) - Math.round(a.milliseconds / 10));
   const payer = ranking[ranking.length - 1];
 
   return (
@@ -391,15 +393,14 @@ export default function DodgeGame({ onExit }: { onExit: () => void }) {
       {phase === 'final' && payer && (
         <section className="dodge-final">
           <div className="dodge-payer">
-            <AnimalPortrait animal={animals[payer.player]} />
-            <p>오늘의 커피 담당</p>
-            <h2>{PLAYER_NAMES[payer.player]}</h2>
+            {ranking.filter((item) => item.rank === payer.rank).length === 1 && <AnimalPortrait animal={animals[payer.player]} />}
+            <ResultVerdict results={ranking} />
             <strong>{formatTime(payer.milliseconds)}</strong>
           </div>
           <ol className="dodge-ranking">
-            {ranking.map((result, index) => (
+            {ranking.map((result) => (
               <li key={result.player}>
-                <span>{index + 1}</span>
+                <span>{result.rank}</span>
                 <AnimalPortrait animal={animals[result.player]} />
                 <div><strong>{PLAYER_NAMES[result.player]}</strong><small>{animals[result.player].name}</small></div>
                 <b>{formatTime(result.milliseconds)}</b>

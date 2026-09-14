@@ -1,4 +1,6 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
+import { rankResults } from './ranking';
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { DODGE_ANIMALS, assignDodgeAnimals, type DodgeAnimal } from './dodge-game';
@@ -321,7 +323,7 @@ export default function ParkingGame({ onExit }: { onExit: () => void }) {
     changePhase('ready');
   }
 
-  const ranking = [...results].sort((a, b) => b.score - a.score || a.player - b.player);
+  const ranking = rankResults(results, (a, b) => b.score - a.score);
   const payer = ranking[ranking.length - 1];
 
   return (
@@ -382,9 +384,9 @@ export default function ParkingGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'final' && payer && (
         <section className="parking-final">
-          <div className="parking-payer"><AnimalPortrait animal={animals[payer.player]} /><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.score}점 · {payer.parked ? '주차 성공' : payer.reason}</strong></div>
+          <div className="parking-payer">{ranking.filter((item) => item.rank === payer.rank).length === 1 && <AnimalPortrait animal={animals[payer.player]} />}<ResultVerdict results={ranking} /><strong>{payer.score}점</strong></div>
           <ol className="parking-ranking">
-            {ranking.map((result, index) => <li key={result.player}><span>{index + 1}</span><AnimalPortrait animal={animals[result.player]} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.parked ? '주차 성공' : result.reason}</small></div><b>{result.score}점</b></li>)}
+            {ranking.map((result) => <li key={result.player}><span>{result.rank}</span><AnimalPortrait animal={animals[result.player]} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.parked ? '주차 성공' : result.reason}</small></div><b>{result.score}점</b></li>)}
           </ol>
           <button className="parking-primary" onClick={startGame}>다시 주차하기</button>
           <button className="parking-secondary" onClick={onExit}>게임 선택으로</button>

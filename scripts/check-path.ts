@@ -24,15 +24,24 @@ for (let seed = 1; seed <= 80; seed += 1) {
   assert.equal(new Set(challenges.map((challenge) => challenge.optimalRotations)).size, 1, 'transformed boards must have equal difficulty');
 }
 
-assert.equal(pathProgress([10, 11, 12, 7], [10, 11, 12, 13]), 2);
+const openBoard = { directions: Array<0>(25).fill(0), hazards: [], start: 10, exitCell: 14, solution: [10, 11, 12, 13, 14], optimalRotations: 3 };
+assert.deepEqual(pathProgress([10, 5, 6, 7, 8, 9], openBoard), { progress: 75, remainingSteps: 1 }, 'an alternate route is not penalized for leaving the sample solution');
+assert.deepEqual(pathProgress([10, 11, 12, 13], openBoard), { progress: 75, remainingSteps: 1 });
+assert.deepEqual(pathProgress([10, 5], openBoard), { progress: 0, remainingSteps: 5 }, 'walking away must not earn progress');
+assert.deepEqual(pathProgress([], openBoard), { progress: 0, remainingSteps: 4 });
+assert.deepEqual(pathProgress([10, 11, 12, 13, 14], openBoard), { progress: 100, remainingSteps: 0 });
+assert.deepEqual(pathProgress([10, 5, 6, 7, 8, 9], { ...openBoard, solution: [10, 5, 6, 7, 8, 9, 14] }), { progress: 75, remainingSteps: 1 }, 'changing the stored solution cannot change scoring');
+const blocked = { ...openBoard, hazards: [11, 12, 13] };
+assert.deepEqual(pathProgress([10, 5, 6, 7, 8, 9], blocked), { progress: 83, remainingSteps: 1 }, 'distance must route around guards');
 const ranked = rankPathResults([
-  { player: 0, success: false, elapsed: 8, rotations: 5, optimalRotations: 5, progress: 4, pathLength: 8 },
-  { player: 1, success: true, elapsed: 6.1, rotations: 7, optimalRotations: 5, progress: 8, pathLength: 8 },
-  { player: 2, success: true, elapsed: 6.3, rotations: 5, optimalRotations: 5, progress: 8, pathLength: 8 },
+  { player: 0, success: false, elapsed: 8, rotations: 5, optimalRotations: 5, progress: 75, remainingSteps: 2 },
+  { player: 1, success: true, elapsed: 6.1, rotations: 7, optimalRotations: 5, progress: 100, remainingSteps: 0 },
+  { player: 2, success: true, elapsed: 6.3, rotations: 5, optimalRotations: 5, progress: 100, remainingSteps: 0 },
 ]);
 assert.deepEqual(ranked.map((result) => result.player), [2, 1, 0]);
 assert.equal(pathScore(ranked[0]), 62);
 assert.equal(pathScore(ranked[1]), 53);
+assert.deepEqual(rankPathResults([ranked[2], { ...ranked[2], player: 4, rotations: 0, elapsed: 1 }]).map((r) => r.rank), [1, 1], 'failed attempts at equal progress share a rank');
 
 const guardBoard = makePathChallenges(2, 991)[0];
 const guardDirections = [...guardBoard.directions];

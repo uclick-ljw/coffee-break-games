@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -34,6 +35,8 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
   const completeTurn = useCallback((forcedElapsed?: number) => {
     if (finishingRef.current) return;
     finishingRef.current = true;
+    dragRef.current = null;
+    setDrag(null);
     const elapsed = forcedElapsed ?? Math.min(LUNCH_TURN_MS, performance.now() - startedAtRef.current);
     setResults((current) => [...current, lunchResult(player, placementsRef.current, elapsed)]);
     setPhase('result');
@@ -80,13 +83,14 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
   }
 
   function rotateFood(id: string) {
+    if (phase !== 'play' || finishingRef.current) return;
     const placed = placements.find((item) => item.id === id);
     if (!placed) {
       setTrayRotations((current) => ({ ...current, [id]: !current[id] }));
       return;
     }
     const rotated = { ...placed, rotated: !placed.rotated };
-    if (isValidLunchPlacement(rotated, placements)) setPlacements((current) => current.map((item) => item.id === id ? rotated : item));
+    if (isValidLunchPlacement(rotated, placements, layout.dividers)) setPlacements((current) => current.map((item) => item.id === id ? rotated : item));
     else rejectDrop(id);
   }
 
@@ -118,7 +122,7 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
 
   function endDrag(event: ReactPointerEvent<HTMLElement> | ReactMouseEvent<HTMLElement>) {
     const active = dragRef.current;
-    if (!active) return;
+    if (!active || phase !== 'play' || finishingRef.current) return;
     dragRef.current = null;
     setDrag(null);
     if (!active.moved && Math.hypot(event.clientX - active.startX, event.clientY - active.startY) <= 6) {
@@ -189,6 +193,7 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
       <p className="lunch-kicker">25초 도시락 포장 대결</p>
       <h2>빈틈은 줄이고,<br />맛있는 건 더 많이!</h2>
       <p>음식을 끌어 담고 짧게 눌러 회전하세요.<br />채운 면적이 넓을수록 높은 순위입니다.</p>
+      <p className="ranking-rule">채운 면적 → 빠른 제출 순서 · 같은 기록은 공동 순위</p>
       <label>참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
       <button className="lunch-primary" onClick={startGame}>도시락 싸기 시작</button>
       <div className="lunch-rules"><span>☝️ 드래그 배치</span><span>↻ 눌러서 회전</span><span>🏆 면적 우선</span></div>
@@ -197,7 +202,7 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
     {phase === 'ready' && <section className="lunch-ready"><div className="lunch-ready-card" style={{ '--lunch-player': COLORS[player] } as CSSProperties}><span>🍱</span><small>{player + 1}/{players}번째 포장</small><h2>{PLAYER_NAMES[player]} 준비</h2><p>다른 사람은 화면을 보지 마세요.<br />시작하면 25초가 흐릅니다.</p><button className="lunch-primary" onClick={beginTurn}>25초 시작</button></div></section>}
 
     {phase === 'play' && <section className="lunch-play" style={{ '--lunch-player': COLORS[player] } as CSSProperties} onPointerMove={moveDrag} onPointerUp={endDrag} onMouseMove={moveDrag} onMouseUp={endDrag} onPointerCancel={() => { dragRef.current = null; setDrag(null); }}>
-      <div className="lunch-status"><i /><div><small>{PLAYER_NAMES[player]} · {player + 1}/{players} · {layout.name}</small><strong>{placements.length}/{foods.length}개 담았습니다</strong></div><b>{(timeLeft / 1000).toFixed(1)}<small>초</small></b></div>
+      <div className="lunch-status"><i /><div><small>{PLAYER_NAMES[player]} · {player + 1}/{players} · {layout.name}</small><strong>채운 면적 {(lunchResult(player, placements, 0).area / (LUNCH_WIDTH * LUNCH_HEIGHT) * 100).toFixed(1)}%</strong></div><b>{(timeLeft / 1000).toFixed(1)}<small>초</small></b></div>
       <div className="lunch-board" ref={boardRef} aria-label={layout.name}><div className="lunch-rice" />{layout.dividers.map((divider, index) => <div key={index} className={`lunch-divider ${divider.width > divider.height ? 'horizontal' : 'vertical'}`} style={{ left: `${divider.x / LUNCH_WIDTH * 100}%`, top: `${divider.y / LUNCH_HEIGHT * 100}%`, width: `${divider.width / LUNCH_WIDTH * 100}%`, height: `${divider.height / LUNCH_HEIGHT * 100}%` }} />)}{placements.map((placement) => foodButton(LUNCH_FOODS.find((food) => food.id === placement.id)!, placement))}{drag?.moved && insideBoard(drag) && dropPreviewRect && ghostFood && <div className={`lunch-drop-preview ${dropPreviewValid ? 'valid' : 'invalid'}`} style={dropPreviewStyle} aria-hidden="true"><span>{ghostFood.emoji}</span></div>}</div>
       <p className="lunch-tip">음식을 끌어 담기 · 짧게 눌러 회전</p>
       <div className="lunch-tray">{foods.filter((food) => !placements.some((placement) => placement.id === food.id)).map((food) => foodButton(food))}</div>
@@ -205,8 +210,8 @@ export default function LunchGame({ onExit }: { onExit: () => void }) {
       {drag?.moved && ghostFood && !insideBoard(drag) && <div className="lunch-ghost" style={ghostStyle}><span>{ghostFood.emoji}</span></div>}
     </section>}
 
-    {phase === 'result' && currentResult && <section className="lunch-result"><div className="lunch-result-box"><span>🍱</span><small>{PLAYER_NAMES[player]}의 도시락</small><h2>{currentResult.placed}<b>/{foods.length}개</b></h2><p>채운 면적 {Math.round(currentResult.area / (LUNCH_WIDTH * LUNCH_HEIGHT) * 100)}% · {currentResult.score}점</p><button className="lunch-primary" onClick={continueGame}>{player + 1 < players ? '화면 가리고 넘기기' : '최종 순위 보기'}</button></div></section>}
+    {phase === 'result' && currentResult && <section className="lunch-result"><div className="lunch-result-box"><span>🍱</span><small>{PLAYER_NAMES[player]}의 도시락</small><h2>{(currentResult.area / (LUNCH_WIDTH * LUNCH_HEIGHT) * 100).toFixed(1)}<b>%</b></h2><p>채운 면적 · {currentResult.score}점 · 반찬 {currentResult.placed}/{foods.length}개</p><button className="lunch-primary" onClick={continueGame}>{player + 1 < players ? '화면 가리고 넘기기' : '최종 순위 보기'}</button></div></section>}
 
-    {phase === 'final' && payer && <section className="lunch-final"><div className="lunch-payer"><span>☕</span><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.placed}/{foods.length}개 · {payer.score}점</strong></div><ol>{ranked.map((result, index) => <li key={result.player}><span>{index + 1}</span><i style={{ background: COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.placed}/{foods.length}개 · {(result.elapsedMs / 1000).toFixed(1)}초</small></div><b>{result.score}점</b></li>)}</ol><button className="lunch-primary" onClick={startGame}>새 도시락 한 판 더</button><button className="lunch-secondary" onClick={onExit}>게임 선택으로</button></section>}
+    {phase === 'final' && payer && <section className="lunch-final"><div className="lunch-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>채운 면적 {(payer.area / (LUNCH_WIDTH * LUNCH_HEIGHT) * 100).toFixed(1)}% · {payer.score}점</strong></div><ol>{ranked.map((result) => <li key={result.player}><span>{result.rank}</span><i style={{ background: COLORS[result.player] }} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.placed}/{foods.length}개 · {(result.elapsedMs / 1000).toFixed(1)}초</small></div><b>{result.score}점</b></li>)}</ol><button className="lunch-primary" onClick={startGame}>새 도시락 한 판 더</button><button className="lunch-secondary" onClick={onExit}>게임 선택으로</button></section>}
   </main>;
 }

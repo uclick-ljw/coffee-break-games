@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export type TimingMode = 'blind' | 'visible';
 
 export type TimingResult = {
@@ -15,11 +17,12 @@ export function makeTimingTarget(random = Math.random) {
 }
 
 export function scoreTimingAttempt(player: number, elapsed: number, target: number): TimingResult {
-  return { player, elapsed, error: Math.abs(elapsed - target) };
+  const recorded = Math.round(elapsed / 10) * 10;
+  return { player, elapsed: recorded, error: Math.abs(recorded - target) };
 }
 
 export function rankTimingResults(results: TimingResult[]) {
-  return [...results].sort((a, b) => a.error - b.error || a.player - b.player);
+  return rankResults(results, (a, b) => Math.round(a.error / 10) - Math.round(b.error / 10));
 }
 
 export function formatTiming(ms: number) {

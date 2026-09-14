@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -258,7 +259,7 @@ export default function MeasureGame({ onExit }: { onExit: () => void }) {
       )}
 
       {phase === 'final' && payer && (
-        <section className="measure-final"><div className="measure-payer"><span>☕</span><p>가장 크게 빗나간 사람</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>누적 부피 오차 {(payer.error * 100).toFixed(1)}%</strong></div><ol>{ranked.map((entry, index) => <li key={entry.player}><span>{index + 1}</span><i style={{ background: PLAYER_COLORS[entry.player] }} /><div><strong>{PLAYER_NAMES[entry.player]}</strong><small>평균 오차 {(entry.error / 3 * 100).toFixed(1)}%</small></div><b>{entry.score}점</b></li>)}</ol><button className="measure-primary" onClick={startGame}>새 물잔으로 한 판 더</button><button className="measure-secondary" onClick={onExit}>게임 선택으로</button></section>
+        <section className="measure-final"><div className="measure-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>평균 부피 오차 {(payer.error / MEASURE_ROUNDS.length * 100).toFixed(1)}%</strong></div><ol>{ranked.map((entry) => <li key={entry.player}><span>{entry.rank}</span><i style={{ background: PLAYER_COLORS[entry.player] }} /><div><strong>{PLAYER_NAMES[entry.player]}</strong><small>평균 오차 {(entry.error / 3 * 100).toFixed(1)}%</small></div><b>{entry.score}점</b></li>)}</ol><button className="measure-primary" onClick={startGame}>새 물잔으로 한 판 더</button><button className="measure-secondary" onClick={onExit}>게임 선택으로</button></section>
       )}
     </main>
   );

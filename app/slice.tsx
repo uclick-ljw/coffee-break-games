@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { DODGE_ANIMALS, assignDodgeAnimals, type DodgeAnimal } from './dodge-game';
@@ -362,9 +363,9 @@ export default function SliceGame({ onExit }: { onExit: () => void }) {
 
       {phase === 'final' && payer && (
         <section className="slice-final">
-          <div className="slice-payer"><AnimalPortrait animal={animals[payer.player]} /><p>오늘의 커피 담당</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>{payer.shapeName} · 오차 {payer.error.toFixed(1)}%</strong></div>
+          <div className="slice-payer">{ranked.filter((item) => item.rank === payer.rank).length === 1 && <AnimalPortrait animal={animals[payer.player]} />}<ResultVerdict results={ranked} /><strong>{payer.score}점</strong></div>
           <ol className="slice-ranking">
-            {ranked.map((result, index) => <li key={result.player}><span>{index + 1}</span><AnimalPortrait animal={animals[result.player]} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.shapeName} · {result.left.toFixed(1)}:{result.right.toFixed(1)}</small></div><b>{result.score}점</b></li>)}
+            {ranked.map((result) => <li key={result.player}><span>{result.rank}</span><AnimalPortrait animal={animals[result.player]} /><div><strong>{PLAYER_NAMES[result.player]}</strong><small>{result.shapeName} · {result.left.toFixed(1)}:{result.right.toFixed(1)}</small></div><b>{result.score}점</b></li>)}
           </ol>
           <button className="slice-primary" onClick={startGame}>다른 물체로 한 판 더</button>
           <button className="slice-secondary" onClick={onExit}>게임 선택으로</button>

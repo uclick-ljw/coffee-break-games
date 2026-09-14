@@ -22,9 +22,19 @@ for (const layout of LUNCH_LAYOUTS) {
     assert(fits, `${food.name} must fit ${layout.name}`);
   }
 }
-assert(isValidLunchPlacement({ id: 'gimbap-a', x: 10, y: 10, rotated: false }, []));
-assert(!isValidLunchPlacement({ id: 'gimbap-a', x: 190, y: 20, rotated: false }, []));
-assert(!isValidLunchPlacement({ id: 'gimbap-b', x: 30, y: 30, rotated: false }, [{ id: 'gimbap-a', x: 10, y: 10, rotated: false }]));
+const dividers = LUNCH_LAYOUTS[0].dividers;
+assert(isValidLunchPlacement({ id: 'gimbap-a', x: 10, y: 10, rotated: false }, [], dividers));
+assert(!isValidLunchPlacement({ id: 'gimbap-a', x: 190, y: 20, rotated: false }, [], dividers));
+assert(!isValidLunchPlacement({ id: 'gimbap-b', x: 30, y: 30, rotated: false }, [{ id: 'gimbap-a', x: 10, y: 10, rotated: false }], dividers));
+
+// The audit reproduction: a horizontal egg fits, but rotating crosses the current divider.
+for (const layout of LUNCH_LAYOUTS) {
+  const egg = { id: 'egg', x: layout.id === 'l-left' ? 120 : 16, y: 18, rotated: false };
+  assert(isValidLunchPlacement(egg, [], layout.dividers));
+  assert.equal(isValidLunchPlacement({ ...egg, rotated: true }, [egg], layout.dividers), !['cross', 'stairs'].includes(layout.id));
+  const tomato = { id: 'tomato-a', x: 10, y: 10, rotated: true };
+  assert(isValidLunchPlacement(tomato, [], layout.dividers), `valid rotations still work in ${layout.name}`);
+}
 
 const one = lunchResult(0, [{ id: 'gimbap-a', x: 10, y: 10, rotated: false }], 10_000);
 const two = lunchResult(1, [{ id: 'egg', x: 10, y: 10, rotated: false }], 20_000);

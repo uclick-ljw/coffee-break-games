@@ -1,4 +1,5 @@
 'use client';
+import { ResultVerdict } from './result-verdict';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { PLAYER_NAMES } from './game';
@@ -185,6 +186,7 @@ export default function DartGame({ onExit }: { onExit: () => void }) {
       <p className="dart-kicker">빈틈을 읽고 한 발씩</p><h2>돌아가는 판에<br />다트를 꽂아라</h2>
       <p>미리 꽂힌 다트 사이를 노려 화면을 누르세요.<br />다트끼리 충돌하면 튕겨 나갑니다.</p>
       <label>참가 인원<select value={players} onChange={(event) => setPlayers(Number(event.target.value))}>{[2, 3, 4, 5, 6].map((count) => <option key={count} value={count}>{count}명</option>)}</select></label>
+      <p className="ranking-rule">성공 수 → 적은 충돌 → 빠른 발사 순서<br />0.1초 단위로 비교 · 같은 기록은 공동 순위입니다.</p>
       <button className="dart-primary" onClick={startGame}>회전판 시작</button>
       <div className="dart-rules"><span>🎯 라운드당 3발</span><span>⏱️ 발당 2.6초</span><span>🌀 장애물 3→5→7</span></div>
     </section>}
@@ -217,8 +219,8 @@ export default function DartGame({ onExit }: { onExit: () => void }) {
     </section>}
 
     {phase === 'final' && payer && <section className="dart-final">
-      <div className="dart-payer"><span>☕</span><p>가장 적게 꽂은 사람</p><h2>{PLAYER_NAMES[payer.player]}</h2><strong>총 {payer.hits}/{DARTS_PER_ROUND * DART_ROUNDS}개 성공</strong></div>
-      <ol>{ranked.map((entry, index) => <li key={entry.player}><b>{index + 1}</b><i style={{ background: COLORS[entry.player] }} /><div><strong>{PLAYER_NAMES[entry.player]}</strong><small>충돌 {entry.misses}회 · {(entry.duration / 1000).toFixed(1)}초</small></div><span>{entry.hits}<small>/{DARTS_PER_ROUND * DART_ROUNDS}</small></span></li>)}</ol>
+      <div className="dart-payer"><span>☕</span><ResultVerdict results={ranked} /><strong>총 {payer.hits}/{DARTS_PER_ROUND * DART_ROUNDS}개 성공</strong></div>
+      <ol>{ranked.map((entry) => <li key={entry.player}><b>{entry.rank}</b><i style={{ background: COLORS[entry.player] }} /><div><strong>{PLAYER_NAMES[entry.player]}</strong><small>충돌 {entry.misses}회 · {(entry.duration / 1000).toFixed(1)}초</small></div><span>{entry.hits}<small>/{DARTS_PER_ROUND * DART_ROUNDS}</small></span></li>)}</ol>
       <button className="dart-primary" onClick={startGame}>새 회전판으로 한 판 더</button><button className="dart-secondary" onClick={onExit}>게임 선택으로</button>
     </section>}
   </main>;

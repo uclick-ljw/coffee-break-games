@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export const LUNCH_WIDTH = 320;
 export const LUNCH_HEIGHT = 220;
 export const LUNCH_TURN_MS = 25_000;
@@ -88,7 +90,7 @@ function overlaps(a: ReturnType<typeof foodRect>, b: ReturnType<typeof foodRect>
   return a.x < b.x + b.width + gap && a.x + a.width + gap > b.x && a.y < b.y + b.height + gap && a.y + a.height + gap > b.y;
 }
 
-export function isValidLunchPlacement(candidate: LunchPlacement, placed: LunchPlacement[], dividers = LUNCH_LAYOUTS[0].dividers) {
+export function isValidLunchPlacement(candidate: LunchPlacement, placed: LunchPlacement[], dividers: LunchDivider[]) {
   const rect = foodRect(candidate);
   if (rect.x < 2 || rect.y < 2 || rect.x + rect.width > LUNCH_WIDTH - 2 || rect.y + rect.height > LUNCH_HEIGHT - 2) return false;
   if (dividers.some((divider) => overlaps(rect, divider))) return false;
@@ -104,5 +106,5 @@ export function lunchResult(player: number, placed: LunchPlacement[], elapsedMs:
 }
 
 export function rankLunchResults(results: LunchResult[]) {
-  return [...results].sort((a, b) => b.area - a.area || a.elapsedMs - b.elapsedMs || a.player - b.player);
+  return rankResults(results, (a, b) => b.area - a.area || Math.round(a.elapsedMs / 100) - Math.round(b.elapsedMs / 100));
 }

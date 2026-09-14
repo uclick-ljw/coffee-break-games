@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export type SlicePoint = { x: number; y: number };
 
 export type SliceShape = {
@@ -214,5 +216,5 @@ export function scoreSlice(player: number, challenge: SliceChallenge, start: Sli
 }
 
 export function rankSlices(results: SliceOutcome[]) {
-  return [...results].sort((a, b) => b.score - a.score || a.player - b.player);
+  return rankResults(results, (a, b) => b.score - a.score);
 }

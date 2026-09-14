@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export const MEASURE_ROUNDS = [
   { vessel: 'tall', name: '긴 유리잔', hint: '반듯하지만 잔류 물줄기는 짧습니다', revealMs: 1200, flowScale: 1, decay: 5.2 },
   { vessel: 'bowl', name: '넓은 물잔', hint: '폭이 넓어 수위가 천천히 올라갑니다', revealMs: 1000, flowScale: 1.08, decay: 4.5 },
@@ -101,7 +103,7 @@ export function makeMeasureResult(player: number, round: number, target: number,
 }
 
 export function rankMeasureResults(results: MeasureResult[], players: number) {
-  return Array.from({ length: players }, (_, player) => {
+  return rankResults(Array.from({ length: players }, (_, player) => {
     const attempts = results.filter((result) => result.player === player);
     return {
       player,
@@ -109,5 +111,5 @@ export function rankMeasureResults(results: MeasureResult[], players: number) {
       error: attempts.reduce((sum, result) => sum + result.error, 0),
       attempts,
     };
-  }).sort((a, b) => b.score - a.score || a.error - b.error || a.player - b.player);
+  }), (a, b) => b.score - a.score || Math.round(a.error / MEASURE_ROUNDS.length * 1000) - Math.round(b.error / MEASURE_ROUNDS.length * 1000));
 }

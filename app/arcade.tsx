@@ -137,7 +137,7 @@ function HoleTurn({ seed, player, practice, onDone }: { seed: number; player: nu
     <div className="arcade-hud"><div><span>{practice ? '연습 점수 · 순위 제외' : '모은 점수'}</span><strong>{hud.score}<small>점</small></strong></div><div className={hud.seconds <= 5 ? 'hole-urgent' : ''}><span>남은 시간</span><strong>{hud.seconds}<small>초</small></strong></div><button className="hole-pause-button" onClick={pause} disabled={paused || loading || !!error} aria-label="잠깐 멈추기">Ⅱ</button></div>
     <div className="hole-growth"><div><strong>Lv.{hud.tier + 1} · {TOYS[hud.tier].name}까지 꿀꺽</strong><span>{hud.tier === 3 ? '모든 장난감 OK!' : '다음: ' + TOYS[hud.tier + 1].name}</span></div><progress value={hud.progress} max={1} aria-label="다음 크기까지 성장" /></div>
     <div className="arcade-stage">
-      <canvas ref={canvas} className="arcade-board" tabIndex={0} role="application" aria-label="블랙홀 게임판. 누르면 이동합니다. 방향키를 누르고 있어도 이동합니다." onContextMenu={(event) => event.preventDefault()}
+      <canvas ref={canvas} className="arcade-board" style={{ visibility: paused ? 'hidden' : 'visible' }} tabIndex={paused ? -1 : 0} aria-hidden={paused} role="application" aria-label="블랙홀 게임판. 누르면 이동합니다. 방향키를 누르고 있어도 이동합니다." onContextMenu={(event) => event.preventDefault()}
         onPointerDown={(event) => {
           if (locked() || drag.current || event.button !== 0) return;
           event.preventDefault(); event.currentTarget.focus({ preventScroll: true }); event.currentTarget.setPointerCapture(event.pointerId);
@@ -146,7 +146,7 @@ function HoleTurn({ seed, player, practice, onDone }: { seed: number; player: nu
         onPointerMove={(event) => { if (!locked() && drag.current?.id === event.pointerId) moveHole(world.current!, pos(event)); }}
         onPointerUp={(event) => end(event)} onPointerCancel={(event) => end(event, true)} onLostPointerCapture={(event) => end(event, true)}
         onKeyDown={(event) => keyboard(event, true)} onKeyUp={(event) => keyboard(event, false)} onBlur={stop} />
-      {(paused || error || loading || countdown > 0) && <div className={'arcade-overlay' + (!paused && !error && !loading ? ' hole-countdown' : '')}>
+      {(paused || error || loading || countdown > 0) && <div className={'arcade-overlay' + (paused ? ' hole-paused' : !error && !loading ? ' hole-countdown' : '')}>
         <h2>{error ? '잠깐, 다시 준비할게요' : paused ? '잠깐 멈췄어요' : loading ? '장난감 준비 중…' : countdown}</h2>
         {error ? <><p>{error}</p><button className="puzzle-primary" onClick={() => { setError(''); setLoading(true); setCountdown(3); setRetry((n) => n + 1); }}>다시 준비하기</button></> : paused ? <button className="puzzle-primary" onClick={() => { pausedRef.current = false; setPaused(false); }}>계속하기</button> : !loading ? <p>아래 패드를 누르고 방향으로 밀기</p> : null}
       </div>}

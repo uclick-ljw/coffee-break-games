@@ -1,3 +1,5 @@
+import { rankResults } from './ranking.ts';
+
 export const DARTS_PER_ROUND = 3;
 export const DART_ROUNDS = 3;
 export const DART_SHOT_MS = 2600;
@@ -58,7 +60,7 @@ export function canPlaceDart(angles: number[], candidate: number, minGap = DART_
 }
 
 export function rankDartResults(results: DartResult[], players: number) {
-  return Array.from({ length: players }, (_, player) => {
+  return rankResults(Array.from({ length: players }, (_, player) => {
     const attempts = results.filter((result) => result.player === player);
     return {
       player,
@@ -66,5 +68,5 @@ export function rankDartResults(results: DartResult[], players: number) {
       misses: attempts.reduce((sum, result) => sum + result.misses, 0),
       duration: attempts.reduce((sum, result) => sum + result.duration, 0),
     };
-  }).sort((a, b) => b.hits - a.hits || a.misses - b.misses || a.duration - b.duration || a.player - b.player);
+  }), (a, b) => b.hits - a.hits || a.misses - b.misses || Math.round(a.duration / 100) - Math.round(b.duration / 100));
 }

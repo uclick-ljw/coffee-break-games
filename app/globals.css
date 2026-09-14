@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+.result-tie-note { display: block; margin: 10px 0; font-size: 13px; line-height: 1.5; }
+.result-names { word-break: keep-all; overflow-wrap: break-word; }
+.ranking-rule { margin: 12px 0; font-size: 13px; line-height: 1.55; text-align: center; }
+.hole-paused { background: #142d48; }
+.bomb-board.bomb-picks { aspect-ratio: auto; gap: 5px; padding: 8px; }
+.bomb-board.bomb-picks button { min-height: 44px; font-size: 15px; }
+
 .hole-card { background: linear-gradient(135deg, #c9f9ec, #b8dfef); }
 .game-cluster-heading.new-games-heading { padding: 18px; border-radius: 20px; background: #e5f1ff; border: 1px solid #b9d7f9; }
 .puzzle-shell.arcade-shell { --puzzle-accent: #176b84; --puzzle-soft: #dcedf1; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: linear-gradient(155deg, #f3fbff, #d8e9f1); }
